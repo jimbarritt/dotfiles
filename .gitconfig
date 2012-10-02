@@ -1,0 +1,13 @@
+[user]
+	name = Jim Barritt
+	email = jim@planet-ix.com
+
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	interactive = auto
+
+[alias]
+	st = status
+	br = branch
