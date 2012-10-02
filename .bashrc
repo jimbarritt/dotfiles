@@ -7,10 +7,11 @@ set -o emacs
 export TERM=xterm
 
 export PATH="."
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin:/usr/X11/bin"
+export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin:/usr/X11/bin"
 export PATH="$PATH:/usr/local/share/python"
 export PATH="$PATH:/Applications"
 export PATH="$PATH:/usr/texbin"
+export PATH="~/bin:$PATH"
 
 export SVN_EDITOR=emacs
 
@@ -47,11 +48,6 @@ declare -x LSCOLORS=gxfxcxdxbxegedabagacad
 # This basically saying "if the symbolic link to rvm exists, execute it"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
-# Amazon EC2 for sukrupa
-export PATH=$PATH:$EC2_HOME/bin
-export PATH=~/bin:$PATH
-export EC2_PRIVATE_KEY=`ls $EC2_HOME/pk-*.pem`
-export EC2_CERT=`ls $EC2_HOME/cert-*.pem`
 export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home/
 
 #export PATH=~/work/code/external/scala-2.8.0.final/bin:$PATH
