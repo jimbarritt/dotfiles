@@ -9,8 +9,6 @@ export TERM=xterm
 export PATH="."
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin:/usr/X11/bin"
 export PATH="$PATH:/usr/local/share/python"
-export PATH="$PATH:/opt/local/bin:/opt/local/sbin:/usr/local/sbin"
-export PATH="$PATH:/usr/games"
 export PATH="$PATH:/Applications"
 export PATH="$PATH:/usr/texbin"
 
