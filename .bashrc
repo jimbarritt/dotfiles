@@ -12,11 +12,7 @@ export PATH="$PATH:/usr/local/share/python"
 export PATH="$PATH:/Applications"
 export PATH="$PATH:/usr/texbin"
 
-export JAVACC_HOME="/Users/jim/work/code/external/javacc-5.0"
-
 export SVN_EDITOR=emacs
-export JMETER_HOME=/Users/jim/work/code/external/apache/jakarta-jmeter-2.3.4
-
 
 source ~/bin/git_completion.sh
 
@@ -52,7 +48,6 @@ declare -x LSCOLORS=gxfxcxdxbxegedabagacad
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
 # Amazon EC2 for sukrupa
-export EC2_HOME=/Users/jim/sukrupa/EC2/ec2-api-tools-1.4.2.2 # move this to ~/.ec2
 export PATH=$PATH:$EC2_HOME/bin
 export PATH=~/bin:$PATH
 export EC2_PRIVATE_KEY=`ls $EC2_HOME/pk-*.pem`
@@ -70,4 +65,4 @@ export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home/
 export CLOJURE_EXT=~/.clojure
 alias clj=clj-env-dir
 
-
+source ~/.bashrc_workstation # for any specific customisation for a particular computer
