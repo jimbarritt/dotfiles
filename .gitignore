@@ -1,3 +1,5 @@
+*~
+
 Applications
 Dropbox
 Music
@@ -35,9 +37,6 @@ github
 .adobe/
 .anyconnect
 .bash_history
-.bash_profile
-.bashrc
-.bashrc~
 .cabal/
 .clojure/
 .cpan/
