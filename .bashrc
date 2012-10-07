@@ -44,13 +44,12 @@ alias ls='ls -G' #To get colorised listing
 declare -x CLICOLOR=1
 declare -x LSCOLORS=gxfxcxdxbxegedabagacad
 
-# For RVM (Ruby environment manager)
-# This basically saying "if the symbolic link to rvm exists, execute it"
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
-
 export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home/
 
-#export PATH=~/work/code/external/scala-2.8.0.final/bin:$PATH
+# For RVM (Ruby environment manager)
+# This basically saying "if the symbolic link to rvm exists, execute it"
+# this sets rvm up as a shell function which seems to be nescessary for it to work.
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
 # Clojure
 # See (http://riddell.us/ClojureSwankLeiningenWithEmacsOnLinux.html)
@@ -62,3 +61,5 @@ export CLOJURE_EXT=~/.clojure
 alias clj=clj-env-dir
 
 source ~/.bashrc_workstation # for any specific customisation for a particular computer
+
+
