@@ -21,8 +21,9 @@ source ~/bin/git_completion.sh
 #\W pwd
 # PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '
 
-normal=`tput sgr0`
-START_GREEN="\[\e[1;32m\]"
+#http://www.isthe.com/chongo/tech/comp/ansi_escapes.html
+START_GREEN_BOLD="\[\e[1;32m\]"
+START_GREEN_NORMAL="\[\e[0;32m\]"
 END_GREEN="\[\e[0m\]"
 
 # Configure the command prompt
