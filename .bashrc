@@ -20,6 +20,8 @@ source ~/bin/git_completion.sh
 # \u -- username
 #\W pwd
 # PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '
+
+normal=`tput sgr0`
 START_GREEN="\[\e[1;32m\]"
 END_GREEN="\[\e[0m\]"
 
@@ -34,7 +36,8 @@ export CURRENT_HOST=coco
 # \h - hostname
 # \W - current dir
 # \w - full working dir
-export PS1='\u@$CURRENT_HOST:\w\[\e[1;32m\]$(__git_ps1 " [%s]")\[\e[0m\]\n\$-> '
+NORMAL_FONT=`tput sgr0`
+export PS1='\u@$CURRENT_HOST:\w\[\e[0;32m\]$(__git_ps1 " [%s]")\[\e[0m\]\n\$-> '
 
 
 
