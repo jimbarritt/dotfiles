@@ -1,4 +1,4 @@
-#!bash
+#!/bin/sh
 #
 # bash completion support for core Git.
 #
@@ -125,7 +125,7 @@ __git_ps1_show_upstream ()
 			upstream=svn+git # default upstream is SVN if available, else git
 			;;
 		esac
-	done < <(git config -z --get-regexp '^(svn-remote\..*\.url|bash\.showupstream)$' 2>/dev/null | tr '\0\n' '\n ')
+	done #<< $(git config -z --get-regexp '^(svn-remote\..*\.url|bash\.showupstream)$' 2>/dev/null | tr '\0\n' '\n ')
 
 	# parse configuration values
 	for option in ${GIT_PS1_SHOWUPSTREAM}; do
