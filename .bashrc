@@ -1,5 +1,9 @@
 #bash configuration
 
+# Bash history - ignore duplicates and have a big history
+export HISTCONTROL=ignoredups
+export HISTSIZE=10000
+
 # Output everything to be in emacs format
 set -o emacs
 
@@ -65,5 +69,3 @@ export CLOJURE_EXT=~/.clojure
 alias clj=clj-env-dir
 
 source ~/.bashrc_workstation # for any specific customisation for a particular computer
-
-
