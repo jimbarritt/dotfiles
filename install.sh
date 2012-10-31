@@ -14,14 +14,9 @@ then
     unlink ~/img
 fi
 
-if [ -e ~/.intellij ] 
-then
-    unlink ~/.intellij
-fi
 
 ln -sv ${CURRENT_DIR}/bin ~/bin
 ln -sv ${CURRENT_DIR}/img ~/img
-ln -sv ${CURRENT_DIR}/.intellij ~/.intellij
 
 for file in .*
 do
