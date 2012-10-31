@@ -59,13 +59,7 @@ export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home/
 # this sets rvm up as a shell function which seems to be nescessary for it to work.
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
-# Clojure
-# See (http://riddell.us/ClojureSwankLeiningenWithEmacsOnLinux.html)
-# 1. Install clojure-mode via git or marmalade-repo.org
-# 2. lein plugin install swank-clojure 1.3.1
-# 3. Invoke M-x clojure-jack-in from a project
-#
-export CLOJURE_EXT=~/.clojure
-alias clj=clj-env-dir
 
 source ~/.bashrc_workstation # for any specific customisation for a particular computer
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
