@@ -13,4 +13,4 @@
 	br = branch
         serve = !git daemon --reuseaddr --verbose  --base-path=. --export-all ./.git
 [push]
-	default = simple
+	default = matching
