@@ -1,5 +1,14 @@
 ;; General Window features:
 
+;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Choosing-Window-Options.html#Choosing-Window-Options
+
+(add-to-list 'load-path "~/.emacs.d/lib/maxframe")
+
+(require 'maxframe)
+(setq mf-max-width 1600)  ;; Pixel width of main monitor.
+;;(add-hook 'window-setup-hook 'maximize-frame t)
+(add-hook 'window-setup-hook 'ns-toggle-fullscreen t)
+
 ;; Hide  scroll bars and toolbar:
 ;; Emacs gurus don't need no stinking scroll bars
 (when (fboundp 'toggle-scroll-bar)

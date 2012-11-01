@@ -16,6 +16,7 @@
 
 
 (load "jmdb/windows.el")
+(load "jmdb/modeline.el")
 (load "jmdb/theme.el")
 
 (message "[jmdb] - Display configured.")
