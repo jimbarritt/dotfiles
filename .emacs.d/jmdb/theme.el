@@ -2,6 +2,8 @@
 
 (global-font-lock-mode 1) ;; allows syntax highlighting to work
 
+(set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+
 ;; Color themes
 (add-to-list 'load-path "~/.emacs.d/lib/color-theme")
 (require 'color-theme)
@@ -14,6 +16,11 @@
 ;;(color-theme-snowish)
 ;;(color-theme-gtk-ide)
 ;;(color-theme-lawrence)
+;;(color-theme-standard)
+;;(color-theme-taylor)
+;;(color-theme-pok-wob)
+
+
 
 ;; Jims' Customisations:
 
@@ -36,12 +43,13 @@
 (set-face-background 'fringe "#222222") ;;#222222, #111111
 
 
-(set-cursor-color "purple")
+;;(set-cursor-color "purple")
 
 ;;(set-face-background 'hl-line "#222222")
 ;;(add-hook 'clojure-mode-hook (lambda () (hl-line-mode 1)))
 
 (add-hook 'window-setup-hook (lambda () (set-cursor-color "purple")))
+(add-hook 'window-setup-hook (lambda () (set-background-color "black")))
 
 
 
@@ -82,7 +90,7 @@
 ;;(set-default-font "-apple-Inconsolata-medium-normal-normal--24-180-75-75-m-0-iso10646-1")
 
 ;;(set-default-font "-ibm-courier-medium-r-normal--0-0-0-0-m-0-iso8859-1")
-(set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+
 
 
 ;; To change a font size globally:
