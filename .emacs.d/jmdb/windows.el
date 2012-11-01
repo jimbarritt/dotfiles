@@ -4,10 +4,13 @@
 
 (add-to-list 'load-path "~/.emacs.d/lib/maxframe")
 
+
 (require 'maxframe)
 (setq mf-max-width 1600)  ;; Pixel width of main monitor.
 ;;(add-hook 'window-setup-hook 'maximize-frame t)
 (add-hook 'window-setup-hook 'ns-toggle-fullscreen t)
+
+(menu-bar-mode -1)
 
 ;; Hide  scroll bars and toolbar:
 ;; Emacs gurus don't need no stinking scroll bars
