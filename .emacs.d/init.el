@@ -10,10 +10,6 @@
 
 (setq exec-path (append exec-path '("/usr/local/bin")))
 
-(load "jmdb/display.el")
-(load "jmdb/keyboard.el")
-
-
 (when (> emacs-major-version 23)
         (require 'package)
         (package-initialize)
@@ -21,6 +17,8 @@
                      '("melpa" . "http://melpa.milkbox.net/packages/")
 		     '("marmalade" . "http://marmalade-repo.org/packages/")))
 
+(load "jmdb/display.el")
+(load "jmdb/keyboard.el")
 
 
 (load "jmdb/behaviour.el")

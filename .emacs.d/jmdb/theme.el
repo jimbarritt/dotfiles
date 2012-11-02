@@ -1,5 +1,15 @@
 ;;; Setup of color theme
 
+;; (when (not (package-installed-p 'cyberpunk-theme))
+;;   (package-install 'cyberpunk-theme))
+
+(when (not (package-installed-p 'ir-black-theme))
+  (package-install 'ir-black-theme))
+
+(require 'ir-black-theme)
+
+
+
 (global-font-lock-mode 1) ;; allows syntax highlighting to work
 
 ;; To change the font size interactively per buffer:
@@ -7,17 +17,27 @@
 ;; Down:  C-x C--
 ;; Reset: C-x C-0
 
-(set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
-(add-to-list 'default-frame-alist '(font . "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
+(set-default-font "-apple-Inconsolata-medium-normal-normal--17-180-75-75-m-0-iso10646-1")
+;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-18-*-*-*-m-0-iso10646-1")
+;;(set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+;;(add-to-list 'default-frame-alist '(font . "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
+
+;; In cocoa emacs, you can set the font in Options->Change default font.
+;;(set-default-font "-apple-Consolas-medium-normal-normal--18-180-75-75-m-0-iso10646-1")
+;;(set-default-font "-apple-Inconsolata-medium-normal-normal--20-180-75-75-m-0-iso10646-1")
+;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+;;(set-default-font "-apple-Inconsolata-medium-normal-normal--24-180-75-75-m-0-iso10646-1")
+;;(set-default-font "-ibm-courier-medium-r-normal--0-0-0-0-m-0-iso8859-1")
+
 
 ;; Color themes
 (add-to-list 'load-path "~/.emacs.d/lib/color-theme")
-(require 'color-theme)
-(color-theme-initialize)
+;;(require 'color-theme)
+;;(color-theme-initialize)
 
 ;;(color-theme-gnome)
 ;;(color-theme-billw)
-(color-theme-charcoal-black)
+;;(color-theme-charcoal-black)
 ;;(color-theme-greiner)
 ;;(color-theme-snowish)
 ;;(color-theme-gtk-ide)
@@ -83,19 +103,6 @@
 
 
 
-;; In cocoa emacs, you can set the font in Options->Change default font.
-;;(set-default-font "-apple-Consolas-medium-normal-normal--18-180-75-75-m-0-iso10646-1")
-
-
-
-;; Make the default Inconsolata (at least on the mac)
-;;(set-default-font "-apple-Inconsolata-medium-normal-normal--20-180-75-75-m-0-iso10646-1")
-;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
-
-
-;;(set-default-font "-apple-Inconsolata-medium-normal-normal--24-180-75-75-m-0-iso10646-1")
-
-;;(set-default-font "-ibm-courier-medium-r-normal--0-0-0-0-m-0-iso8859-1")
 
 
 

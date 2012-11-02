@@ -17,4 +17,7 @@
 (add-hook 'lisp-interaction-mode-hook (lambda () (paredit-mode +1)))
 (add-hook 'clojure-mode-hook (lambda () (paredit-mode +1)))
 
+(when (not (package-installed-p 'ecukes))
+  (package-install 'ecukes))
+
 
