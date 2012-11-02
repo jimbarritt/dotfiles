@@ -6,11 +6,18 @@
 
 
 (require 'maxframe)
-(setq mf-max-width 1600)  ;; Pixel width of main monitor.
-;;(add-hook 'window-setup-hook 'maximize-frame t)
-(add-hook 'window-setup-hook 'ns-toggle-fullscreen t)
+;;(setq mf-max-width 1600)  ;; Pixel width of main monitor.
+(add-hook 'window-setup-hook 'maximize-frame t)
+;;(add-hook 'window-setup-hook 'ns-toggle-fullscreen t)
 
-(menu-bar-mode -1)
+(setq frame-title-format (concat "Emacs " ": %f"))
+
+;; put something different in the scratch buffer
+(setq initial-scratch-message
+      ";; scratch buffer created -- start typing...\n")
+
+
+;;(menu-bar-mode t)
 
 ;; Hide  scroll bars and toolbar:
 ;; Emacs gurus don't need no stinking scroll bars
@@ -38,6 +45,35 @@
 (require 'popwin)
 (setq display-buffer-function 'popwin:display-buffer)
 (setq popwin:popup-window-height 0.2)
+
+(setq display-buffer-function 'popwin:display-buffer)
+
+;; (setq popwin:special-display-config
+;;       '(("*Help*"  :height 30 :stick t)
+;;         ("*Completions*" :noselect t)
+;;         ("*compilation*" :noselect t)
+;;         ("*Messages*" :height 30)
+;;         ("*Occur*" :noselect t)
+;;         ("\\*Slime Description.*" :noselect t :regexp t :height 30)
+;;         ("*magit-commit*" :noselect t :height 40 :width 80)
+;;         ("*magit-diff*" :noselect t :height 40 :width 80)
+;;         ("*magit-edit-log*" :noselect t :height 15 :width 80)
+;;         ("\\*Slime Inspector.*" :regexp t :height 30)
+;;         ("*Ido Completions*" :noselect t :height 30)
+;;         ("*eshell*" :height 30)
+;;         ("\\*ansi-term\\*.*" :regexp t :height 30)
+;;         ("*shell*" :height 30)
+;;         (".*overtone.log" :regexp t :height 30)
+;;         ("*gists*" :height 30)
+;;         ("*sldb.*":regexp t :height 30)
+;;         ("*nREPL error*" :height 30)
+;;         ("*nREPL doc*" :height 30)
+;;         ("*Kill Ring*" :height 30)))
+
+;; (defun live-show-messages ()
+;;   (interactive)
+;;   (popwin:display-buffer "*Messages*"))
+
 
 (push '("^\\*magit.*\\*$"  :regexp) popwin:special-display-config)
 (push "*Backtrace*" popwin:special-display-config)

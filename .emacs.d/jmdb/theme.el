@@ -2,7 +2,13 @@
 
 (global-font-lock-mode 1) ;; allows syntax highlighting to work
 
+;; To change the font size interactively per buffer:
+;; Up:    C-x C-+, C-x C-=
+;; Down:  C-x C--
+;; Reset: C-x C-0
+
 (set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+(add-to-list 'default-frame-alist '(font . "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
 
 ;; Color themes
 (add-to-list 'load-path "~/.emacs.d/lib/color-theme")
@@ -49,7 +55,7 @@
 ;;(add-hook 'clojure-mode-hook (lambda () (hl-line-mode 1)))
 
 (add-hook 'window-setup-hook (lambda () (set-cursor-color "purple")))
-(add-hook 'window-setup-hook (lambda () (set-background-color "black")))
+(add-hook 'window-setup-hook (lambda () (set-background-color "#111111")))
 
 
 
@@ -99,10 +105,6 @@
 ;; (set-face-attribute 'default nil :height 160)
 ;; (set-face-attribute 'default nil :height 120)
 
-;; To change the font size interactively per buffer:
-;; Up:    C-x C-+, C-x C-=
-;; Down:  C-x C--
-;; Reset: C-x C-0
 
 ;; see http://www.gnu.org/software/emacs/manual/html_node/elisp/Attribute-Functions.html
 ;; for information about font faces
