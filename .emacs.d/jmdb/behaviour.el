@@ -50,6 +50,16 @@
 (setq truncate-lines t)
 (setq truncate-partial-width-windows nil)
 
+;; Setup environment variables from the shell...
+(defun env-var-from-shell (varname)
+  (replace-regexp-in-string
+   "[[:space:]\n]*$" ""
+   (shell-command-to-string (concat "$SHELL -l -c 'echo $" varname
+"'"))))
+
+
+(defun setenv-from-shell (varname)
+  (setenv varname (env-var-from-shell varname)))
 
 
 

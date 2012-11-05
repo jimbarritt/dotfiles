@@ -21,3 +21,8 @@
   (package-install 'ecukes))
 
 
+(require 'magit) ;; Magit needs to be installed first - try to work out how to only load if present
+(require 'lambda-mode)
+
+
+
