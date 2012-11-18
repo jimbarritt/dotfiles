@@ -14,4 +14,10 @@
 (load "jmdb/modeline.el")
 (load "jmdb/theme.el")
 
+
+;;(setq ns-auto-hide-menu-bar t)
+;;(set-frame-position (selected-frame) 0 -20)
+;;(set-frame-position (selected-frame) 0 0)
+;;(set-frame-height (selected-frame) 39)
+
 (message "[jmdb] - Display configured.")

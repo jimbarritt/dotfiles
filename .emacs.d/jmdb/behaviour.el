@@ -16,6 +16,8 @@
         ido-use-filename-at-point 'guess
         ido-max-prospects 10))
 
+(setq enable-recursive-minibuffers t) ;; This should prevent the "Read-only enabled for this buffer
+
 ;; Recent file mode
 (require 'recentf)
 (recentf-mode 1)
@@ -54,8 +56,7 @@
 (defun env-var-from-shell (varname)
   (replace-regexp-in-string
    "[[:space:]\n]*$" ""
-   (shell-command-to-string (concat "$SHELL -l -c 'echo $" varname
-"'"))))
+   (shell-command-to-string (concat "$SHELL -l -c 'echo $" varname "'"))))
 
 
 (defun setenv-from-shell (varname)

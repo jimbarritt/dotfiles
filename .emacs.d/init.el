@@ -23,7 +23,6 @@
 
 (load "jmdb/behaviour.el")
 (load "jmdb/code.el")
-(load "jmdb/uncatalogued.el")
 
 
 
