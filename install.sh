@@ -8,10 +8,22 @@ if [ -e ~/bin ]
 then
     unlink ~/bin
 fi
+
 if [ -e ~/img ] 
 then
     unlink ~/img
 fi
+
+if [ -e ~/.lein ]
+then
+  mkdir ~/.lein
+fi
+
+if [ -e ~/.lein/profiles.clj ] 
+then
+    unlink ~/.lein/profiles.clj
+fi
+
 if [ -e ~/.emacs.d ] 
 then
     unlink ~/.emacs.d
@@ -30,10 +42,11 @@ fi
 ln -sv ${CURRENT_DIR}/bin ~/bin
 ln -sv ${CURRENT_DIR}/img ~/img
 ln -sv ${CURRENT_DIR}/.emacs.d ~/.emacs.d
+ln -sv ${CURRENT_DIR}/.lein/profiles.clj ~/.lein/profiles.clj
 
 for file in .*
 do
-    if [[ ${file} != ".git" && ${file} != "." && ${file} != ".." && ${file} != ".emacs.d" ]]
+    if [[ ${file} != ".git" && ${file} != "." && ${file} != ".." && ${file} != ".emacs.d" && ${file} != ".lein" ]]
     then	
 	ln -svf ${CURRENT_DIR}/${file} ~/${file}
     fi
