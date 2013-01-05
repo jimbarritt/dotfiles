@@ -21,6 +21,10 @@
   (package-install 'slim-mode))
 (require 'slim-mode)
 
+
+
+
+
 (setq mweb-default-major-mode 'html-mode)
 (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
                   (js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>" "</script>")

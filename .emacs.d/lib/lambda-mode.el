@@ -27,7 +27,7 @@
 (defvar lambda-regex "lambda"
   "A regular expression matching things to convert to lambda symbols.")
 
-(defvar lambda-symbol (string 54091) "The symbol to use for lambdas")
+(defvar lambda-symbol "\u03bb" "The symbol to use for lambdas")
 
 (defun lambda-fontify (beg end)
   (save-excursion

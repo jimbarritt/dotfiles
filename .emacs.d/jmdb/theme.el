@@ -1,12 +1,19 @@
 ;;; Setup of color theme
 
+(load-theme 'ir-black-evolv 0)
+
 ;; (when (not (package-installed-p 'cyberpunk-theme))
 ;;   (package-install 'cyberpunk-theme))
 
 (when (not (package-installed-p 'ir-black-theme))
   (package-install 'ir-black-theme))
 
-(require 'ir-black-theme)
+;;(require 'ir-black-theme)
+
+(when (not (package-installed-p 'zenburn-theme))
+  (package-install 'zenburn-theme))
+
+;;(require 'zenburn-theme)
 
 
 

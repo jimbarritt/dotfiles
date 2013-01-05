@@ -2,3 +2,4 @@
 #*
 .emacs.d/elpa
 backups
+.DS_Store

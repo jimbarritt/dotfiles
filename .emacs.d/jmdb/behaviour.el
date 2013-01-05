@@ -63,4 +63,9 @@
   (setenv varname (env-var-from-shell varname)))
 
 
+(when (not (package-installed-p 'undo-tree))
+  (package-install 'undo-tree))
+(require 'undo-tree)
+
+
 

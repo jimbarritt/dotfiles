@@ -10,6 +10,13 @@
 (when (fboundp 'fringe-mode)
   (fringe-mode '(1 . 0))) ;; Hide the fringes (0 hide, 1 show both)
 
+(when (not (package-installed-p 'rainbow-delimiters))
+  (package-install 'rainbow-delimiters))
+
+(when (not (package-installed-p 'rainbow-mode))
+  (package-install 'rainbow-mode))
+
+
 (load "jmdb/windows.el")
 (load "jmdb/modeline.el")
 (load "jmdb/theme.el")
