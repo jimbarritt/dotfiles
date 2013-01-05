@@ -20,6 +20,7 @@
 (load "jmdb/windows.el")
 (load "jmdb/modeline.el")
 (load "jmdb/theme.el")
+(load "jmdb/pretty-lambda.el")
 
 
 ;;(setq ns-auto-hide-menu-bar t)
