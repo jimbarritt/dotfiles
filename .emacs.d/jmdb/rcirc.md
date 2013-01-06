@@ -118,6 +118,14 @@ We can also set ourselves up so we join some channels automatically...
       '(("irc.freenode.net" :channels ("#emacs" "#clojure"))))
 ```
 
+## Ignoring all the noise of people leaving and joining
+
+Nicked from https://github.com/technomancy/dotfiles/blob/master/.emacs.d/phil/my-irc.el
+
+```lisp
+(add-hook 'rcirc-mode-hook 'rcirc-omit-mode)
+```
+
 ## References
 
 [1]: http://www.emacswiki.org/emacs/rcircAutoAuthentication "rcirc authentication"

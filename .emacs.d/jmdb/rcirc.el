@@ -3,7 +3,9 @@
       '(("irc.freenode.net" :channels ("#emacs" "#clojure"))))
 
 
-;;(setq rcirc-omit-responses '("JOIN" "PART" "QUIT" "NICK" "AWAY"))
+
+(setq rcirc-omit-responses '("JOIN" "PART" "QUIT" "NICK" "AWAY"))
+(add-hook 'rcirc-mode-hook 'rcirc-omit-mode)
 
 ;; You could do this...
 ;;(setq rcirc-authinfo '(("freenode" nickserv "jmdb" "J1mbob")))
