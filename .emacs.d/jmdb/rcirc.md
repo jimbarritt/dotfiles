@@ -35,7 +35,7 @@ You can do this...
 
 But this would store your credentials openly in your emacs config.
 
-So, what you want to do is add the following to your emacs config [&#91;1&#93;] [refs]  ...
+So, what you want to do is add the [following] [1] to your emacs config  ...
 
 
 ```lisp
@@ -61,18 +61,10 @@ This magic will then look for either a file called `~/.authinfo` or `~/.authinfo
 ```
 host freenode port irc-nickserv login nick username "My FullName" password "password"
 ```
-Beware this ref [2] because is has the wrong format. I found the correct one [here][3].
+Beware [this ref] [2] because is has the wrong format. I found the correct one [here] [3].
 
 So now hopefully when you fire up irc (`M-x irc`) you are automatically connected and verified. Note that it will tell you first that you need to identify yourself but then it will show a subsequent message saying you are identified.
 
-
-References:
------------
-
-[refs]: https://github.com/jimbarritt/dot-files/blob/master/.emacs.d/jmdb/rcirc.md#references "Go to the references"
-
-[1] http://www.emacswiki.org/emacs/rcircAutoAuthentication
-
-[2] http://superuser.com/questions/429937/how-do-you-hide-login-information-esp-passwords-in-emacs-init-file 
-
-[3] http://lists.gnu.org/archive/html/bug-gnu-emacs/2011-04/msg00096.html
+[1]: http://www.emacswiki.org/emacs/rcircAutoAuthentication "rcirc authentication"
+[2]: http://superuser.com/questions/429937/how-do-you-hide-login-information-esp-passwords-in-emacs-init-file "Dodgy format of authinf file"
+[3]: http://lists.gnu.org/archive/html/bug-gnu-emacs/2011-04/msg00096.html "Good version of the authinf file"
