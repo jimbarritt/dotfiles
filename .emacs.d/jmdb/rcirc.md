@@ -88,9 +88,7 @@ So now hopefully when you fire up irc (`M-x irc`) you are automatically connecte
 
 ## Encrypt your authinfo
 
-The next step is to not have our password out in the open.
-
-Download the DMG file from [[4] [4]]
+The next step is to not have our password out in the open. Emacs expects this to be encrypted using the Gnu PGP encryption. You will need some software for this, so download the DMG file from [[4] [4]]
 
 I found some instructions [[5] [5]] but they were a bit out of date concerning the verification of the downloaded files' checksum. It is now published with a sha1 checksum so to verify [[6] [6]]...
 
