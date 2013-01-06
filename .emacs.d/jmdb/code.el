@@ -38,6 +38,7 @@
 (require 'paredit)
 (autoload 'paredit-mode "paredit"
       "Minor mode for pseudo-structurally editing Lisp code." t)
+
 (add-hook 'emacs-lisp-mode-hook       (lambda () (paredit-mode +1)))
 (add-hook 'lisp-mode-hook             (lambda () (paredit-mode +1)))
 (add-hook 'lisp-interaction-mode-hook (lambda () (paredit-mode +1)))
@@ -53,7 +54,17 @@
 
 
 (require 'magit) ;; Magit needs to be installed first - try to work out how to only load if present
-(require 'lambda-mode)
 
+(require 'lambda-mode)
+(add-hook 'emacs-lisp-mode-hook       (lambda () (lambda-mode)))
+(add-hook 'lisp-mode-hook             (lambda () (lambda-mode)))
+(add-hook 'lisp-interaction-mode-hook (lambda () (lambda-mode)))
+(add-hook 'clojure-mode-hook (lambda () (lambda-mode)))
+
+;; I tried to use this:
+;;(load "jmdb/pretty-lambda.el")
+;; but lambda mode seems to work well
+
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 
