@@ -33,7 +33,7 @@ You can do this...
 But this would store your credentials openly in your emacs config.
 
 So, what you want to do is add the following to your emacs config  ...
-[[1]] https://github.com/jimbarritt/dot-files/edit/master/.emacs.d/jmdb/rcirc.md#references
+[link] https://github.com/jimbarritt/dot-files/blob/master/.emacs.d/jmdb/rcirc.md
 
 ```lisp
 (defadvice rcirc (around rcirc-read-from-authinfo activate)
