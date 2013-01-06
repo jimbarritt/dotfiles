@@ -39,7 +39,7 @@ You can do this...
 
 But this would store your credentials openly in your emacs config.
 
-So, what you want to do is add the following [[1] [1]] to your emacs config  ...
+So, what you want to do is add the following to your emacs config [[1] [1]] ...
 
 
 ```lisp
@@ -65,7 +65,7 @@ This magic will then look for either a file called `~/.authinfo` or `~/.authinfo
 ```
 host freenode port irc-nickserv login nick username "My FullName" password "password"
 ```
-Beware this ref ([[2] [2]]) because is has the wrong format. I found the correct one here ([[3] [3]]).
+Beware this ref [[2] [2]] because is has the wrong format. I found the correct one here [[3] [3]].
 
 So now hopefully when you fire up irc (`M-x irc`) you are automatically connected and verified. Note that it will tell you first that you need to identify yourself but then it will show a subsequent message saying you are identified.
 
