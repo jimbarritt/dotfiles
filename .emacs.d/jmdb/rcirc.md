@@ -3,7 +3,7 @@
 - `rcirc` (http://emacswiki.org/emacs/rcirc) is the default irc package and will be started by doing `M-x irc` in your emacs
 - It uses the `freenode` server by default (http://freenode.net)
 
-# Registering with freenode
+## Registering with freenode
 
 First of all, your going to want to register yourself a nickname with freenode..
 
@@ -23,7 +23,7 @@ Next time you log in you will need to identify yourself (see below)
 
 rcirc Kept my username somewhere, I could'nt find out where.
 
-# Automatically Authenticating:
+## Automatically Authenticating:
 
 You can do this...
 ```lisp
@@ -32,7 +32,7 @@ You can do this...
 
 But this would store your credentials openly in your emacs config.
 
-So, what you want to do is add the following to your emacs config:
+So, what you want to do is add the following to your emacs config <a href="1">[1]</a>:
 
 ```lisp
 (defadvice rcirc (around rcirc-read-from-authinfo activate)
@@ -62,8 +62,10 @@ Beware this ref [2] because is has the wrong format. I found the correct one at 
 So now hopefully when you fire up irc (`M-x irc`) you are automatically connected and verified. Note that it will tell you first that you need to identify yourself but then it will show a subsequent message saying you are identified.
 
 
-# References:
+## References:
 
-[1] http://www.emacswiki.org/emacs/rcircAutoAuthentication
+<a id="1"></a>[1] http://www.emacswiki.org/emacs/rcircAutoAuthentication
+
 [2] http://superuser.com/questions/429937/how-do-you-hide-login-information-esp-passwords-in-emacs-init-file 
+
 [3] http://lists.gnu.org/archive/html/bug-gnu-emacs/2011-04/msg00096.html
