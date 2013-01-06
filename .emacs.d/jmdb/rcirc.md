@@ -33,13 +33,7 @@ You can do this...
 But this would store your credentials openly in your emacs config.
 
 So, what you want to do is add the following to your emacs config  ...
-
-I get 10 times more traffic from [Google] [1] than from
-[Yahoo] [2] or [MSN] [3].
-
-  [1]: http://google.com/        "Google"
-  [2]: http://search.yahoo.com/  "Yahoo Search"
-  [3]: http://search.msn.com/    "MSN Search"
+[[1]] https://github.com/jimbarritt/dot-files/edit/master/.emacs.d/jmdb/rcirc.md#references
 
 ```lisp
 (defadvice rcirc (around rcirc-read-from-authinfo activate)
