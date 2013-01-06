@@ -1,5 +1,9 @@
 # Guide to getting IRC up and running with emacs 24 and rcirc
 
+[&#91;1&#93;] [1]
+
+[1]: https://github.com/jimbarritt/dot-files/blob/master/.emacs.d/jmdb/rcirc.md#references "rcirc"
+
 - `rcirc` (http://emacswiki.org/emacs/rcirc) is the default irc package and will be started by doing `M-x irc` in your emacs
 - It uses the `freenode` server by default (http://freenode.net)
 
@@ -33,7 +37,7 @@ You can do this...
 But this would store your credentials openly in your emacs config.
 
 So, what you want to do is add the following to your emacs config  ...
-[link] https://github.com/jimbarritt/dot-files/blob/master/.emacs.d/jmdb/rcirc.md
+
 
 ```lisp
 (defadvice rcirc (around rcirc-read-from-authinfo activate)
