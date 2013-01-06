@@ -11,17 +11,23 @@ First of all, your going to want to register yourself a nickname with freenode..
 
 When you start up irc you will get a prompt at which you can type commands to the server.
 
-`/msg NickServ REGISTER password youremail@example.com` 
+```
+/msg NickServ REGISTER password youremail@example.com
+```
 
 (From http://freenode.net/faq.shtml#nicksetup)
 
 It will then send you an email with instructions on how to confirm your registration...
 
-`/msg NickServ VERIFY REGISTER nick token`
+```
+/msg NickServ VERIFY REGISTER nick token
+```
 
 Next time you log in you will need to identify yourself (see below)
 
-`/msg NickServ IDENTIFY account password`
+```
+/msg NickServ IDENTIFY account password
+```
 
 rcirc Kept my username somewhere, I could'nt find out where.
 
