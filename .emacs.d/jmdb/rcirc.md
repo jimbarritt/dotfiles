@@ -64,8 +64,6 @@ So now hopefully when you fire up irc (`M-x irc`) you are automatically connecte
 
 ## References:
 
-<a id="1">[1]</a> http://www.emacswiki.org/emacs/rcircAutoAuthentication
-
-[2] http://superuser.com/questions/429937/how-do-you-hide-login-information-esp-passwords-in-emacs-init-file 
-
-[3] http://lists.gnu.org/archive/html/bug-gnu-emacs/2011-04/msg00096.html
+[1]: http://www.emacswiki.org/emacs/rcircAutoAuthentication
+[2]: http://superuser.com/questions/429937/how-do-you-hide-login-information-esp-passwords-in-emacs-init-file 
+[3]: http://lists.gnu.org/archive/html/bug-gnu-emacs/2011-04/msg00096.html
