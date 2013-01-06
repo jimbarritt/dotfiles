@@ -32,7 +32,7 @@ You can do this...
 
 But this would store your credentials openly in your emacs config.
 
-So, what you want to do is add the following to your [emacs config] [1]:
+So, what you want to do is add the following to your [emacs config] [1] ...
 
 ```lisp
 (defadvice rcirc (around rcirc-read-from-authinfo activate)
