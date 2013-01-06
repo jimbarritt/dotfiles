@@ -1,9 +1,11 @@
-# Guide to getting IRC up and running with emacs 24 and rcirc
+Guide to getting IRC up and running with emacs 24 and rcirc
+===========================================================
 
 - `rcirc` (http://emacswiki.org/emacs/rcirc) is the default irc package and will be started by doing `M-x irc` in your emacs
 - It uses the `freenode` server by default (http://freenode.net)
 
-## Registering with freenode
+Registering with freenode
+-------------------------
 
 First of all, your going to want to register yourself a nickname with freenode..
 
@@ -23,7 +25,8 @@ Next time you log in you will need to identify yourself (see below)
 
 rcirc Kept my username somewhere, I could'nt find out where.
 
-## Automatically Authenticating:
+Automatically Authenticating:
+-----------------------------
 
 You can do this...
 ```lisp
@@ -63,7 +66,9 @@ Beware this ref [2] because is has the wrong format. I found the correct one [he
 So now hopefully when you fire up irc (`M-x irc`) you are automatically connected and verified. Note that it will tell you first that you need to identify yourself but then it will show a subsequent message saying you are identified.
 
 
-## References:
+References:
+-----------
+
 [refs]: https://github.com/jimbarritt/dot-files/blob/master/.emacs.d/jmdb/rcirc.md#references "Go to the references"
 
 [1] http://www.emacswiki.org/emacs/rcircAutoAuthentication
