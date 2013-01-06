@@ -26,7 +26,7 @@
 
 (load "jmdb/behaviour.el")
 (load "jmdb/code.el")
-(load "jmdb/irc.el")
+(load "jmdb/rcirc.el")
 
 
 
