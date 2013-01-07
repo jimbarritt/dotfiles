@@ -54,6 +54,8 @@
 (global-set-key (kbd "<f5>") 'magit-status)
 (global-set-key (kbd "M-P") 'magit-push)
 
+(global-set-key (kbd "<f9>") 'recentf-open-files)
+
 ;; Toggle line numbering
 (global-set-key (kbd "M-s-L") 'linum-mode)
 
