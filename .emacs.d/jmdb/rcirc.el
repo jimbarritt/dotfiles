@@ -15,15 +15,18 @@
 (setq auth-sources '("~/.authinfo" "~/.authinfo.gpg"))
 
 ;; Then extract what we want and set it into 'rcirc-authinfo
-(let ((p (auth-source-search :port '("irc-nickserv"))))   
-  (let ((host (plist-get (first p) :host))
-        (user (plist-get (third p) :user))
-        (secret (plist-get (fourth p) :secret)))
-    (setq rcirc-authinfo
-          (list (list host 'nickserv user
-                      (if (functionp secret)
-                          (funcall secret)
-                        secret))))))
+(defadvice rcirc (around rcirc=read-from-authinfo activate)
+  "Allow rcirc to read authinfo from ~/.authinfo.gpg or ~/.authinfo (un-encrypted) via the auth-source API."
+  (let ((p (auth-source-search :port '("irc-nickserv"))))   
+    (let ((host (plist-get (first p) :host))
+          (user (plist-get (third p) :user))
+          (secret (plist-get (fourth p) :secret)))
+      (setq rcirc-authinfo
+            (list (list host 'nickserv user
+                        (if (functionp secret)
+                            (funcall secret)
+                          secret))))))
+  ad-do-it)
 
 
 ;;(describe-variable 'rcirc-authinfo)

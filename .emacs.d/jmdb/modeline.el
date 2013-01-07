@@ -41,6 +41,8 @@
     ;; Major modes
     (lisp-interaction-mode . "λ")
     (clojure-mode . "λ")
+    (EL-mode . "λ")
+    (lambda-mode . "")
     (hi-lock-mode . "")
     (python-mode . "Py")
     (emacs-lisp-mode . "EL")

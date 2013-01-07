@@ -15,3 +15,7 @@
 
 (add-hook 'interactive-lisp-mode-hook 'lisp-pretty-lambdas)
 (add-hook 'clojure-mode-hook 'clojure-pretty-lambdas)
+(add-hook 'emacs-lisp-mode-hook       'lisp-pretty-lambdas)
+(add-hook 'lisp-mode-hook             'lisp-pretty-lambdas)
+(add-hook 'lisp-interaction-mode-hook 'lisp-pretty-lambdas)
+

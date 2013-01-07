@@ -55,15 +55,15 @@
 
 (require 'magit) ;; Magit needs to be installed first - try to work out how to only load if present
 
-(require 'lambda-mode)
-(add-hook 'emacs-lisp-mode-hook       (lambda () (lambda-mode)))
-(add-hook 'lisp-mode-hook             (lambda () (lambda-mode)))
-(add-hook 'lisp-interaction-mode-hook (lambda () (lambda-mode)))
-(add-hook 'clojure-mode-hook (lambda () (lambda-mode)))
+;; (require 'lambda-mode)
+;; (add-hook 'emacs-lisp-mode-hook       (lambda () (lambda-mode)))
+;; (add-hook 'lisp-mode-hook             (lambda () (lambda-mode)))
+;; (add-hook 'lisp-interaction-mode-hook (lambda () (lambda-mode)))
+;; (add-hook 'clojure-mode-hook (lambda () (lambda-mode)))
 
-;; I tried to use this:
-;;(load "jmdb/pretty-lambda.el")
-;; but lambda mode seems to work well
+
+(load "jmdb/pretty-lambda.el")
+;; lambda mode seems to work well 
 
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
