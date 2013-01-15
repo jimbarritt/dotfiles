@@ -25,7 +25,9 @@
 
 
 (load "jmdb/behaviour.el")
+(load "jmdb/ido-conf.el")
 (load "jmdb/code.el")
+(load "jmdb/org-conf.el")
 (load "jmdb/rcirc.el")
 
 

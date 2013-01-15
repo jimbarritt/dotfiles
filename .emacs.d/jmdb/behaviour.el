@@ -6,17 +6,6 @@
 ;;(require 'icicles)
 ;;(icy-mode 0)
 
-;; Interactive do
-(when (> emacs-major-version 21)
-  (require 'ido)
-  (ido-mode t)
-  (setq ido-enable-prefix nil
-        ido-enable-flex-matching t
-        ido-create-new-buffer 'always
-        ido-use-filename-at-point 'guess
-        ido-max-prospects 10))
-
-(setq enable-recursive-minibuffers t) ;; This should prevent the "Read-only enabled for this buffer
 
 ;; Recent file mode
 (require 'recentf)
