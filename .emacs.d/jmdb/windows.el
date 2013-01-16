@@ -14,7 +14,7 @@
 
 ;; put something different in the scratch buffer
 (setq initial-scratch-message
-      ";; scratch buffer created -- start typing...\n")
+      ";; Hello Jim. Time to start coding ...\n")
 
 
 ;;(menu-bar-mode t)
@@ -30,6 +30,7 @@
 
 ;; Make the minibuffer smaller
 (setq max-mini-window-height 1)
+(setq resize-mini-windows 'grow-only)
 
 ;; Display line and column numbers
 (setq line-number-mode    t)
@@ -104,3 +105,8 @@
 (push '(" *undo-tree*" :width 0.3 :position right) popwin:special-display-config)
 
 (push "*Buffer List*" popwin:special-display-config)
+
+
+(defun window-coding-layout ()
+  (interactive)
+  (message "hello jim"))
