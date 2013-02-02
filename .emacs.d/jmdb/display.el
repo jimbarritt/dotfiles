@@ -1,5 +1,8 @@
 (message "[jmdb] - Configuring emacs display.")
 
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+
 (setq inhibit-startup-message t)
 (tool-bar-mode 0) ;; hide the toolbar
 (fset 'yes-or-no-p 'y-or-n-p) ;; "y or n" instead of "yes or no"
