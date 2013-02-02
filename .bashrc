@@ -36,7 +36,8 @@ export PROMPT_COMMAND=''
 
 # See - http://www.cyberciti.biz/tips/howto-linux-unix-bash-shell-setup-prompt.html
 #$(hostname)
-export CURRENT_HOST=coco
+export CURRENT_HOST=K2
+hostname=K2
 # \u - username
 # \h - hostname
 # \W - current dir
