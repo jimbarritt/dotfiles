@@ -43,7 +43,7 @@ hostname=K2
 # \W - current dir
 # \w - full working dir
 NORMAL_FONT=`tput sgr0`
-export PS1='\u@$CURRENT_HOST:\w\[\e[0;32m\]$(__git_ps1 " [%s]")\[\e[0m\]\n\$-> '
+export PS1='\u@$CURRENT_HOST:\w\[\e[0;32m\]$(__git_ps1 " [%s]")\[\e[0m\]\n\$ '
 
 
 
