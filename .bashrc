@@ -62,9 +62,9 @@ export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home/
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
 
-source ~/.bashrc_workstation # for any specific customisation for a particular computer
-
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
+
+

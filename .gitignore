@@ -1,6 +1,10 @@
 *~
-#*
+*#*
 .emacs.d/elpa
 backups
 .DS_Store
 #!*
+*/eshell/history
+*/eshell/lastdir
+.emacs.d/tramp
+.bash_local

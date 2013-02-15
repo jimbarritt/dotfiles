@@ -64,6 +64,7 @@
 
 (load "jmdb/pretty-lambda.el")
 ;; lambda mode seems to work well 
+(load "jmdb/eshell.el")
 
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
