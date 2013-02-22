@@ -87,3 +87,6 @@ PWD is not in a git repo (or the git command is not found)."
 	  '(lambda ()
 	     (local-set-key "\C-c\C-q" 'eshell-kill-process)
 	     (local-set-key "\C-c\C-k" 'compile)))
+
+(setq ansi-color-names-vector
+  ["black" "red" "green" "yellow" "PaleBlue" "magenta" "cyan" "white"])

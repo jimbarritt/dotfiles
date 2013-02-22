@@ -33,3 +33,4 @@
 
 
 (message "[jmdb] - Emacs Customisation End.")
+(put 'erase-buffer 'disabled nil)
