@@ -70,4 +70,4 @@
 (require 'pg)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
-
+(setq explicit-shell-file-name "/bin/bash")
