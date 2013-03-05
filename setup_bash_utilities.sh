@@ -9,3 +9,4 @@ brew install cmatrix
 brew install sl
 brew install curl
 brew install wget
+brew install htop
