@@ -9,6 +9,10 @@
 (when (not (package-installed-p 'paredit))
   (package-install 'paredit))
 
+(when (not (package-installed-p 'nav))
+  (package-install 'nav))
+
+
 (when (not (package-installed-p 'multi-web-mode))
   (package-install 'multi-web-mode))
 (require 'multi-web-mode)
