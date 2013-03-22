@@ -4,7 +4,8 @@
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 
 (setq inhibit-startup-message t)
-(tool-bar-mode 0) ;; hide the toolbar
+(tool-bar-mode -1) ;; hide the toolbar
+(menu-bar-mode -1) ;; hide the menubar
 (fset 'yes-or-no-p 'y-or-n-p) ;; "y or n" instead of "yes or no"
 (show-paren-mode) ;; Highlight matching parentheses
 (setq visible-bell 1) ;;To stop it making a bell noise...

@@ -12,6 +12,9 @@
 (when (not (package-installed-p 'nav))
   (package-install 'nav))
 
+(when (not (package-installed-p 'itail))
+  (package-install 'itail))
+
 
 (when (not (package-installed-p 'multi-web-mode))
   (package-install 'multi-web-mode))
