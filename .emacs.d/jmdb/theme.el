@@ -83,6 +83,8 @@
 (set-face-background 'fringe "#222222") ;;#222222, #111111
 
 
+
+
 ;;(set-cursor-color "purple")
 
 ;;(set-face-background 'hl-line "#222222")
