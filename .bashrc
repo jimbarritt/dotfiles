@@ -26,6 +26,7 @@ source ~/bin/git_completion.sh
 # PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '
 
 #http://www.isthe.com/chongo/tech/comp/ansi_escapes.html
+#http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 START_GREEN_BOLD="\[\e[1;32m\]"
 START_GREEN_NORMAL="\[\e[0;32m\]"
 END_GREEN="\[\e[0m\]"

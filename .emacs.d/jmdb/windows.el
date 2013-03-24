@@ -12,9 +12,6 @@
 
 (setq frame-title-format (concat "Emacs " ": %f"))
 
-;; put something different in the scratch buffer
-(setq initial-scratch-message
-      ";; Hello Jim. Time to start coding ...\n")
 
 
 ;;(menu-bar-mode t)

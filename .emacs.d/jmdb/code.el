@@ -15,6 +15,7 @@
 (when (not (package-installed-p 'itail))
   (package-install 'itail))
 
+(require 'itail)
 
 (when (not (package-installed-p 'multi-web-mode))
   (package-install 'multi-web-mode))
@@ -78,3 +79,6 @@
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 (setq explicit-shell-file-name "/bin/bash")
+
+(load "jmdb/nodejs-mode.el")
+(require 'nodejs-mode)

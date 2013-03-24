@@ -24,7 +24,8 @@
 ;; Down:  C-x C--
 ;; Reset: C-x C-0
 
-(set-default-font "-apple-Inconsolata-medium-normal-normal--17-180-75-75-m-0-iso10646-1")
+(set-default-font "-apple-Inconsolata-medium-normal-normal--16-180-75-75-m-0-iso10646-1")
+;;(set-default-font "-apple-Inconsolata-medium-normal-normal--17-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-18-*-*-*-m-0-iso10646-1")
 ;;(set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
 ;;(add-to-list 'default-frame-alist '(font . "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
@@ -39,9 +40,11 @@
 
 ;; Color themes
 (add-to-list 'load-path "~/.emacs.d/lib/color-theme")
-;;(require 'color-theme)
+(require 'color-theme)
 ;;(color-theme-initialize)
 
+;;(color-theme-ld-dark)
+;;(color-theme-taylor)
 ;;(color-theme-gnome)
 ;;(color-theme-billw)
 ;;(color-theme-charcoal-black)
@@ -82,7 +85,8 @@
 ;;(add-hook 'clojure-mode-hook (lambda () (hl-line-mode 1)))
 
 (add-hook 'window-setup-hook (lambda () (set-cursor-color "purple")))
-(add-hook 'window-setup-hook (lambda () (set-background-color "#111111")))
+;;(add-hook 'window-setup-hook (lambda () (set-background-color "#111111")))
+(add-hook 'window-setup-hook (lambda () (set-foreground-color "#AAAAAA")))
 
 
 
