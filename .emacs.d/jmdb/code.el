@@ -135,6 +135,17 @@
 (when (not (package-installed-p 'ac-nrepl))
   (package-install 'ac-nrepl))
 
+(require 'ac-nrepl)
+
+(when (not (package-installed-p 'slime))
+  (package-install 'slime))
+
+(when (not (package-installed-p 'ac-slime))
+  (package-install 'ac-slime))
+
+(require 'ac-slime)
+(add-hook 'slime-mode-hook 'set-up-slime-ac)
+
 
 (dolist (mode '(magit-log-edit-mode log-edit-mode org-mode text-mode haml-mode
                 sass-mode yaml-mode csv-mode espresso-mode haskell-mode
@@ -142,6 +153,7 @@
                 lisp-mode textile-mode markdown-mode tuareg-mode))
   (add-to-list 'ac-modes mode))
 
+(ac-flyspell-workaround)
 ;; auto-complete
 ;; Examples
 (set-face-background 'ac-candidate-face "#555555")
