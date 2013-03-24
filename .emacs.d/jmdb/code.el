@@ -144,6 +144,12 @@
   (package-install 'ac-slime))
 
 (require 'ac-slime)
+
+(when (not (package-installed-p 'pos-tip))
+  (package-install 'pos-tip))
+
+(require 'pos-tip)
+
 (add-hook 'slime-mode-hook 'set-up-slime-ac)
 
 
