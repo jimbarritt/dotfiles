@@ -132,6 +132,10 @@
                ac-source-semantic
                ac-source-yasnippet))
 
+(when (not (package-installed-p 'ac-nrepl))
+  (package-install 'ac-nrepl))
+
+
 (dolist (mode '(magit-log-edit-mode log-edit-mode org-mode text-mode haml-mode
                 sass-mode yaml-mode csv-mode espresso-mode haskell-mode
                 html-mode nxml-mode sh-mode smarty-mode clojure-mode nrepl-mode
@@ -152,6 +156,4 @@
 ;; (define-key ac-completing-map "\r" 'nil)
 
 
-(when (not (package-installed-p 'ac-nrepl))
-  (package-install 'ac-nrepl))
 

@@ -68,7 +68,8 @@
 ;; dif-hl:
 
 (custom-set-faces
- '(diff-hl-insert ((t (:foreground "Green4" :background "#224422"))) 'now))
+ '(diff-hl-insert ((t (:foreground "Green4" :background "#224422"))) 'now)
+ '(diff-hl-delete ((t (:foreground "Red4" :background "#AA2222"))) 'now))
 
 ;; The modeline:
 
