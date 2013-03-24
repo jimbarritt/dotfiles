@@ -6,6 +6,13 @@
 (setq nrepl-popup-stacktraces nil)
 (add-to-list 'same-window-buffer-names "*nrepl*")
 
+;; https://github.com/syohex/emacs-git-gutter
+;; (when (not (package-installed-p 'git-gutter)) 
+;;   (package-install 'git-gutter))
+;; This doesnt seem to work
+;; (require 'git-gutter)
+;; (global-git-gutter-mode t)
+
 (when (not (package-installed-p 'paredit))
   (package-install 'paredit))
 
@@ -74,8 +81,13 @@
 ;; lambda mode seems to work well 
 (load "jmdb/eshell.el")
 (load "jmdb/pg.el")
+(load "jmdb/diff-hl.el")
+
+(add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
+(add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode)
 
 (require 'pg)
+(require 'diff-hl)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 (setq explicit-shell-file-name "/bin/bash")
