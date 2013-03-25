@@ -17,6 +17,14 @@
 (when (not (package-installed-p 'paredit))
   (package-install 'paredit))
 
+(when (not (package-installed-p 'clojure-mode))
+  (package-install 'clojure-mode))
+
+;; You need to do brew install w3m
+(when (not (package-installed-p 'w3m))
+  (package-install 'w3m))
+
+
 (when (not (package-installed-p 'nav))
   (package-install 'nav))
 
@@ -118,6 +126,7 @@
 (setq ac-auto-show-menu t)
 (setq ac-dwim t)
 (setq ac-use-menu-map t)
+(setq ac-use-quick-help t)
 (setq ac-quick-help-delay 1)
 (setq ac-quick-help-height 60)
 (setq ac-disable-inline t)
@@ -148,7 +157,7 @@
 (when (not (package-installed-p 'pos-tip))
   (package-install 'pos-tip))
 
-(require 'pos-tip)
+;;(require 'pos-tip)
 
 (add-hook 'slime-mode-hook 'set-up-slime-ac)
 
@@ -175,3 +184,60 @@
 
 
 
+(add-hook 'nrepl-interaction-mode-hook
+  'nrepl-turn-on-eldoc-mode)
+
+(setq nrepl-hide-special-buffers t)
+
+(add-hook 'nrepl-mode-hook 'subword-mode)
+(add-hook 'nrepl-mode-hook 'paredit-mode)
+
+
+;;nREPL
+
+(add-hook 'nrepl-interaction-mode-hook
+          (lambda ()
+            (nrepl-turn-on-eldoc-mode)
+            (enable-paredit-mode)))
+
+(add-hook 'nrepl-mode-hook
+          (lambda ()
+            (nrepl-turn-on-eldoc-mode)
+            (enable-paredit-mode)
+            (define-key nrepl-mode-map
+              (kbd "{") 'paredit-open-curly)
+            (define-key nrepl-mode-map
+              (kbd "}") 'paredit-close-curly)))
+
+(setq nrepl-popup-stacktraces nil)
+(add-to-list 'same-window-buffer-names "*nrepl*")
+
+;;Auto Complete
+;;(live-add-pack-lib "ac-nrepl")
+(require 'ac-nrepl )
+(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
+(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
+
+(eval-after-load "auto-complete"
+  '(add-to-list 'ac-modes 'nrepl-mode))
+
+;;; Monkey Patch nREPL with better behaviour:
+
+(defun nrepl-region-for-expression-at-point ()
+  "Return the start and end position of defun at point."
+  (when (and (live-paredit-top-level-p)
+             (save-excursion
+               (ignore-errors (forward-char))
+               (live-paredit-top-level-p)))
+    (error "Not in a form"))
+
+  (save-excursion
+    (save-match-data
+      (ignore-errors (live-paredit-forward-down))
+      (paredit-forward-up)
+      (while (ignore-errors (paredit-forward-up) t))
+      (let ((end (point)))
+        (backward-sexp)
+        (list (point) end)))))
+
+(setq nrepl-port "6678")

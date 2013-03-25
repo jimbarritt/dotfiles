@@ -68,6 +68,7 @@ want to use in the modeline *in lieu of* the original.")
  
  
 (add-hook 'after-change-major-mode-hook 'clean-mode-line)
+
  
  
 ;;; Greek letters - C-u C-\ greek ;; C-\ to revert to default

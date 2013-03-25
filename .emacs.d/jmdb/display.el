@@ -20,6 +20,9 @@
 (when (not (package-installed-p 'rainbow-mode))
   (package-install 'rainbow-mode))
 
+;;(setq-default truncate-lines t)
+;; or
+(setq-default global-visual-line-mode t)
 
 (load "jmdb/windows.el")
 (load "jmdb/modeline.el")
