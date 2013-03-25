@@ -7,7 +7,7 @@
 
 (require 'maxframe)
 ;;(setq mf-max-width 1600)  ;; Pixel width of main monitor.
-(add-hook 'window-setup-hook 'maximize-frame t)
+;;(add-hook 'window-setup-hook 'maximize-frame t)
 ;;(add-hook 'window-setup-hook 'ns-toggle-fullscreen t)
 
 (setq frame-title-format (concat "Emacs " ": %f"))
