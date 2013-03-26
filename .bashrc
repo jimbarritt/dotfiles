@@ -71,7 +71,3 @@ PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 export PATH="/usr/local/heroku/bin:$PATH"
 
 
-# Rackspace credentials
-export RACKSPACE_USERNAME="jimbarritt"
-export RACKSPACE_API_KEY="299aefeae700a15d7a1d62be11cda300"
-export NEWRELIC_LICENSE_KEY="e7c93c5753132a22f60ab3e67442830e02398476"
