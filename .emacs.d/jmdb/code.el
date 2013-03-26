@@ -236,6 +236,7 @@
 
 (setq nrepl-popup-stacktraces nil)
 (add-to-list 'same-window-buffer-names "*nrepl*")
+(add-hook 'nrepl-mode-hook 'subword-mode)
 
 ;;Auto Complete
 ;;(live-add-pack-lib "ac-nrepl")

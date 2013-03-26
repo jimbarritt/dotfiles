@@ -74,6 +74,24 @@
 ;; The modeline:
 
 (custom-set-faces
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "#9933FF"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "#CCFFFF"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "#554499"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "#669999"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "#336666"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "#CCCCFF"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "#9999CC"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "#666699"))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "#99CCCC"))))
+ '(rainbow-delimiters-unmatched-face ((t (:foreground "#FF0000")))))
+
+;; Highlight parens
+(custom-set-faces
+ '(show-paren-match-face ((t (:foreground "#DDCC11" :background "#FFFFFF" :weight 'bold)))))
+
+
+
+(custom-set-faces
    '(mode-line ((t (:foreground "#777777" :background "#222222" :box nil))))
    '(mode-line-inactive ((t (:foreground "#555555" :background "#222222" :box nil)))))
 
@@ -93,7 +111,7 @@
 
 (add-hook 'window-setup-hook (lambda () (set-cursor-color "purple")))
 ;;(add-hook 'window-setup-hook (lambda () (set-background-color "#111111")))
-(add-hook 'window-setup-hook (lambda () (set-foreground-color "#AAAAAA")))
+(add-hook 'window-setup-hook (lambda () (set-foreground-color "#CCDDEE")))
 
 
 
