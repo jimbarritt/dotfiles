@@ -75,7 +75,7 @@
 
 (custom-set-faces
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#9933FF"))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "#CCFFFF"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "#9999CC"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "#554499"))))
  '(rainbow-delimiters-depth-4-face ((t (:foreground "#669999"))))
  '(rainbow-delimiters-depth-5-face ((t (:foreground "#336666"))))
@@ -87,7 +87,7 @@
 
 ;; Highlight parens
 (custom-set-faces
- '(show-paren-match-face ((t (:foreground "#DDCC11" :background "#FFFFFF" :weight 'bold)))))
+ '(show-paren-match-face ((t (:foreground "#FF00FF" :background "#222222" :bold t)))))
 
 
 
