@@ -89,6 +89,12 @@
 (custom-set-faces
  '(show-paren-match-face ((t (:foreground "#FF00FF" :background "#222222" :bold t)))))
 
+;; Shell
+(custom-set-faces
+ '(comint-highlight-input ((t (:foreground "#CCDDEE" :bold nil))))
+ '(comint-highlight-prompt ((t (:foreground "#CCDDEE" :bold nil)))))
+ 
+
 
 
 (custom-set-faces
@@ -118,7 +124,7 @@
 ;; Disable boldness in all fonts:
 (mapc
   (lambda (face)
-    (set-face-attribute face nil :weight 'normal :underline nil))
+    (set-face-attribute face nil :weight 'normal :underline nil :bold nil))
   (face-list))
 
 
