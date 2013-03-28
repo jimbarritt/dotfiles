@@ -27,6 +27,7 @@
 (setq-default global-visual-line-mode t)
 
 (load "jmdb/windows.el")
+(load "jmdb/header-line.el")
 (load "jmdb/modeline.el")
 (load "jmdb/theme.el")
 (load "jmdb/scratch-message.el")
