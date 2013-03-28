@@ -111,7 +111,8 @@
 
 ;; IDO mode:
 (custom-set-faces
- '(ido-first-match ((t (:foreground "#6666EE" :bold nil)))))
+ '(ido-first-match ((t (:foreground "#6666EE" :bold nil))))
+ '(ido-subdir ((t (:foreground "#6622CC" :bold nil)))))
 
 
 ;;(set-cursor-color "purple")
