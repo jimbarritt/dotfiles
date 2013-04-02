@@ -98,7 +98,7 @@
 (global-hl-line-mode)
 
 (custom-set-faces
-   '(hl-line ((t (:background "#222222" :bold nil :underline nil :box nil)))))
+   '(hl-line ((t (:background "#111111" :bold nil :underline nil :box nil)))))
 
 
 (custom-set-faces
@@ -111,6 +111,9 @@
 
 (custom-set-faces
    '(magit-branch ((t (:foreground "#00CC66" :bold nil))))
+   '(magit-diff-hunk-header ((t (:foreground "#AAAAAA" :background "#444444" :bold nil))))
+   '(magit-diff-file-header ((t (:foreground "#888888" :background "#444444" :bold nil))))
+   '(magit-diff-del ((t (:foreground "#CC3333"  :bold nil))))
    '(magit-header ((t (:foreground "#999966" :bold nil)))))
 
 ;; Can set them individually like this:

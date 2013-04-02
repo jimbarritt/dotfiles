@@ -69,3 +69,11 @@
     (setq exec-path (split-string path-from-shell path-separator))))
 
 (if window-system (set-exec-path-from-shell-PATH))
+
+
+(when (not (package-installed-p 'expand-region))
+  (package-install 'expand-region))
+
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+(global-set-key (kbd "C--") 'er/contract-region)
