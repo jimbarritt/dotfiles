@@ -102,6 +102,10 @@
    '(header-line ((t (:foreground "#777777" :background "#222222" :box nil))))
    '(mode-line-inactive ((t (:foreground "#555555" :background "#222222" :box nil)))))
 
+(custom-set-faces
+   '(markdown-header-face ((t (:foreground "#FFFFCC" :bold nil)))))
+
+
 ;; Can set them individually like this:
 ;; (set-face-foreground 'modeline "#777777")
 
