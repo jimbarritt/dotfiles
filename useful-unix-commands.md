@@ -11,3 +11,7 @@ grep -rn --include "*.el" "live-load" .
 ## Search bash history
 
     cat ~/.bash_history | grep -e "^knife" | sort | uniq -u
+
+## Find all files of a certain type
+
+    find . -name '*.pl'
