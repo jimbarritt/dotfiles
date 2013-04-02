@@ -105,6 +105,9 @@
 (custom-set-faces
    '(markdown-header-face ((t (:foreground "#999966" :bold nil)))))
 
+(custom-set-faces
+   '(magit-branch ((t (:foreground "#00CC66" :bold nil))))
+   '(magit-header ((t (:foreground "#999966" :bold nil)))))
 
 ;; Can set them individually like this:
 ;; (set-face-foreground 'modeline "#777777")
