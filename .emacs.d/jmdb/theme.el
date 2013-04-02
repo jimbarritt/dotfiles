@@ -95,6 +95,10 @@
  '(comint-highlight-prompt ((t (:foreground "#CCDDEE" :bold nil)))))
  
 
+(global-hl-line-mode)
+
+(custom-set-faces
+   '(hl-line ((t (:background "#111111" :bold nil :underline nil :box nil)))))
 
 
 (custom-set-faces
