@@ -103,7 +103,7 @@
    '(mode-line-inactive ((t (:foreground "#555555" :background "#222222" :box nil)))))
 
 (custom-set-faces
-   '(markdown-header-face ((t (:foreground "#FFFFCC" :bold nil)))))
+   '(markdown-header-face ((t (:foreground "#999966" :bold nil)))))
 
 
 ;; Can set them individually like this:
