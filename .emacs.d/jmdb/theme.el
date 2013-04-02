@@ -98,7 +98,7 @@
 (global-hl-line-mode)
 
 (custom-set-faces
-   '(hl-line ((t (:background "#111111" :bold nil :underline nil :box nil)))))
+   '(hl-line ((t (:background "#222222" :bold nil :underline nil :box nil)))))
 
 
 (custom-set-faces
