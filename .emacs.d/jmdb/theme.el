@@ -60,6 +60,17 @@
 
 ;; Jims' Customisations:
 
+(custom-set-faces
+ '(font-lock-doc-face ((t (:foreground "#669966" :bold nil))) 'now)
+ '(font-lock-doc-string-face ((t (:foreground "#669966" :bold nil))) 'now)
+ '(font-lock-string-face ((t (:foreground "#669966" :bold nil))) 'now)
+ '(font-lock-builtin-face ((t (:foreground "#6699CC" :bold nil))) 'now)
+ '(font-lock-keyword-face ((t (:foreground "#6699CC" :bold nil))) 'now)
+ '(font-lock-function-name-face ((t (:foreground "#CCCC99" :bold nil))) 'now)
+ '(font-lock-variable-name-face ((t (:foreground "#99AABB" :bold nil))) 'now)
+ '(font-lock-type-face ((t (:foreground "#99AABB" :bold nil))) 'now))
+
+
 ;; Diff mode:
 (custom-set-faces
  '(diff-added ((t (:foreground "Green"))) 'now)
@@ -95,7 +106,7 @@
  '(comint-highlight-prompt ((t (:foreground "#CCDDEE" :bold nil)))))
  
 
-(global-hl-line-mode)
+;;(global-hl-line-mode)
 
 (custom-set-faces
    '(hl-line ((t (:background "#111111" :bold nil :underline nil :box nil)))))
