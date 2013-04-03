@@ -36,6 +36,8 @@ END_GREEN="\[\e[0m\]"
 export PROMPT_COMMAND=''
 
 # See - http://www.cyberciti.biz/tips/howto-linux-unix-bash-shell-setup-prompt.html
+# Also http://hints.macworld.com/article.php?story=20001224021638403
+# Edit /etc/hostconfig to force it away from K2.local
 #$(hostname)
 export CURRENT_HOST=K2
 hostname=K2

@@ -116,6 +116,10 @@
 (load "jmdb/eshell.el")
 (load "jmdb/pg.el")
 (load "jmdb/diff-hl.el")
+(load "jmdb/shell.el")
+(load "lib/tidy.el")
+
+(require 'tidy)
 
 (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
 (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode)
