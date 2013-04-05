@@ -15,3 +15,7 @@ grep -rn --include "*.el" "live-load" .
 ## Find all files of a certain type
 
     find . -name '*.pl'
+
+## Move a set of files listed in a file to a certain directory
+
+    cat files.txt | xargs -I {} mv {} to/

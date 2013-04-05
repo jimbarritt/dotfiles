@@ -1,8 +1,11 @@
 #bash configuration
 
 # Bash history - ignore duplicates and have a big history
-export HISTCONTROL=ignoredups
 export HISTSIZE=10000
+shopt -s histappend
+export HISTIGNORE='&:ls:cd ~:cd ..:[bf]g:exit:h:history'
+export HISTCONTROL=erasedups
+export PROMPT_COMMAND='history -a'
 
 # Output everything to be in emacs format
 set -o emacs
