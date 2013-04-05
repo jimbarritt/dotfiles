@@ -18,6 +18,5 @@
 (defun my-comint-init () 
   (setq comint-process-echoes t)) 
 
-(add-hook 'comint-mode-hook 'my-comint-init) 
 
 

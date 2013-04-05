@@ -119,6 +119,8 @@
 (load "jmdb/shell.el")
 (load "lib/tidy.el")
 
+(add-hook 'comint-mode-hook 'my-comint-init) 
+
 (require 'tidy)
 
 (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
