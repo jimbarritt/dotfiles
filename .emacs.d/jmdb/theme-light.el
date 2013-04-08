@@ -84,6 +84,7 @@
 
 (custom-set-faces
  '(mode-line ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
+ '(mode-line-buffer-id ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
  '(header-line ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
  '(mode-line-inactive ((t (:foreground "#555555" :background "#CCCCCC" :box nil)))))
 
@@ -110,14 +111,9 @@
  '(ido-subdir ((t (:foreground "#6622CC" :bold nil)))))
 
 
-;;(set-cursor-color "purple")
-
-;;(set-face-background 'hl-line "#222222")
-;;(add-hook 'clojure-mode-hook (lambda () (hl-line-mode 1)))
 
 (add-hook 'window-setup-hook (lambda () (set-cursor-color "purple")))
-;;(add-hook 'window-setup-hook (lambda () (set-background-color "#111111")))
-(add-hook 'window-setup-hook (lambda () (set-foreground-color "#99AABB")))
+(add-hook 'window-setup-hook (lambda () (set-foreground-color "#333333")))
 
 
 
@@ -128,39 +124,13 @@
   (face-list))
 
 
-;;; Fonts
-
-;; You can determine the full name for a font in a window (under the cursor) by doing C-u C-x =
-
-;; From: http://community.schemewiki.org/cgi-bin/scheme.cgi?Emacs
-;;
-;;(and window-system
-;; (create-fontset-from-fontset-spec
-;; (concat
-;;       "-apple-monaco-medium-r-normal--12-*-*-*-*-*-fontset-monaco,"
-;;       "ascii:-apple-monaco-medium-r-normal--12-100-*-*-m-100-mac-roman"))
-;;     )
-
-;;
-
-
-
-
-
-
-;; To change a font size globally:
-;; (set-face-attribute 'default nil :height 360)
-;; (set-face-attribute 'default nil :height 240)
-;; (set-face-attribute 'default nil :height 160)
-;; (set-face-attribute 'default nil :height 120)
-
 
 ;; see http://www.gnu.org/software/emacs/manual/html_node/elisp/Attribute-Functions.html
 ;; for information about font faces
 (setq org-todo-keyword-faces
-      (quote (("TODO" :foreground "cyan" :weight normal)
+      (quote (("TODO" :foreground "blue" :weight normal)
               ("NEXT" :weight normal)
-              ("DONE" :foreground "forest green" :weight normal)
+              ("DONE" :foreground "green" :weight normal)
               ("WAITING" :weight normal)
               ("HOLD" :weight normal)
               ("CANCELLED" :weight normal)
