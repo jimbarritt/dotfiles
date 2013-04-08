@@ -1,6 +1,6 @@
 ;;; Setup of color theme
 
-(load-theme 'ir-black-evolv 0)
+;;(load-theme 'ir-black-evolv 0)
 
 ;; (when (not (package-installed-p 'cyberpunk-theme))
 ;;   (package-install 'cyberpunk-theme))
@@ -8,7 +8,7 @@
 (when (not (package-installed-p 'ir-black-theme))
   (package-install 'ir-black-theme))
 
-;;(require 'ir-black-theme)
+(require 'ir-black-theme)
 
 (when (not (package-installed-p 'zenburn-theme))
   (package-install 'zenburn-theme))
@@ -68,7 +68,10 @@
  '(font-lock-keyword-face ((t (:foreground "#6699CC" :bold nil))) 'now)
  '(font-lock-function-name-face ((t (:foreground "#CCCC99" :bold nil))) 'now)
  '(font-lock-variable-name-face ((t (:foreground "#99AABB" :bold nil))) 'now)
+ '(font-lock-preprocessor-face ((t (:foreground "#9999CC" :bold nil))) 'now)
  '(font-lock-type-face ((t (:foreground "#99AABB" :bold nil))) 'now))
+
+
 
 
 ;; Diff mode:
@@ -112,10 +115,11 @@
    '(hl-line ((t (:background "#111111" :bold nil :underline nil :box nil)))))
 
 
+
 (custom-set-faces
-   '(mode-line ((t (:foreground "#777777" :background "#222222" :box nil))))
-   '(header-line ((t (:foreground "#777777" :background "#222222" :box nil))))
-   '(mode-line-inactive ((t (:foreground "#555555" :background "#222222" :box nil)))))
+ '(mode-line ((t (:foreground "#777777" :background "#222222" :box nil))))
+ '(header-line ((t (:foreground "#777777" :background "#222222" :box nil))))
+ '(mode-line-inactive ((t (:foreground "#555555" :background "#222222" :box nil)))))
 
 (custom-set-faces
    '(markdown-header-face ((t (:foreground "#999966" :bold nil)))))
@@ -131,7 +135,7 @@
 ;; (set-face-foreground 'modeline "#777777")
 
 ;; The edge of the screen
-(set-face-background 'fringe "#222222") ;;#222222, #111111
+;;(set-face-background 'fringe "#222222") ;;#222222, #111111
 
 
 ;; IDO mode:

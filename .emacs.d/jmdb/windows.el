@@ -2,6 +2,9 @@
 
 ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Choosing-Window-Options.html#Choosing-Window-Options
 
+(if window-system
+      (set-frame-size (selected-frame) 110 40))
+
 (add-to-list 'load-path "~/.emacs.d/lib/maxframe")
 
 

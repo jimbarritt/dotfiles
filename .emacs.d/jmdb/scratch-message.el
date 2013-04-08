@@ -1,7 +1,28 @@
 ;; put something different in the scratch buffer
 
-(setq initial-scratch-message      
-      (concat ";;                                                                                  
+
+
+(defconst *emacs* ";;                                                                                                    
+;; EEEEEEEEEEEEEEEEEEEEEE                                                                              
+;; E::::::::::::::::::::E                                                                              
+;; E::::::::::::::::::::E                                                                              
+;; EE::::::EEEEEEEEE::::E                                                                              
+;;   E:::::E       EEEEEE   mmmmmmm    mmmmmmm     aaaaaaaaaaaaa      cccccccccccccccc    ssssssssss   
+;;   E:::::E              mm:::::::m  m:::::::mm   a::::::::::::a   cc:::::::::::::::c  ss::::::::::s  
+;;   E::::::EEEEEEEEEE   m::::::::::mm::::::::::m  aaaaaaaaa:::::a c:::::::::::::::::css:::::::::::::s 
+;;   E:::::::::::::::E   m::::::::::::::::::::::m           a::::ac:::::::cccccc:::::cs::::::ssss:::::s
+;;   E:::::::::::::::E   m:::::mmm::::::mmm:::::m    aaaaaaa:::::ac::::::c     ccccccc s:::::s  ssssss 
+;;   E::::::EEEEEEEEEE   m::::m   m::::m   m::::m  aa::::::::::::ac:::::c                s::::::s      
+;;   E:::::E             m::::m   m::::m   m::::m a::::aaaa::::::ac:::::c                   s::::::s   
+;;   E:::::E       EEEEEEm::::m   m::::m   m::::ma::::a    a:::::ac::::::c     cccccccssssss   s:::::s 
+;; EE::::::EEEEEEEE:::::Em::::m   m::::m   m::::ma::::a    a:::::ac:::::::cccccc:::::cs:::::ssss::::::s
+;; E::::::::::::::::::::Em::::m   m::::m   m::::ma:::::aaaa::::::a c:::::::::::::::::cs::::::::::::::s 
+;; E::::::::::::::::::::Em::::m   m::::m   m::::m a::::::::::aa:::a cc:::::::::::::::c s:::::::::::ss  
+;; EEEEEEEEEEEEEEEEEEEEEEmmmmmm   mmmmmm   mmmmmm  aaaaaaaaaa  aaaa   cccccccccccccccc  sssssssssss 
+;; 
+;; ")
+
+(defconst *jmdb* ";;                                                                                  
 ;;                                                      ddddddddbbbbbbbb            
 ;;             jjjj                                     d::::::db::::::b            
 ;;            j::::j                                    d::::::db::::::b            
@@ -27,13 +48,16 @@
 ;;    jjj::::::jjj                                                                  
 ;;       jjjjjj                                                                     
 ;;
-;; "
+;; ")
+
+
+     ;; TODO - Make a function that calls this webservice to generate these automatically and insert to the buffer
+     
+(setq initial-scratch-message      
+      (concat *emacs*
 (first (split-string (version) "\n"))
 "
 ;;
 ;; Hello Jim. Time to start coding ...
 
 "))
-
-
-
