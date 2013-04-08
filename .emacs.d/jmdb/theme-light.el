@@ -1,20 +1,4 @@
-;;; Setup of color theme
-
-;;(load-theme 'ir-black-evolv 0)
-
-;; (when (not (package-installed-p 'cyberpunk-theme))
-;;   (package-install 'cyberpunk-theme))
-
-(when (not (package-installed-p 'ir-black-theme))
-  (package-install 'ir-black-theme))
-
-(require 'ir-black-theme)
-
-(when (not (package-installed-p 'zenburn-theme))
-  (package-install 'zenburn-theme))
-
-;;(require 'zenburn-theme)
-
+;;; Setup of color theme to be dark
 
 
 (global-font-lock-mode 1) ;; allows syntax highlighting to work
@@ -25,36 +9,18 @@
 ;; Reset: C-x C-0
 
 (set-default-font "-apple-Inconsolata-medium-normal-normal--16-180-75-75-m-0-iso10646-1")
-;;(set-default-font "-apple-Inconsolata-medium-normal-normal--17-180-75-75-m-0-iso10646-1")
-;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-18-*-*-*-m-0-iso10646-1")
-;;(set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
-;;(add-to-list 'default-frame-alist '(font . "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
-
-;; In cocoa emacs, you can set the font in Options->Change default font.
-;;(set-default-font "-apple-Consolas-medium-normal-normal--18-180-75-75-m-0-iso10646-1")
-;;(set-default-font "-apple-Inconsolata-medium-normal-normal--20-180-75-75-m-0-iso10646-1")
-;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
-;;(set-default-font "-apple-Inconsolata-medium-normal-normal--24-180-75-75-m-0-iso10646-1")
-;;(set-default-font "-ibm-courier-medium-r-normal--0-0-0-0-m-0-iso8859-1")
 
 
 ;; Color themes
 (add-to-list 'load-path "~/.emacs.d/lib/color-theme")
 (require 'color-theme)
-;;(color-theme-initialize)
+(color-theme-initialize)
 
-;;(color-theme-ld-dark)
-;;(color-theme-taylor)
-;;(color-theme-gnome)
-;;(color-theme-billw)
-;;(color-theme-charcoal-black)
 ;;(color-theme-greiner)
 ;;(color-theme-snowish)
 ;;(color-theme-gtk-ide)
-;;(color-theme-lawrence)
-;;(color-theme-standard)
-;;(color-theme-taylor)
-;;(color-theme-pok-wob)
+(color-theme-standard)
+
 
 
 
@@ -117,9 +83,9 @@
 
 
 (custom-set-faces
- '(mode-line ((t (:foreground "#777777" :background "#222222" :box nil))))
- '(header-line ((t (:foreground "#777777" :background "#222222" :box nil))))
- '(mode-line-inactive ((t (:foreground "#555555" :background "#222222" :box nil)))))
+ '(mode-line ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
+ '(header-line ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
+ '(mode-line-inactive ((t (:foreground "#555555" :background "#CCCCCC" :box nil)))))
 
 (custom-set-faces
    '(markdown-header-face ((t (:foreground "#999966" :bold nil)))))
@@ -135,7 +101,7 @@
 ;; (set-face-foreground 'modeline "#777777")
 
 ;; The edge of the screen
-;;(set-face-background 'fringe "#222222") ;;#222222, #111111
+(set-face-background 'fringe "#AAAAAA") ;;#222222, #111111
 
 
 ;; IDO mode:

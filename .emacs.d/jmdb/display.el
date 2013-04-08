@@ -29,7 +29,10 @@
 (load "jmdb/windows.el")
 (load "jmdb/header-line.el")
 (load "jmdb/modeline.el")
-(load "jmdb/theme.el")
+
+;;(load "jmdb/theme-dark.el")
+(load "jmdb/theme-light.el")
+
 (load "jmdb/scratch-message.el")
 
 
