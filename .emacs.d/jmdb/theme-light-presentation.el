@@ -26,16 +26,19 @@
 
 ;; Jims' Customisations:
 
-;; (custom-set-faces
-;;  '(font-lock-doc-face ((t (:foreground "#669966" :bold nil))) 'now)
-;;  '(font-lock-doc-string-face ((t (:foreground "#669966" :bold nil))) 'now)
-;;  '(font-lock-string-face ((t (:foreground "#669966" :bold nil))) 'now)
-;;  '(font-lock-builtin-face ((t (:foreground "#6699CC" :bold nil))) 'now)
-;;  '(font-lock-keyword-face ((t (:foreground "#6699CC" :bold nil))) 'now)
-;;  '(font-lock-function-name-face ((t (:foreground "#CCCC99" :bold nil))) 'now)
-;;  '(font-lock-variable-name-face ((t (:foreground "#99AABB" :bold nil))) 'now)
-;;  '(font-lock-preprocessor-face ((t (:foreground "#9999CC" :bold nil))) 'now)
-;;  '(font-lock-type-face ((t (:foreground "#99AABB" :bold nil))) 'now))
+(custom-set-faces
+ '(font-lock-doc-face ((t (:foreground "#669966" :bold nil))) 'now)
+ '(font-lock-comment-delimiter-face ((t (:foreground "#AAAAAA" :bold nil))) 'now)
+ '(font-lock-comment-face ((t (:foreground "#AAAAAA" :bold nil))) 'now)
+ '(font-lock-doc-string-face ((t (:foreground "#669966" :bold nil))) 'now)
+ '(font-lock-constant-face ((t (:foreground "#226666" :bold nil))) 'now)
+ '(font-lock-string-face ((t (:foreground "#669966" :bold nil))) 'now)
+ '(font-lock-builtin-face ((t (:foreground "#333333" :bold nil))) 'now)
+ '(font-lock-keyword-face ((t (:foreground "#333333" :bold nil))) 'now)
+ '(font-lock-function-name-face ((t (:foreground "#555555" :bold nil))) 'now)
+ '(font-lock-variable-name-face ((t (:foreground "#444444" :bold nil))) 'now)
+ '(font-lock-preprocessor-face ((t (:foreground "#777777" :bold nil))) 'now)
+ '(font-lock-type-face ((t (:foreground "#777777" :bold nil))) 'now))
 
 
 
@@ -51,18 +54,16 @@
  '(diff-hl-insert ((t (:foreground "Green4" :background "#224422"))) 'now)
  '(diff-hl-delete ((t (:foreground "Red4" :background "#AA2222"))) 'now))
 
-;; The modeline:
-
 (custom-set-faces
- '(rainbow-delimiters-depth-1-face ((t (:foreground "#9933FF"))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "#9999CC"))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "#554499"))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "#669999"))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "#336666"))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "#CCCCFF"))))
- '(rainbow-delimiters-depth-7-face ((t (:foreground "#9999CC"))))
- '(rainbow-delimiters-depth-8-face ((t (:foreground "#666699"))))
- '(rainbow-delimiters-depth-9-face ((t (:foreground "#99CCCC"))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "#222222"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "#222222"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "#222222"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "#222222"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "#222222"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "#222222"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "#222222"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "#222222"))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "#222222"))))
  '(rainbow-delimiters-unmatched-face ((t (:foreground "#FF0000")))))
 
 ;; Highlight parens
@@ -75,18 +76,16 @@
  '(comint-highlight-prompt ((t (:foreground "#CCDDEE" :bold nil)))))
  
 
-;;(global-hl-line-mode)
-
 (custom-set-faces
    '(hl-line ((t (:background "#111111" :bold nil :underline nil :box nil)))))
 
 
 
 (custom-set-faces
- '(mode-line ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
+ '(mode-line ((t (:foreground "#333333" :background "#AAAAAA" :box nil))))
  '(mode-line-buffer-id ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
  '(header-line ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
- '(mode-line-inactive ((t (:foreground "#555555" :background "#CCCCCC" :box nil)))))
+ '(mode-line-inactive ((t (:foreground "#777777" :background "#CCCCCC" :box nil)))))
 
 (custom-set-faces
    '(markdown-header-face ((t (:foreground "#999966" :bold nil)))))

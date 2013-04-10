@@ -30,8 +30,10 @@
 (load "jmdb/header-line.el")
 (load "jmdb/modeline.el")
 
-;;(load "jmdb/theme-dark.el")
-(load "jmdb/theme-light.el")
+(load "jmdb/theme-dark.el")
+;;(load "jmdb/theme-dark-presentation.el")
+;;(load "jmdb/theme-light.el")
+;;(load "jmdb/theme-light-presentation.el")
 
 (load "jmdb/scratch-message.el")
 

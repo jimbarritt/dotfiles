@@ -6,6 +6,8 @@
 ;;(require 'icicles)
 ;;(icy-mode 0)
 
+;; Dont jump when scrolling down
+(setq scroll-step 1)
 
 ;; Recent file mode
 (require 'recentf)

@@ -151,8 +151,9 @@
 
 (add-hook 'window-setup-hook (lambda () (set-cursor-color "purple")))
 ;;(add-hook 'window-setup-hook (lambda () (set-background-color "#111111")))
-(add-hook 'window-setup-hook (lambda () (set-foreground-color "#99AABB")))
+(add-hook 'window-setup-hook (lambda () (set-foreground-color "#99AAAA")))
 
+(set-foreground-color "#99AAAA")
 
 
 ;; Disable boldness in all fonts:
