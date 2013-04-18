@@ -19,3 +19,11 @@ grep -rn --include "*.el" "live-load" .
 ## Move a set of files listed in a file to a certain directory
 
     cat files.txt | xargs -I {} mv {} to/
+
+## Pull out columns from a line with awk
+
+    awk '{print $1 " " $2}'
+
+## Determine the target of a symbolic link
+
+    readlink <link>

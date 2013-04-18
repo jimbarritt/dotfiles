@@ -19,6 +19,7 @@ export PATH="$PATH:/usr/local/share/python"
 export PATH="$PATH:/Applications"
 export PATH="$PATH:/usr/texbin"
 export PATH="~/bin:$PATH"
+export PATH="/usr/local/Cellar/rabbitmq/3.0.4/sbin:$PATH"
 
 export SVN_EDITOR=emacs
 
@@ -76,3 +77,11 @@ PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 export PATH="/usr/local/heroku/bin:$PATH"
 
 [[ -s "$HOME/.bashrc_workstation" ]] && source "$HOME/.bashrc_workstation"
+
+function tabname {
+  printf "\e]1;$1\a"
+}
+ 
+function winname {
+  printf "\e]2;$1\a"
+}

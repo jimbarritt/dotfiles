@@ -31,5 +31,5 @@
   (interactive "sSSH To: ")
   (let ((remote-dir (concat "/ssh:" input))) 
     (message (concat "Opening shell at " remote-dir))
-    (cd remote-dir)
+    (dired remote-dir)
     (shell (concat "*shell:" (current-user) "@" (current-hostname) "*"))))
