@@ -11,3 +11,5 @@ brew install curl
 brew install wget
 brew install htop
 brew install w3m
+brew install gpg2
+brew install nginx

@@ -19,6 +19,7 @@ export PATH="$PATH:/usr/local/share/python"
 export PATH="$PATH:/Applications"
 export PATH="$PATH:/usr/texbin"
 export PATH="~/bin:$PATH"
+export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/Cellar/rabbitmq/3.0.4/sbin:$PATH"
 
 export SVN_EDITOR=emacs

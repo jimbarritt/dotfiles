@@ -1,6 +1,6 @@
 ;; put something different in the scratch buffer
 
-
+;; See here: http://patorjk.com/software/taag/#p=display&h=1&v=1&f=Doh&t=Emacs
 
 (defconst *emacs* ";;                                                                                                    
 ;; EEEEEEEEEEEEEEEEEEEEEE                                                                              
@@ -51,13 +51,22 @@
 ;; ")
 
 
-     ;; TODO - Make a function that calls this webservice to generate these automatically and insert to the buffer
+;; TODO - Make a function that calls this webservice to generate these automatically and insert to the buffer
+
+(defun choose-message () 
+  "Time to start coding ...")
+(defun current-user ()
+  (first (split-string (shell-command-to-string "whoami") "\n")))
+
      
 (setq initial-scratch-message      
       (concat *emacs*
 (first (split-string (version) "\n"))
 "
 ;;
-;; Hello Jim. Time to start coding ...
-
+;; Hello " (current-user) ". " (choose-message)
+"
 "))
+
+
+

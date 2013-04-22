@@ -4,5 +4,5 @@ DIRNAME=$(basename $(pwd))
 
 echo "Working in ${DIRNAME} virtual env ..."
 
-source ./virtualenv/${DIRNAME}/bin/activate
+source ~/.virtualenvs/${DIRNAME}/bin/activate
 
