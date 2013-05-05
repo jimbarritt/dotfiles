@@ -8,7 +8,7 @@
 ;; Down:  C-x C--
 ;; Reset: C-x C-0
 
-(set-default-font "-apple-Inconsolata-medium-normal-normal--16-180-75-75-m-0-iso10646-1")
+(set-default-font "-apple-Inconsolata-medium-normal-normal--14-180-75-75-m-0-iso10646-1")
 
 
 ;; Color themes
@@ -26,16 +26,25 @@
 
 ;; Jims' Customisations:
 
-;; (custom-set-faces
-;;  '(font-lock-doc-face ((t (:foreground "#669966" :bold nil))) 'now)
-;;  '(font-lock-doc-string-face ((t (:foreground "#669966" :bold nil))) 'now)
-;;  '(font-lock-string-face ((t (:foreground "#669966" :bold nil))) 'now)
-;;  '(font-lock-builtin-face ((t (:foreground "#6699CC" :bold nil))) 'now)
-;;  '(font-lock-keyword-face ((t (:foreground "#6699CC" :bold nil))) 'now)
-;;  '(font-lock-function-name-face ((t (:foreground "#CCCC99" :bold nil))) 'now)
-;;  '(font-lock-variable-name-face ((t (:foreground "#99AABB" :bold nil))) 'now)
-;;  '(font-lock-preprocessor-face ((t (:foreground "#9999CC" :bold nil))) 'now)
-;;  '(font-lock-type-face ((t (:foreground "#99AABB" :bold nil))) 'now))
+
+(custom-set-faces
+ '(font-lock-doc-face ((t (:foreground "#669966" :bold nil))) 'now)
+ '(font-lock-doc-string-face ((t (:foreground "#669966" :bold nil))) 'now)
+ '(font-lock-string-face ((t (:foreground "#669966" :bold nil))) 'now)
+ '(font-lock-builtin-face ((t (:foreground "#1111FF" :bold nil))) 'now)
+ '(font-lock-keyword-face ((t (:foreground "#1111FF" :bold nil))) 'now)
+ '(font-lock-function-name-face ((t (:foreground "#1111FF" :bold nil))) 'now)
+ '(font-lock-variable-name-face ((t (:foreground "#1111FF" :bold nil))) 'now)
+ '(font-lock-preprocessor-face ((t (:foreground "#9999CC" :bold nil))) 'now)
+ '(font-lock-type-face ((t (:foreground "#1111FF" :bold nil))) 'now)
+ '(font-lock-comment-delimiter-face ((t (:foreground "#99AABB" :bold nil))) 'now)
+ '(font-lock-comment-face ((t (:foreground "#99AABB" :bold nil))) 'now)
+ '(font-lock-constant-face ((t (:foreground "#9933FF" :bold nil))) 'now)
+ '(font-lock-negation-char-face ((t (:foreground "#FF1122" :bold nil))) 'now)
+ '(font-lock-regexp-grouping-backslash ((t (:foreground "#FF1122" :bold nil))) 'now)
+ '(font-lock-regexp-grouping-construct ((t (:foreground "#FF1122" :bold nil))) 'now)
+ '(font-lock-warning-face ((t (:foreground "#FF1122" :bold nil))) 'now)
+)
 
 
 
@@ -75,10 +84,10 @@
  '(comint-highlight-prompt ((t (:foreground "#CCDDEE" :bold nil)))))
  
 
-;;(global-hl-line-mode)
+(global-hl-line-mode)
 
 (custom-set-faces
-   '(hl-line ((t (:background "#111111" :bold nil :underline nil :box nil)))))
+   '(hl-line ((t (:background "#EEEEEE" :bold nil :underline nil :box nil)))))
 
 
 
@@ -102,7 +111,7 @@
 ;; (set-face-foreground 'modeline "#777777")
 
 ;; The edge of the screen
-(set-face-background 'fringe "#AAAAAA") ;;#222222, #111111
+(set-face-background 'fringe "#EEEEEE") ;;#222222, #111111
 
 
 ;; IDO mode:
@@ -114,6 +123,7 @@
 
 (add-hook 'window-setup-hook (lambda () (set-cursor-color "purple")))
 (add-hook 'window-setup-hook (lambda () (set-foreground-color "#333333")))
+(add-hook 'window-setup-hook (lambda () (set-background-color "#FEFEFE")))
 
 
 

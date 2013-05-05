@@ -8,6 +8,10 @@ Look for something within files recursively in a dir. This one lists out the lin
 grep -rn --include "*.el" "live-load" .
 ```
 
+Look for more than one thing:
+
+cat some.log | egrep "(INFO|DEBUG)"
+
 ## Search bash history
 
     cat ~/.bash_history | grep -e "^knife" | sort | uniq -u
