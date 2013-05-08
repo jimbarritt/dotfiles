@@ -80,8 +80,8 @@
 
 ;; Shell
 (custom-set-faces
- '(comint-highlight-input ((t (:foreground "#CCDDEE" :bold nil))))
- '(comint-highlight-prompt ((t (:foreground "#CCDDEE" :bold nil)))))
+ '(comint-highlight-input ((t (:foreground "#555555" :bold nil))))
+ '(comint-highlight-prompt ((t (:foreground "#555555" :bold nil)))))
  
 
 (global-hl-line-mode)
@@ -92,11 +92,13 @@
 
 
 (custom-set-faces
- '(mode-line ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
- '(mode-line-buffer-id ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
- '(header-line ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
+ '(mode-line ((t (:foreground "#444444" :background "#CCCCCC" :box nil))))
+ '(mode-line-buffer-id ((t (:foreground "#444444" :background nil :box nil))))
+ '(header-line ((t (:foreground "#777777" :background "#CCCCCC" :box nil))))
  '(header-line-inactive ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
- '(mode-line-inactive ((t (:foreground "#555555" :background "#CCCCCC" :box nil)))))
+ '(mode-line-inactive ((t (:foreground "#444444" :background "#DDDDDD" :box nil))))
+ 
+)
 
 (custom-set-faces
    '(markdown-header-face ((t (:foreground "#999966" :bold nil)))))
@@ -118,9 +120,10 @@
 ;; IDO mode:
 (custom-set-faces
  '(ido-first-match ((t (:foreground "#6666EE" :bold nil))))
- '(ido-subdir ((t (:foreground "#6622CC" :bold nil)))))
+ '(ido-subdir ((t (:foreground "#6622CC" :bold nil))))
+ '(minibuffer-prompt ((t (:foreground "#666666" :bold nil)))))
 
-
+minibuffer-prompt
 
 (add-hook 'window-setup-hook (lambda () (set-cursor-color "purple")))
 (add-hook 'window-setup-hook (lambda () (set-foreground-color "#333333")))
