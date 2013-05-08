@@ -8,8 +8,8 @@
 ;; Down:  C-x C--
 ;; Reset: C-x C-0
 
-(set-default-font "-apple-Inconsolata-medium-normal-normal--14-180-75-75-m-0-iso10646-1")
-
+;;(set-default-font "-apple-Inconsolata-medium-normal-normal--14-180-75-75-m-0-iso10646-1")
+(set-default-font "-apple-consolas-medium-normal-normal--14-180-75-75-m-0-iso10646-1")
 
 ;; Color themes
 (add-to-list 'load-path "~/.emacs.d/lib/color-theme")
@@ -31,15 +31,15 @@
  '(font-lock-doc-face ((t (:foreground "#669966" :bold nil))) 'now)
  '(font-lock-doc-string-face ((t (:foreground "#669966" :bold nil))) 'now)
  '(font-lock-string-face ((t (:foreground "#669966" :bold nil))) 'now)
- '(font-lock-builtin-face ((t (:foreground "#1111FF" :bold nil))) 'now)
- '(font-lock-keyword-face ((t (:foreground "#1111FF" :bold nil))) 'now)
- '(font-lock-function-name-face ((t (:foreground "#1111FF" :bold nil))) 'now)
- '(font-lock-variable-name-face ((t (:foreground "#1111FF" :bold nil))) 'now)
- '(font-lock-preprocessor-face ((t (:foreground "#9999CC" :bold nil))) 'now)
- '(font-lock-type-face ((t (:foreground "#1111FF" :bold nil))) 'now)
- '(font-lock-comment-delimiter-face ((t (:foreground "#99AABB" :bold nil))) 'now)
- '(font-lock-comment-face ((t (:foreground "#99AABB" :bold nil))) 'now)
- '(font-lock-constant-face ((t (:foreground "#9933FF" :bold nil))) 'now)
+ '(font-lock-builtin-face ((t (:foreground "#000080" :bold nil))) 'now)
+ '(font-lock-keyword-face ((t (:foreground "#000080" :bold nil))) 'now)
+ '(font-lock-function-name-face ((t (:foreground "#333333" :bold nil))) 'now)
+ '(font-lock-variable-name-face ((t (:foreground "#000080" :bold nil))) 'now)
+ '(font-lock-preprocessor-face ((t (:foreground "#666666" :bold nil))) 'now)
+ '(font-lock-type-face ((t (:foreground "#333333" :bold nil))) 'now)
+ '(font-lock-comment-delimiter-face ((t (:foreground "#555555" :bold nil))) 'now)
+ '(font-lock-comment-face ((t (:foreground "#888888" :bold nil))) 'now)
+ '(font-lock-constant-face ((t (:foreground "#660099" :bold nil))) 'now)
  '(font-lock-negation-char-face ((t (:foreground "#FF1122" :bold nil))) 'now)
  '(font-lock-regexp-grouping-backslash ((t (:foreground "#FF1122" :bold nil))) 'now)
  '(font-lock-regexp-grouping-construct ((t (:foreground "#FF1122" :bold nil))) 'now)
@@ -95,6 +95,7 @@
  '(mode-line ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
  '(mode-line-buffer-id ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
  '(header-line ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
+ '(header-line-inactive ((t (:foreground "#777777" :background "#AAAAAA" :box nil))))
  '(mode-line-inactive ((t (:foreground "#555555" :background "#CCCCCC" :box nil)))))
 
 (custom-set-faces
@@ -124,6 +125,11 @@
 (add-hook 'window-setup-hook (lambda () (set-cursor-color "purple")))
 (add-hook 'window-setup-hook (lambda () (set-foreground-color "#333333")))
 (add-hook 'window-setup-hook (lambda () (set-background-color "#FEFEFE")))
+
+(set-cursor-color "purple")
+(set-foreground-color "#333333")
+(set-background-color "#FEFEFE")
+
 
 
 

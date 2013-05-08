@@ -24,14 +24,14 @@
 ;; Down:  C-x C--
 ;; Reset: C-x C-0
 
-(set-default-font "-apple-Inconsolata-medium-normal-normal--16-180-75-75-m-0-iso10646-1")
+;;(set-default-font "-apple-Inconsolata-medium-normal-normal--16-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Inconsolata-medium-normal-normal--17-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-18-*-*-*-m-0-iso10646-1")
 ;;(set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
 ;;(add-to-list 'default-frame-alist '(font . "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
 
 ;; In cocoa emacs, you can set the font in Options->Change default font.
-;;(set-default-font "-apple-Consolas-medium-normal-normal--18-180-75-75-m-0-iso10646-1")
+(set-default-font "-apple-Consolas-medium-normal-normal--14-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Inconsolata-medium-normal-normal--20-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
 ;;(set-default-font "-apple-Inconsolata-medium-normal-normal--24-180-75-75-m-0-iso10646-1")
@@ -150,10 +150,13 @@
 ;;(add-hook 'clojure-mode-hook (lambda () (hl-line-mode 1)))
 
 (add-hook 'window-setup-hook (lambda () (set-cursor-color "purple")))
-;;(add-hook 'window-setup-hook (lambda () (set-background-color "#111111")))
+(add-hook 'window-setup-hook (lambda () (set-background-color "#111111")))
 (add-hook 'window-setup-hook (lambda () (set-foreground-color "#99AAAA")))
 
 (set-foreground-color "#99AAAA")
+(set-background-color "#111111")
+(set-cursor-color "purple")
+
 
 
 ;; Disable boldness in all fonts:
