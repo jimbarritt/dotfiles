@@ -56,6 +56,7 @@ export PS1='\u@$CURRENT_HOST:\w\[\e[0;32m\]$(__git_ps1 " [%s]")\[\e[0m\]\n\$ '
 
 
 alias ll='ls -larthG'
+alias ld='ls -d */'
 alias du='du -h'
 alias ls='ls -G' #To get colorised listing
 alias emacs='emacsclient -n'

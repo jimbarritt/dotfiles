@@ -154,4 +154,3 @@ minibuffer-prompt
               ("HOLD" :weight normal)
               ("CANCELLED" :weight normal)
               ("PHONE" :weight normal))))
-

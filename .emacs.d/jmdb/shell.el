@@ -33,3 +33,9 @@
     (message (concat "Opening shell at " remote-dir))
     (dired remote-dir)
     (shell (concat "*shell:" (current-user) "@" (current-hostname) "*"))))
+
+(defun clear-shell ()
+  (interactive)  
+  (mark-whole-buffer)
+  (delete-backward-char)
+  (comint-send-input))

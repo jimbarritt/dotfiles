@@ -27,11 +27,11 @@
 ;;(set-default-font "-apple-Inconsolata-medium-normal-normal--16-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Inconsolata-medium-normal-normal--17-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-18-*-*-*-m-0-iso10646-1")
-;;(set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+(set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
 ;;(add-to-list 'default-frame-alist '(font . "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
 
 ;; In cocoa emacs, you can set the font in Options->Change default font.
-(set-default-font "-apple-Consolas-medium-normal-normal--14-180-75-75-m-0-iso10646-1")
+;;(set-default-font "-apple-Consolas-medium-normal-normal--16-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Inconsolata-medium-normal-normal--20-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
 ;;(set-default-font "-apple-Inconsolata-medium-normal-normal--24-180-75-75-m-0-iso10646-1")
