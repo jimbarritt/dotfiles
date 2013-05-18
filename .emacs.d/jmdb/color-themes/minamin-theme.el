@@ -78,10 +78,10 @@ Also bind `class' to ((class color) (min-colors 89))."
                                   :background ,minamin-grey+3 
                                   :box (:color ,minamin-grey+3 :line-width 2 :style nil)))))
 
-  `(mode-line-buffer-id ((t (:foreground ,minamin-grey+4 :background nil :box nil))))
+  `(mode-line-buffer-id ((t (:foreground ,minamin-grey+4 :background nil))))
 
   `(mode-line-inactive  ((t (:foreground ,minamin-bg-light 
-                                         :background ,minamin-grey+4 
+                                         :background ,minamin-bg-light 
                                          :box (:color ,minamin-grey+4 :line-width 2 :style nil)))))
 
 
