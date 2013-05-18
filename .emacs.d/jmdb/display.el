@@ -1,5 +1,8 @@
 (message "[jmdb] - Configuring emacs display.")
 
+;; Color theme resources:
+;; http://gnuemacscolorthemetest.googlecode.com/svn/html/index-java.html - shows pictures of them all
+
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 
@@ -31,7 +34,8 @@
 (load "jmdb/header-line.el")
 (load "jmdb/modeline.el")
 
-(load "jmdb/theme-dark.el")
+(load "jmdb/theme-default.el")
+;;(load "jmdb/theme-dark.el")
 ;;(load "jmdb/theme-dark-presentation.el")
 ;;(load "jmdb/theme-light.el")
 ;;(load "jmdb/theme-light-presentation.el")

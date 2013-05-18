@@ -8,7 +8,7 @@
 (when (not (package-installed-p 'ir-black-theme))
   (package-install 'ir-black-theme))
 
-(require 'ir-black-theme)
+;;(require 'ir-black-theme)
 
 (when (not (package-installed-p 'zenburn-theme))
   (package-install 'zenburn-theme))
@@ -27,7 +27,7 @@
 ;;(set-default-font "-apple-Inconsolata-medium-normal-normal--16-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Inconsolata-medium-normal-normal--17-180-75-75-m-0-iso10646-1")
 ;;(set-default-font "-apple-Courier_New-medium-normal-normal-*-18-*-*-*-m-0-iso10646-1")
-(set-default-font "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+(set-default-font "-apple-Monaco-medium-normal-normal-*-15-*-*-*-m-0-iso10646-1")
 ;;(add-to-list 'default-frame-alist '(font . "-apple-Monaco-medium-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
 
 ;; In cocoa emacs, you can set the font in Options->Change default font.
@@ -41,13 +41,13 @@
 ;; Color themes
 (add-to-list 'load-path "~/.emacs.d/lib/color-theme")
 (require 'color-theme)
-;;(color-theme-initialize)
+(color-theme-initialize)
 
 ;;(color-theme-ld-dark)
 ;;(color-theme-taylor)
 ;;(color-theme-gnome)
 ;;(color-theme-billw)
-;;(color-theme-charcoal-black)
+(color-theme-charcoal-black)
 ;;(color-theme-greiner)
 ;;(color-theme-snowish)
 ;;(color-theme-gtk-ide)
@@ -142,6 +142,9 @@
 (custom-set-faces
  '(ido-first-match ((t (:foreground "#6666EE" :bold nil))))
  '(ido-subdir ((t (:foreground "#6622CC" :bold nil)))))
+
+(custom-set-faces
+ '(vertical-border ((t (:foreground "#6666EE" :bold nil)))))
 
 
 ;;(set-cursor-color "purple")

@@ -7,11 +7,14 @@ export HISTIGNORE='&:ls:cd ~:cd ..:[bf]g:exit:h:history'
 export HISTCONTROL=erasedups
 export PROMPT_COMMAND='history -a'
 
+
+
 # Output everything to be in emacs format
 set -o emacs
 
 # In emacs, this gets set to 'dumb' by default so here we override it so that ls prints out colors correctly
-export TERM=xterm
+#export TERM=xterm
+export TERM=xterm-256color # And this should make it look nicer
 
 export PATH="."
 export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin:/usr/X11/bin"
