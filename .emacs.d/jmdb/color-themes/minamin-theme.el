@@ -125,6 +125,7 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(comint-highlight-prompt           ((t (:foreground ,minamin-fg))))
    `(comint-highlight-input            ((t (:foreground ,minamin-grey+3))))
 
+   `(linum            ((t (:foreground ,minamin-grey+4))))
 
   ))
 
