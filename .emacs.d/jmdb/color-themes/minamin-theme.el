@@ -63,13 +63,33 @@ Also bind `class' to ((class color) (min-colors 89))."
  (custom-theme-set-faces
   'minamin
   `(default     ((t (:foreground ,minamin-fg :background , minamin-bg-light))))
-  `(cursor      ((t (:foreground ,minamin-purple :background "white"))))
+  `(cursor      ((t (:foreground ,minamin-purple :background,  minamin-bg-light))))
   `(fringe      ((t (:foreground ,minamin-fg :background ,minamin-grey+1))))
-  `(header-line ((t (:foreground ,minamin-yellow
-                                 :background ,minamin-grey-1
-                                 :box (:line-width -1 :style released-button)))))
+  `(header-line ((t (:foreground ,minamin-bg-light
+                                 :background ,minamin-grey+3
+                                 :box (:color, minamin-grey+3 :line-width 5 :style nil)))))
   `(highlight   ((t (:background ,minamin-grey))))
+  `(region      ((t (:background ,minamin-yellow))))
+
+   ;;;; font lock
+   `(font-lock-builtin-face           ((t (:foreground ,minamin-fg))))
+   `(font-lock-comment-face           ((t (:foreground ,minamin-grey+3))))
+   `(font-lock-comment-delimiter-face ((t (:foreground ,minamin-grey+3))))
+   `(font-lock-constant-face          ((t (:foreground ,minamin-fg))))
+   `(font-lock-doc-face               ((t (:foreground ,minamin-fg))))
+   `(font-lock-doc-string-face        ((t (:foreground ,minamin-fg))))
+   `(font-lock-function-name-face     ((t (:foreground ,minamin-fg))))
+   `(font-lock-keyword-face           ((t (:foreground ,minamin-fg))))
+   `(font-lock-negation-char-face     ((t (:foreground ,minamin-fg))))
+   `(font-lock-preprocessor-face      ((t (:foreground ,minamin-fg))))
+   `(font-lock-string-face            ((t (:foreground ,minamin-fg))))
+   `(font-lock-type-face              ((t (:foreground ,minamin-fg))))
+   `(font-lock-variable-name-face     ((t (:foreground ,minamin-fg))))
+   `(font-lock-warning-face           ((t (:foreground ,minamin-fg))))
+
   ))
+;;;;;
+
 
 (provide-theme 'minamin)
 
