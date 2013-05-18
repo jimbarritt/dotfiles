@@ -4,13 +4,16 @@
 ;; (require 'highline) ;; This is a newer version of hl-mode
 ;; (global-highline-mode)
 ;; (setq highline-priority 0)
-(global-hl-line-mode)
+
 
 (require 'rainbow-mode)
 ;;(add-hook 'css-mode-hook 'rainbow-mode)
 ;;(add-hook 'html-mode-hook 'rainbow-mode)
 
 ;;(add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
+
+;;(global-hl-line-mode)
+(add-hook 'emacs-lisp-mode-hook 'hl-line-mode)
 
 
 
@@ -76,5 +79,5 @@
 ;;(set-frame-position (selected-frame) 0 -20)
 ;;(set-frame-position (selected-frame) 0 0)
 ;;(set-frame-height (selected-frame) 39)
-
+(set-cursor-color "purple")
 (message "[jmdb] - Display configured.")

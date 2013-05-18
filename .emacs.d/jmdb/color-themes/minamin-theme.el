@@ -90,7 +90,7 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(font-lock-variable-name-face     ((t (:foreground ,minamin-fg))))
    `(font-lock-warning-face           ((t (:foreground ,minamin-fg))))
 
-   `(magit-branch                     ((t (:foreground ,minamin-fg :background,minamin-bg-light))))
+   `(magit-branch                     ((t (:foreground ,minamin-fg :background,minamin-bg-light :box nil))))
 
    '(rainbow-delimiters-depth-1-face   ((t (:foreground "#9933FF"))))
    '(rainbow-delimiters-depth-2-face   ((t (:foreground "#9999CC"))))
@@ -142,8 +142,8 @@ Also bind `class' to ((class color) (min-colors 89))."
 
 
 
-(global-hl-line-mode)
-(set-cursor-color "purple")
+
+
 
 (provide-theme 'minamin)
 
