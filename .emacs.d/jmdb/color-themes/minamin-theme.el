@@ -15,8 +15,9 @@
     ("minamin-grey+1"     . "#4F4F4F")
     ("minamin-grey+2"     . "#5F5F5F")
     ("minamin-grey+3"     . "#6F6F6F")
+    ("minamin-grey+4"     . "#cccccc")
     ("minamin-red+1"      . "#DCA3A3")
-    ("minamin-red"        . "#CC9393")
+    ("minamin-red"        . "#cc0000")
     ("minamin-red-1"      . "#BC8383")
     ("minamin-red-2"      . "#AC7373")
     ("minamin-red-3"      . "#9C6363")
@@ -28,17 +29,17 @@
     ("minamin-green-1"    . "#5F7F5F")
     ("minamin-green"      . "#7F9F7F")
     ("minamin-green+1"    . "#8FB28F")
-    ("minamin-green+2"    . "#9FC59F")
+    ("minamin-green+2"    . "#00a300")
     ("minamin-green+3"    . "#AFD8AF")
     ("minamin-green+4"    . "#BFEBBF")
     ("minamin-cyan"       . "#0c00cc")
-    ("minamin-blue+1"     . "#94BFF3")
-    ("minamin-blue"       . "#8CD0D3")
-    ("minamin-blue-1"     . "#7CB8BB")
-    ("minamin-blue-2"     . "#6CA0A3")
-    ("minamin-blue-3"     . "#5C888B")
-    ("minamin-blue-4"     . "#4C7073")
-    ("minamin-blue-5"     . "#366060")
+    ("minamin-blue+1"     . "#1a87ff")
+    ("minamin-blue"       . "#574dff")
+    ("minamin-blue-1"     . "#271aff")
+    ("minamin-blue-2"     . "#0e00e5")
+    ("minamin-blue-3"     . "#0c00cc")
+    ("minamin-blue-4"     . "#0b00b2")
+    ("minamin-blue-5"     . "#08007f")
     ("minamin-magenta"    . "#6622CC"))
   "List of minamin colors.
 Each element has the form (NAME . HEX).
@@ -67,30 +68,44 @@ Also bind `class' to ((class color) (min-colors 89))."
   `(default      ((t (:foreground ,minamin-fg :background , minamin-bg-light))))
   `(cursor       ((t (:foreground ,minamin-purple :background,  minamin-bg-light))))
   `(cursor-color ((t (:foreground ,minamin-purple :background,  minamin-bg-light))))
-  `(fringe       ((t (:foreground ,minamin-fg :background ,minamin-grey+1))))
+  `(fringe       ((t (:foreground ,minamin-bg-light :background ,minamin-grey+4))))
+
   `(header-line  ((t (:foreground ,minamin-bg-light
                                  :background ,minamin-grey+3
                                  :box (:color, minamin-grey+3 :line-width 5 :style nil)))))
+
+  `(mode-line    ((t (:foreground ,minamin-grey+4 
+                                  :background ,minamin-grey+3 
+                                  :box (:color ,minamin-grey+3 :line-width 2 :style nil)))))
+
+  `(mode-line-buffer-id ((t (:foreground ,minamin-grey+4 :background nil :box nil))))
+
+  `(mode-line-inactive  ((t (:foreground ,minamin-bg-light 
+                                         :background ,minamin-grey+4 
+                                         :box (:color ,minamin-grey+4 :line-width 2 :style nil)))))
+
+
   `(highlight   ((t (:background ,minamin-bg-light-1 :inverse t))))
   `(region      ((t (:background ,minamin-yellow))))
 
    ;;;; font lock
-   `(font-lock-builtin-face           ((t (:foreground ,minamin-fg))))
+   `(font-lock-builtin-face           ((t (:foreground ,minamin-blue-4))))
    `(font-lock-comment-face           ((t (:foreground ,minamin-grey+3))))
    `(font-lock-comment-delimiter-face ((t (:foreground ,minamin-grey+3))))
-   `(font-lock-constant-face          ((t (:foreground ,minamin-fg))))
-   `(font-lock-doc-face               ((t (:foreground ,minamin-fg))))
-   `(font-lock-doc-string-face        ((t (:foreground ,minamin-fg))))
-   `(font-lock-function-name-face     ((t (:foreground ,minamin-fg))))
-   `(font-lock-keyword-face           ((t (:foreground ,minamin-fg))))
+   `(font-lock-constant-face          ((t (:foreground ,minamin-blue-4))))
+   `(font-lock-doc-face               ((t (:foreground ,minamin-green))))
+   `(font-lock-doc-string-face        ((t (:foreground ,minamin-green))))
+   `(font-lock-function-name-face     ((t (:foreground ,minamin-grey+1))))
+   `(font-lock-keyword-face           ((t (:foreground ,minamin-blue-4))))
    `(font-lock-negation-char-face     ((t (:foreground ,minamin-fg))))
-   `(font-lock-preprocessor-face      ((t (:foreground ,minamin-fg))))
-   `(font-lock-string-face            ((t (:foreground ,minamin-fg))))
+   `(font-lock-preprocessor-face      ((t (:foreground ,minamin-grey+3))))
+   `(font-lock-string-face            ((t (:foreground ,minamin-green+2))))
    `(font-lock-type-face              ((t (:foreground ,minamin-fg))))
    `(font-lock-variable-name-face     ((t (:foreground ,minamin-fg))))
    `(font-lock-warning-face           ((t (:foreground ,minamin-fg))))
 
    `(magit-branch                     ((t (:foreground ,minamin-fg :background,minamin-bg-light :box nil))))
+   `(magit-section-title              ((t (:foreground ,minamin-fg :background,minamin-bg-light :box nil))))
 
    '(rainbow-delimiters-depth-1-face   ((t (:foreground "#9933FF"))))
    '(rainbow-delimiters-depth-2-face   ((t (:foreground "#9999CC"))))
@@ -102,6 +117,12 @@ Also bind `class' to ((class color) (min-colors 89))."
    '(rainbow-delimiters-depth-8-face   ((t (:foreground "#666699"))))
    '(rainbow-delimiters-depth-9-face   ((t (:foreground "#99CCCC"))))
    '(rainbow-delimiters-unmatched-face ((t (:foreground "#FF0000"))))
+
+   '(show-paren-match-face ((t (:foreground "#ff33cc" :background nil :bold t))))
+
+   `(comint-highlight-prompt           ((t (:foreground ,minamin-fg))))
+   `(comint-highlight-input            ((t (:foreground ,minamin-grey+3))))
+
 
   ))
 
@@ -115,7 +136,7 @@ Also bind `class' to ((class color) (min-colors 89))."
    ;; (setq ansi-color-names-vector
    ;;       ["black" "red" "green" "yellow" "PaleBlue" "magenta" "cyan" "white"])
 
-   `(ansi-color-names-vector [,minamin-bg-light "red" , minamin-green-1 ,"yellow" 
+   `(ansi-color-names-vector [,minamin-bg-light ,minamin-red , minamin-green-1 ,"yellow" 
                               ,"blue" ,minamin-magenta ,minamin-cyan ,minamin-fg])
 
 ;;;;; fill-column-indicator
