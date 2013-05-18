@@ -25,6 +25,11 @@ export PATH="~/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/Cellar/rabbitmq/3.0.4/sbin:$PATH"
 
+# If you do this it start overriding default colors and we have to behave like unix
+#export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+
+#export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+
 export SVN_EDITOR=emacs
 
 source ~/bin/git_completion.sh
@@ -65,8 +70,46 @@ alias ls='ls -G' #To get colorised listing
 alias emacs='emacsclient -n'
 alias pywork='source ~/bin/pywork'
 
+#http://www.ibm.com/developerworks/linux/library/l-tip-prompt/
 declare -x CLICOLOR=1
-declare -x LSCOLORS=gxfxcxdxbxegedabagacad
+declare -x LSCOLORS=fxfxcxdxbxegedabagacad #http://softwaregravy.wordpress.com/2010/10/16/ls-colors-for-mac/
+
+# The color designators are as follows:
+ 
+# a     black
+# b     red
+# c     green
+# d     brown
+# e     blue
+# f     magenta
+# g     cyan
+# h     light grey
+# A     bold black, usually shows up as dark grey
+# B     bold red
+# C     bold green
+# D     bold brown, usually shows up as yellow
+# E     bold blue
+# F     bold magenta
+# G     bold cyan
+# H     bold light grey; looks like bright white
+# x     default foreground or background
+ 
+# Note that the above are standard ANSI colors.  The actual display may differ depending on the color capabilities of the terminal in use.
+ 
+# The order of the attributes are as follows:
+ 
+# 1.   directory
+# 2.   symbolic link
+# 3.   socket
+# 4.   pipe
+# 5.   executable
+# 6.   block special
+# 7.   character special
+# 8.   executable with setuid bit set
+# 9.   executable with setgid bit set
+# 10.  directory writable to others, with sticky bit
+# 11.  directory writable to others, without sticky bit
+
 
 export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home/
 

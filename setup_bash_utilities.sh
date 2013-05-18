@@ -14,3 +14,4 @@ brew install w3m
 brew install gpg2
 brew install nginx
 brew install colortail
+brew install coreutils

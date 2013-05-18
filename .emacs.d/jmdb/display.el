@@ -1,5 +1,6 @@
 (message "[jmdb] - Configuring emacs display.")
 
+;;http://www.ibm.com/developerworks/linux/library/l-tip-prompt/
 
 ;; (require 'highline) ;; This is a newer version of hl-mode
 ;; (global-highline-mode)

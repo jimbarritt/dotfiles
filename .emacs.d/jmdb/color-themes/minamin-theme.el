@@ -5,41 +5,41 @@
 
 (makunbound 'minamin-colors-alist)
 (defvar minamin-colors-alist
-  '(("minamin-fg"       . "#333c4e")
-    ("minamin-bg-light" . "#fffff5")
+  '(("minamin-fg"         . "#333c4e")
+    ("minamin-bg-light"   . "#fffff5")
     ("minamin-bg-light-1" . "#ecece0")
-    ("minamin-purple"   . "#6622CC") 
-    ("minamin-grey-2"   . "#2B2B2B")
-    ("minamin-grey-1"   . "#383838")
-    ("minamin-grey"     . "#3F3F3F")
-    ("minamin-grey+1"   . "#4F4F4F")
-    ("minamin-grey+2"   . "#5F5F5F")
-    ("minamin-grey+3"   . "#6F6F6F")
-    ("minamin-red+1"    . "#DCA3A3")
-    ("minamin-red"      . "#CC9393")
-    ("minamin-red-1"    . "#BC8383")
-    ("minamin-red-2"    . "#AC7373")
-    ("minamin-red-3"    . "#9C6363")
-    ("minamin-red-4"    . "#8C5353")
-    ("minamin-orange"   . "#DFAF8F")
-    ("minamin-yellow"   . "#F0DFAF")
-    ("minamin-yellow-1" . "#E0CF9F")
-    ("minamin-yellow-2" . "#D0BF8F")
-    ("minamin-green-1"  . "#5F7F5F")
-    ("minamin-green"    . "#7F9F7F")
-    ("minamin-green+1"  . "#8FB28F")
-    ("minamin-green+2"  . "#9FC59F")
-    ("minamin-green+3"  . "#AFD8AF")
-    ("minamin-green+4"  . "#BFEBBF")
-    ("minamin-cyan"     . "#93E0E3")
-    ("minamin-blue+1"   . "#94BFF3")
-    ("minamin-blue"     . "#8CD0D3")
-    ("minamin-blue-1"   . "#7CB8BB")
-    ("minamin-blue-2"   . "#6CA0A3")
-    ("minamin-blue-3"   . "#5C888B")
-    ("minamin-blue-4"   . "#4C7073")
-    ("minamin-blue-5"   . "#366060")
-    ("minamin-magenta"  . "#DC8CC3"))
+    ("minamin-purple"     . "#6622CC") 
+    ("minamin-grey-2"     . "#2B2B2B")
+    ("minamin-grey-1"     . "#383838")
+    ("minamin-grey"       . "#3F3F3F")
+    ("minamin-grey+1"     . "#4F4F4F")
+    ("minamin-grey+2"     . "#5F5F5F")
+    ("minamin-grey+3"     . "#6F6F6F")
+    ("minamin-red+1"      . "#DCA3A3")
+    ("minamin-red"        . "#CC9393")
+    ("minamin-red-1"      . "#BC8383")
+    ("minamin-red-2"      . "#AC7373")
+    ("minamin-red-3"      . "#9C6363")
+    ("minamin-red-4"      . "#8C5353")
+    ("minamin-orange"     . "#DFAF8F")
+    ("minamin-yellow"     . "#F0DFAF")
+    ("minamin-yellow-1"   . "#E0CF9F")
+    ("minamin-yellow-2"   . "#D0BF8F")
+    ("minamin-green-1"    . "#5F7F5F")
+    ("minamin-green"      . "#7F9F7F")
+    ("minamin-green+1"    . "#8FB28F")
+    ("minamin-green+2"    . "#9FC59F")
+    ("minamin-green+3"    . "#AFD8AF")
+    ("minamin-green+4"    . "#BFEBBF")
+    ("minamin-cyan"       . "#0c00cc")
+    ("minamin-blue+1"     . "#94BFF3")
+    ("minamin-blue"       . "#8CD0D3")
+    ("minamin-blue-1"     . "#7CB8BB")
+    ("minamin-blue-2"     . "#6CA0A3")
+    ("minamin-blue-3"     . "#5C888B")
+    ("minamin-blue-4"     . "#4C7073")
+    ("minamin-blue-5"     . "#366060")
+    ("minamin-magenta"    . "#6622CC"))
   "List of minamin colors.
 Each element has the form (NAME . HEX).
 
@@ -111,8 +111,13 @@ Also bind `class' to ((class color) (min-colors 89))."
   (custom-theme-set-variables
    'minamin
 ;;;;; ansi-color
-   `(ansi-color-names-vector [,minamin-bg-light ,minamin-red ,minamin-green ,minamin-yellow
-                              ,minamin-blue ,minamin-magenta ,minamin-cyan ,minamin-fg])
+;;http://stackoverflow.com/questions/6549622/adjusting-shell-mode-color-schemes
+   ;; (setq ansi-color-names-vector
+   ;;       ["black" "red" "green" "yellow" "PaleBlue" "magenta" "cyan" "white"])
+
+   `(ansi-color-names-vector [,minamin-bg-light "red" , minamin-green-1 ,"yellow" 
+                              ,"blue" ,minamin-magenta ,minamin-cyan ,minamin-fg])
+
 ;;;;; fill-column-indicator
    `(fci-rule-color ,minamin-bg-light-1)
 ;;;;; vc-annotate
@@ -176,3 +181,5 @@ This requires library `rainbow-mode'.")
 (defadvice rainbow-turn-off (after minamin activate)
   "Also remove font-lock keywords for minamin colors."
   (font-lock-remove-keywords nil minamin-colors-font-lock-keywords))
+
+(set-cursor-color 'purple)
