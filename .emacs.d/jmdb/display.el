@@ -11,7 +11,8 @@
 ;;(add-hook 'css-mode-hook 'rainbow-mode)
 ;;(add-hook 'html-mode-hook 'rainbow-mode)
 
-;;(add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
+
+;;(add-hook 'emacs-lisp-mode-hook )
 
 ;;(global-hl-line-mode)
 
