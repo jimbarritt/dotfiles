@@ -14,7 +14,18 @@
 ;;(add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
 
 ;;(global-hl-line-mode)
+
+(defun line-numbers ()
+  (interactive)  
+  (if (not (string= (buffer-name) "*scratch*"))
+      (linum-mode)))
+
 (add-hook 'emacs-lisp-mode-hook 'hl-line-mode)
+(add-hook 'emacs-lisp-mode-hook 'line-numbers)
+
+
+(add-hook 'clojure-mode-hook 'hl-line-mode)
+(add-hook 'clojure-mode-hook 'linum-mode)
 
 
 

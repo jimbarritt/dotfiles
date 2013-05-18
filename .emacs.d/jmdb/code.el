@@ -115,7 +115,10 @@
 ;; lambda mode seems to work well 
 (load "jmdb/eshell.el")
 (load "jmdb/pg.el")
-(load "jmdb/diff-hl.el")
+;;(load "jmdb/diff-hl.el")
+;;(require 'diff-hl)
+;;(add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
+;;(add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode)
 (load "jmdb/shell.el")
 (load "lib/tidy.el")
 
@@ -123,11 +126,11 @@
 
 (require 'tidy)
 
-(add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
-(add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode)
+
+
 
 (require 'pg)
-(require 'diff-hl)
+
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 (setq explicit-shell-file-name "/bin/bash")

@@ -16,6 +16,7 @@
     ("minamin-grey+2"     . "#5F5F5F")
     ("minamin-grey+3"     . "#6F6F6F")
     ("minamin-grey+4"     . "#cccccc")
+    ("minamin-grey+5"     . "#f0f0f0")
     ("minamin-red+1"      . "#DCA3A3")
     ("minamin-red"        . "#cc0000")
     ("minamin-red-1"      . "#BC8383")
@@ -80,9 +81,10 @@ Also bind `class' to ((class color) (min-colors 89))."
 
   `(mode-line-buffer-id ((t (:foreground ,minamin-grey+4 :background nil))))
 
-  `(mode-line-inactive  ((t (:foreground ,minamin-bg-light 
-                                         :background ,minamin-bg-light 
-                                         :box (:color ,minamin-grey+4 :line-width 2 :style nil)))))
+
+  `(mode-line-inactive  ((t (:foreground ,minamin-grey+5 
+                                         :background ,minamin-grey+5 
+                                         :box (:color ,minamin-grey+5 :line-width 2 :style nil)))))
 
 
   `(highlight   ((t (:background ,minamin-bg-light-1 :inverse t))))
