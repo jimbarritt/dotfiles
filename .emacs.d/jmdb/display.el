@@ -7,12 +7,6 @@
 ;; (setq highline-priority 0)
 
 
-(require 'rainbow-mode)
-;;(add-hook 'css-mode-hook 'rainbow-mode)
-;;(add-hook 'html-mode-hook 'rainbow-mode)
-
-
-;;(add-hook 'emacs-lisp-mode-hook )
 
 ;;(global-hl-line-mode)
 
@@ -93,4 +87,17 @@
 ;;(set-frame-position (selected-frame) 0 0)
 ;;(set-frame-height (selected-frame) 39)
 (set-cursor-color "purple")
+
+(require 'rainbow-mode)
+(rainbow-mode)
+;;(add-hook 'css-mode-hook 'rainbow-mode)
+;;(add-hook 'html-mode-hook 'rainbow-mode)
+
+(defun rainbows ()
+  (interactive)  
+  (if (not (string= (buffer-name) "*scratch*"))
+      (rainbow-mode)))
+
+(add-hook 'emacs-lisp-mode-hook 'rainbows)
+
 (message "[jmdb] - Display configured.")
