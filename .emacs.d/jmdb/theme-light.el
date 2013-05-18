@@ -72,7 +72,8 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "#9999CC"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "#666699"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "#99CCCC"))))
- '(rainbow-delimiters-unmatched-face ((t (:foreground "#FF0000")))))
+ '(rainbow-delimiters-unmatched-face ((t (:foreground "#FF0000"))))
+)
 
 ;; Highlight parens
 (custom-set-faces

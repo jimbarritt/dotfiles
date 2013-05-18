@@ -1,11 +1,13 @@
 ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Faces.html
+;; Nicked mostly from https://raw.github.com/bbatsov/zenburn-emacs/master/zenburn-theme.el
 
 (deftheme minamin "Minimal theme with light background")
 
 (makunbound 'minamin-colors-alist)
 (defvar minamin-colors-alist
-  '(("minamin-fg"       . "#111111")
-    ("minamin-bg-light" . "#FFFFFF")
+  '(("minamin-fg"       . "#333c4e")
+    ("minamin-bg-light" . "#fffff5")
+    ("minamin-bg-light-1" . "#ecece0")
     ("minamin-purple"   . "#6622CC") 
     ("minamin-grey-2"   . "#2B2B2B")
     ("minamin-grey-1"   . "#383838")
@@ -62,13 +64,14 @@ Also bind `class' to ((class color) (min-colors 89))."
 (minamin-with-color-variables
  (custom-theme-set-faces
   'minamin
-  `(default     ((t (:foreground ,minamin-fg :background , minamin-bg-light))))
-  `(cursor      ((t (:foreground ,minamin-purple :background,  minamin-bg-light))))
-  `(fringe      ((t (:foreground ,minamin-fg :background ,minamin-grey+1))))
-  `(header-line ((t (:foreground ,minamin-bg-light
+  `(default      ((t (:foreground ,minamin-fg :background , minamin-bg-light))))
+  `(cursor       ((t (:foreground ,minamin-purple :background,  minamin-bg-light))))
+  `(cursor-color ((t (:foreground ,minamin-purple :background,  minamin-bg-light))))
+  `(fringe       ((t (:foreground ,minamin-fg :background ,minamin-grey+1))))
+  `(header-line  ((t (:foreground ,minamin-bg-light
                                  :background ,minamin-grey+3
                                  :box (:color, minamin-grey+3 :line-width 5 :style nil)))))
-  `(highlight   ((t (:background ,minamin-grey))))
+  `(highlight   ((t (:background ,minamin-bg-light-1 :inverse t))))
   `(region      ((t (:background ,minamin-yellow))))
 
    ;;;; font lock
@@ -87,9 +90,60 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(font-lock-variable-name-face     ((t (:foreground ,minamin-fg))))
    `(font-lock-warning-face           ((t (:foreground ,minamin-fg))))
 
-  ))
-;;;;;
+   `(magit-branch                     ((t (:foreground ,minamin-fg :background,minamin-bg-light))))
 
+   '(rainbow-delimiters-depth-1-face   ((t (:foreground "#9933FF"))))
+   '(rainbow-delimiters-depth-2-face   ((t (:foreground "#9999CC"))))
+   '(rainbow-delimiters-depth-3-face   ((t (:foreground "#554499"))))
+   '(rainbow-delimiters-depth-4-face   ((t (:foreground "#669999"))))
+   '(rainbow-delimiters-depth-5-face   ((t (:foreground "#336666"))))
+   '(rainbow-delimiters-depth-6-face   ((t (:foreground "#442266"))))
+   '(rainbow-delimiters-depth-7-face   ((t (:foreground "#9999CC"))))
+   '(rainbow-delimiters-depth-8-face   ((t (:foreground "#666699"))))
+   '(rainbow-delimiters-depth-9-face   ((t (:foreground "#99CCCC"))))
+   '(rainbow-delimiters-unmatched-face ((t (:foreground "#FF0000"))))
+
+  ))
+
+;; The shell...
+
+(minamin-with-color-variables
+  (custom-theme-set-variables
+   'minamin
+;;;;; ansi-color
+   `(ansi-color-names-vector [,minamin-bg-light ,minamin-red ,minamin-green ,minamin-yellow
+                              ,minamin-blue ,minamin-magenta ,minamin-cyan ,minamin-fg])
+;;;;; fill-column-indicator
+   `(fci-rule-color ,minamin-bg-light-1)
+;;;;; vc-annotate
+   `(vc-annotate-color-map
+     '(( 20. . ,minamin-red-1)
+       ( 40. . ,minamin-red)
+       ( 60. . ,minamin-orange)
+       ( 80. . ,minamin-yellow-2)
+       (100. . ,minamin-yellow-1)
+       (120. . ,minamin-yellow)
+       (140. . ,minamin-green-1)
+       (160. . ,minamin-green)
+       (180. . ,minamin-green+1)
+       (200. . ,minamin-green+2)
+       (220. . ,minamin-green+3)
+       (240. . ,minamin-green+4)
+       (260. . ,minamin-cyan)
+       (280. . ,minamin-blue-2)
+       (300. . ,minamin-blue-1)
+       (320. . ,minamin-blue)
+       (340. . ,minamin-blue+1)
+       (360. . ,minamin-magenta)))
+   `(vc-annotate-very-old-color ,minamin-magenta)
+   `(vc-annotate-background ,minamin-bg-light)
+   ))
+
+
+
+
+(global-hl-line-mode)
+(set-cursor-color "purple")
 
 (provide-theme 'minamin)
 

@@ -1,5 +1,24 @@
 (message "[jmdb] - Configuring emacs display.")
 
+
+;; (require 'highline) ;; This is a newer version of hl-mode
+;; (global-highline-mode)
+;; (setq highline-priority 0)
+(global-hl-line-mode)
+
+(require 'rainbow-mode)
+;;(add-hook 'css-mode-hook 'rainbow-mode)
+;;(add-hook 'html-mode-hook 'rainbow-mode)
+
+;;(add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
+
+
+
+(defun what-face (pos)
+  (interactive "d")
+  (let ((face (or (get-char-property (point) 'read-face-name)
+                  (get-char-property (point) 'face))))
+    (if face (message "Face: %s" face) (message "No face at %d" pos))))
 ;; Color theme resources:
 ;; http://gnuemacscolorthemetest.googlecode.com/svn/html/index-java.html - shows pictures of them all
 
@@ -26,6 +45,8 @@
 (when (not (package-installed-p 'rainbow-mode))
   (package-install 'rainbow-mode))
 
+(require 'rainbow-mode)
+(rainbow-mode)
 ;;(setq-default truncate-lines t)
 ;; or
 (setq-default global-visual-line-mode t)
