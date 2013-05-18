@@ -54,18 +54,51 @@ Also bind `class' to ((class color) (min-colors 89))."
                    minamin-colors-alist))
      ,@body))
 
+(defmacro theme-faces (theme-name)
+  `(custom-theme-set-faces
+    '@theme-name
+    ))
 
 (minamin-with-color-variables
  (custom-theme-set-faces
   'minamin
-  `(default ((t (:foreground ,minamin-fg :background , minamin-bg-light))))
-  `(cursor ((t (:foreground ,minamin-purple :background "white"))))
-  `(fringe ((t (:foreground ,minamin-fg :background ,minamin-grey+1))))
+  `(default     ((t (:foreground ,minamin-fg :background , minamin-bg-light))))
+  `(cursor      ((t (:foreground ,minamin-purple :background "white"))))
+  `(fringe      ((t (:foreground ,minamin-fg :background ,minamin-grey+1))))
   `(header-line ((t (:foreground ,minamin-yellow
                                  :background ,minamin-grey-1
                                  :box (:line-width -1 :style released-button)))))
-  `(highlight ((t (:background ,minamin-grey))))
+  `(highlight   ((t (:background ,minamin-grey))))
   ))
 
 (provide-theme 'minamin)
 
+;;; Rainbow Support - Adding font lock so you can see all the colors defined.
+
+(declare-function rainbow-mode 'rainbow-mode)
+(declare-function rainbow-colorize-by-assoc 'rainbow-mode)
+
+(defvar minamin-add-font-lock-keywords nil
+  "Whether to add font-lock keywords for zenburn color names.
+In buffers visiting library `zenburn-theme.el' the zenburn
+specific keywords are always added.  In all other Emacs-Lisp
+buffers this variable controls whether this should be done.
+This requires library `rainbow-mode'.")
+
+(defvar minamin-colors-font-lock-keywords nil)
+
+(defadvice rainbow-turn-on (after minamin activate)
+  "Maybe also add font-lock keywords for minamin colors."
+  (when (and (derived-mode-p 'emacs-lisp-mode)
+             (or minamin-add-font-lock-keywords
+                 (equal (file-name-nondirectory (buffer-file-name))
+                        "minamin-theme.el")))
+    (unless minamin-colors-font-lock-keywords
+      (setq minamin-colors-font-lock-keywords
+            `((,(regexp-opt (mapcar 'car minamin-colors-alist) 'words)
+               (0 (rainbow-colorize-by-assoc minamin-colors-alist))))))
+    (font-lock-add-keywords nil minamin-colors-font-lock-keywords)))
+
+(defadvice rainbow-turn-off (after minamin activate)
+  "Also remove font-lock keywords for minamin colors."
+  (font-lock-remove-keywords nil minamin-colors-font-lock-keywords))
