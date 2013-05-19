@@ -22,6 +22,10 @@
 (add-hook 'clojure-mode-hook 'hl-line-mode)
 (add-hook 'clojure-mode-hook 'linum-mode)
 
+;;(load "jmdb/diff-hl.el")
+;;(require 'diff-hl)
+;;(add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
+;;(add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode)
 
 
 (defun what-face (pos)
@@ -43,8 +47,11 @@
 (setq visible-bell 1) ;;To stop it making a bell noise...
 (setq ring-bell-function 'ignore)
 
+;; By default don't wrap lines
+(setq-default truncate-lines t)
+
 (when (fboundp 'fringe-mode)
-  (fringe-mode '(1 . 0))) ;; Hide the fringes (0 hide, 1 show both)
+  (fringe-mode '(8 . 0))) ;; Fringe widths (left . right) should be in pixels
 
 
 (when (not (package-installed-p 'rainbow-delimiters))

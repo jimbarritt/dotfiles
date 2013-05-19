@@ -10,7 +10,7 @@
 ;; (format-time-string "%R %Y-%m-%d [%Z]" (current-time))
 
 ;; Display the time in the mode line:
-(setq display-time-format "%R %Y-%m-%d [%Z]")
+(setq display-time-format "%R %Y-%m-%d [%Z] ")
 (setq display-time-string-forms
      '((format-time-string display-time-format (current-time))))
 
