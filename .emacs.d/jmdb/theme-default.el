@@ -1,6 +1,6 @@
 (global-font-lock-mode 1) ;; allows syntax highlighting to work
 
-(set-default-font "-apple-Monaco-medium-normal-normal-*-15-*-*-*-m-0-iso10646-1")
+(set-default-font "-apple-Monaco-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1")
 (add-to-list 'load-path "~/.emacs.d/lib/color-theme")
 
 (require 'color-theme)

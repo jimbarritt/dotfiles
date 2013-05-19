@@ -23,7 +23,7 @@
     ("minamin-red-2"      . "#AC7373")
     ("minamin-red-3"      . "#9C6363")
     ("minamin-red-4"      . "#8C5353")
-    ("minamin-orange"     . "#DFAF8F")
+    ("minamin-orange"     . "#DFAF8F") 
     ("minamin-yellow"     . "#F0DFAF")
     ("minamin-yellow-1"   . "#E0CF9F")
     ("minamin-yellow-2"   . "#D0BF8F")
