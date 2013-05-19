@@ -6,21 +6,14 @@
 
 ;; Display the time in the mode bar.
 ;; http://www.emacswiki.org/emacs/DisplayTime
-
-(defface egoge-display-time
-   '((((type x w32 mac))
-      ;; #060525 is the background colour of my default face.
-      (:foreground "#060525" :inherit bold))
-     (((type tty))
-      (:foreground "blue")))
-   "Face used to display the time in the mode line.")
- ;; This causes the current time in the mode line to be displayed in
- ;; `egoge-display-time-face' to make it stand out visually.
- (setq display-time-string-forms
-       '((propertize (concat " " dayname " " year "-" month "-" day " " 24-hours ":" minutes " ")
- 		    'face 'egoge-display-time)))
+;; Use this to play with the format string...
+;; (format-time-string "%R %Y-%m-%d [%Z]" (current-time))
 
 ;; Display the time in the mode line:
+(setq display-time-format "%R %Y-%m-%d [%Z]")
+(setq display-time-string-forms
+     '((format-time-string display-time-format (current-time))))
+
 (setq display-time-and-date t)
 (display-time-mode 1)
 
@@ -73,3 +66,7 @@ want to use in the modeline *in lieu of* the original.")
  
 ;;; Greek letters - C-u C-\ greek ;; C-\ to revert to default
 ;;; ς ε ρ τ υ θ ι ο π α σ δ φ γ η ξ κ λ ζ χ ψ ω β ν μ
+
+
+
+

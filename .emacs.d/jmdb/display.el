@@ -44,7 +44,7 @@
 (setq ring-bell-function 'ignore)
 
 (when (fboundp 'fringe-mode)
-  (fringe-mode '(.1 . 0))) ;; Hide the fringes (0 hide, 1 show both)
+  (fringe-mode '(1 . 0))) ;; Hide the fringes (0 hide, 1 show both)
 
 
 (when (not (package-installed-p 'rainbow-delimiters))
@@ -99,5 +99,5 @@
       (rainbow-mode)))
 
 (add-hook 'emacs-lisp-mode-hook 'rainbows)
-
+(show-paren-mode)
 (message "[jmdb] - Display configured.")
