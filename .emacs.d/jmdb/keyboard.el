@@ -33,8 +33,8 @@
 ;; We need the option keys to work so we can swap the right option key to be a right control...
 ;; Swap meta and option keys:
 (when (eq system-type 'darwin)
-	  ;;(setq mac-command-key-is-meta t)
-	  ;;(setq mac-command-modifier 'meta)
+	  (setq mac-command-key-is-meta t)
+	  (setq mac-command-modifier 'meta)
           (setq mac-option-modifier nil))
 	 ;; (setq mac-option-key-is-meta nil)
 	 ;; (setq mac-option-modifier nil)) ;; stop the "alt" key responding so it behaves like it would in the os
@@ -54,6 +54,7 @@
 ;;(global-set-key (kbd "C-c C-k") 'kill-region)
 
 (global-set-key (kbd "<f5>") 'magit-status)
+
 (global-set-key (kbd "M-P") 'magit-push)
 
 (global-set-key (kbd "<f9>") 'recentf-open-files)
@@ -112,6 +113,13 @@
  (lambda ()
  (local-set-key (kbd "<M-S-return>") 'eval-region)
  (local-set-key (kbd "<M-return>") 'eval-last-sexp)
+ (local-set-key (kbd "<C-S-f10>") 'eval-buffer)
+ )
+)
+
+(add-hook 'clojure-mode-hook
+ (lambda ()
+ (local-set-key (kbd "<C-S-f10>") 'nrepl-eval-buffer)
  )
 )
 

@@ -1,3 +1,4 @@
+(setq completion-fail-discreetly t) ;; prevents annoying messages in the minibuffer
 
 (eval-after-load 'clojure-mode
   '(font-lock-add-keywords
@@ -31,6 +32,9 @@
   'nrepl-turn-on-eldoc-mode)
 (setq nrepl-popup-stacktraces nil)
 (add-to-list 'same-window-buffer-names "*nrepl*")
+(add-hook 'nrepl-mode-hook 'subword-mode)
+(add-hook 'nrepl-mode-hook 'paredit-mode)
+(add-hook 'nrepl-mode-hook 'rainbow-delimiters-mode)
 
 ;; https://github.com/syohex/emacs-git-gutter
 ;; (when (not (package-installed-p 'git-gutter)) 
@@ -152,7 +156,7 @@
 
 (setq ac-comphist-file (concat "~/tmp/" "ac-comphist.dat"))
 
-(global-auto-complete-mode t)
+;;(global-auto-complete-mode t)
 (setq ac-auto-show-menu t)
 (setq ac-dwim t)
 (setq ac-use-menu-map t)
@@ -195,7 +199,7 @@
 (dolist (mode '(magit-log-edit-mode log-edit-mode org-mode text-mode haml-mode
                 sass-mode yaml-mode csv-mode espresso-mode haskell-mode
                 html-mode nxml-mode sh-mode smarty-mode clojure-mode nrepl-mode
-                lisp-mode textile-mode markdown-mode tuareg-mode))
+                lisp-mode textile-mode tuareg-mode))
   (add-to-list 'ac-modes mode))
 
 (ac-flyspell-workaround)
@@ -204,6 +208,9 @@
 (set-face-background 'ac-candidate-face "#555555")
 (set-face-underline 'ac-candidate-face "#555555")
 (set-face-background 'ac-selection-face "#777777")
+
+
+
 
 ;;;;Key triggers
 ;; (define-key ac-completing-map (kbd "C-M-n") 'ac-next)

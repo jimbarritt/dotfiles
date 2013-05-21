@@ -1,22 +1,23 @@
 (global-font-lock-mode 1) ;; allows syntax highlighting to work
 
 (set-default-font "-apple-Monaco-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1")
-(add-to-list 'load-path "~/.emacs.d/lib/color-theme")
-
-(require 'color-theme)
-(color-theme-initialize)
-
-
-(when (not (package-installed-p 'color-theme-solarized))
-  (package-install 'color-theme-solarized))
-
-;;(load-theme 'solarized-light t)
 
 ;; See here http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
-
 (add-to-list 'custom-theme-load-path "~/.emacs.d/jmdb/color-themes")
 (load-theme 'minamin t) 
 
+;;(add-to-list 'load-path "~/.emacs.d/lib/color-theme")
+
+
+;;(require 'color-theme)
+;;(color-theme-initialize)
+
+
+
+;; (when (not (package-installed-p 'color-theme-solarized))
+;;   (package-install 'color-theme-solarized))
+
+;;(load-theme 'solarized-light t)
 
 
 
