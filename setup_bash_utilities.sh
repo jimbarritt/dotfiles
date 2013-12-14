@@ -15,3 +15,5 @@ brew install gpg2
 brew install nginx
 brew install colortail
 brew install coreutils
+brew install tree
+brew install nmap

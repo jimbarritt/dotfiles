@@ -33,9 +33,16 @@
 ;; We need the option keys to work so we can swap the right option key to be a right control...
 ;; Swap meta and option keys:
 (when (eq system-type 'darwin)
-	  (setq mac-command-key-is-meta t)
-	  (setq mac-command-modifier 'meta)
-          (setq mac-option-modifier nil))
+  (setq mac-option-key-is-meta f)
+  (setq mac-command-key-is-meta t)
+  (setq mac-command-modifier 'meta)
+  (setq mac-option-modifier nil))
+
+
+;;  (setq mac-left-option-modifier nil)
+
+	 ;; (setq mac-command-modifier 'meta)
+
 	 ;; (setq mac-option-key-is-meta nil)
 	 ;; (setq mac-option-modifier nil)) ;; stop the "alt" key responding so it behaves like it would in the os
 
@@ -59,11 +66,13 @@
 
 (global-set-key (kbd "<f9>") 'recentf-open-files)
 
+
 ;; Toggle line numbering
 (global-set-key (kbd "M-s-L") 'linum-mode)
 
 ;; Insert the # key on a uk keyboard
 (global-set-key (kbd "M-3") '(lambda()(interactive)(insert-pound)))
+
 
 ;; Insert a file name into the buffer
 (global-set-key (kbd "C-c C-i") 'insert-file-name)
@@ -78,6 +87,12 @@
 ;; Trying to set navigation a bit like intellij
 ;;(global-set-key (kbd "<M-left>") 'previous-buffer)
 ;;(global-set-key (kbd "<M-right>") 'next-buffer)
+
+;;(global-set-key (kbd "<C-s-left>") 'shrink-window-horizontally)
+;;(global-set-key (kbd "<C-s-right>") 'enlarge-window-horizontally)
+
+(global-set-key (kbd "<C-s-up>") 'shrink-window)
+(global-set-key (kbd "<C-s-down>") 'enlarge-window)
 
 ;; Make DEL (fn + BACKSPACE in OS X) eat up the current characters
 (global-unset-key (kbd "<delete>"))

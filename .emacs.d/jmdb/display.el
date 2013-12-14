@@ -7,7 +7,6 @@
 ;; (setq highline-priority 0)
 
 
-
 ;;(global-hl-line-mode)
 
 (defun line-numbers ()
@@ -105,6 +104,6 @@
   (if (not (string= (buffer-name) "*scratch*"))
       (rainbow-mode)))
 
-(add-hook 'emacs-lisp-mode-hook 'rainbows)
+;;(add-hook 'emacs-lisp-mode-hook 'rainbows)
 (show-paren-mode)
 (message "[jmdb] - Display configured.")

@@ -111,7 +111,7 @@ declare -x LSCOLORS=fxfxcxdxbxegedabagacad #http://softwaregravy.wordpress.com/2
 # 11.  directory writable to others, without sticky bit
 
 
-export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home/
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home
 
 # For RVM (Ruby environment manager)
 # This basically saying "if the symbolic link to rvm exists, execute it"

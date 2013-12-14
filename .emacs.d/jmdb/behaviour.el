@@ -6,6 +6,12 @@
 ;;(require 'icicles)
 ;;(icy-mode 0)
 
+(cua-mode)
+
+;;(setq show-paren-style 'expression) ;; can be used to highlight the whole of an sexpr
+;; http://ergoemacs.org/emacs/emacs_make_modern.html
+(global-visual-line-mode 1)
+
 ;; Dont jump when scrolling down
 (setq scroll-step 1)
 

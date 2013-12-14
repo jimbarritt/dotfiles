@@ -1,0 +1,8 @@
+#!/bin/bash
+
+FILENAME_PATTERN=$1
+SEARCH_STRING=$2
+
+
+
+grep -rn --include "$FILENAME_PATTERN" "$SEARCH_STRING" .

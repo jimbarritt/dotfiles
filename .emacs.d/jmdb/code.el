@@ -24,6 +24,9 @@
 (eval-after-load 'find-file-in-project
   '(add-to-list 'ffip-patterns "*.clj"))
 
+(when (not (package-installed-p 'tabbar))
+  (package-install 'tabbar))
+
 
 (when (not (package-installed-p 'nrepl))
   (package-install 'nrepl))
