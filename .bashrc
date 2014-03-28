@@ -18,7 +18,7 @@ export TERM=xterm-256color # And this should make it look nicer
 
 export PATH="."
 export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin:/usr/X11/bin"
-export PATH="$PATH:/usr/local/share/python"
+#export PATH="$PATH:/usr/local/share/python" # - was used by homebrew to put python scripts but not needed now.
 export PATH="$PATH:/Applications"
 export PATH="$PATH:/usr/texbin"
 export PATH="~/bin:$PATH"
