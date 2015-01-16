@@ -9,14 +9,14 @@ then
     unlink ~/bin
 fi
 
-if [ -e ~/img ] 
+if [ -e "install.sh" ] 
 then
     unlink ~/img
 fi
 
-if [ -e ~/.lein ]
+if [ ! -e ~/.lein ]
 then
-  mkdir ~/.lein
+    mkdir ~/.lein
 fi
 
 if [ -e ~/.lein/profiles.clj ] 
@@ -24,24 +24,24 @@ then
     unlink ~/.lein/profiles.clj
 fi
 
-if [ -e ~/.emacs.d ] 
-then
-    unlink ~/.emacs.d
-fi
-if [ -e ~/.emacs.d.old ] 
-then
-    rm -r ~/.emacs.d.old
-fi
-if [ -e ~/.emacs.d ] 
-then
-    mv ~/.emacs.d ~/.emacs.d.old
-fi
+#if [ -e ~/.emacs.d ] 
+#then
+#    unlink ~/.emacs.d
+#fi
+#if [ -e ~/.emacs.d.old ] 
+#then
+#    rm -r ~/.emacs.d.old
+#fi
+#if [ -e ~/.emacs.d ] 
+#then
+#    mv ~/.emacs.d ~/.emacs.d.old
+#fi
 
 
 
 ln -sv ${CURRENT_DIR}/bin ~/bin
 ln -sv ${CURRENT_DIR}/img ~/img
-ln -sv ${CURRENT_DIR}/.emacs.d ~/.emacs.d
+#ln -sv ${CURRENT_DIR}/.emacs.d ~/.emacs.d
 ln -sv ${CURRENT_DIR}/.lein/profiles.clj ~/.lein/profiles.clj
 
 for file in .*

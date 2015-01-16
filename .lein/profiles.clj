@@ -15,4 +15,6 @@
                   [lein-antlr "0.1.0"]
                   [lein-immutant "0.14.1"]
                   [lein-exec "0.3.0"]
-                  [lein-midje "3.1.1"]]}}
+                  [lein-midje "3.1.1"]
+                  [cider/cider-nrepl "0.9.0"]
+                  ]}}
