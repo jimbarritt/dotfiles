@@ -17,3 +17,5 @@ brew install colortail
 brew install coreutils
 brew install tree
 brew install nmap
+brew install markdown
+

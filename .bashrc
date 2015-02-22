@@ -133,3 +133,6 @@ function tabname {
 function winname {
   printf "\e]2;$1\a"
 }
+
+## This allows anything that creates a .profile file to work, like rvm
+source ~/.profile
