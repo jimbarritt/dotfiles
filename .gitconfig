@@ -1,7 +1,8 @@
 [user]
 	name = Jim Barritt
 	email = jim@planet-ix.com
-
+        signingkey = 42A0F567
+        
 [color]
 	diff = auto
 	status = auto
