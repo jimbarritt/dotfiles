@@ -1,4 +1,5 @@
-{:user {:dependencies [[org.clojure/tools.namespace "0.2.3"]
+{:user {:dependencies [[org.clojure/tools.namespace "0.2.11"]
+                       [org.clojure/tools.nrepl "0.2.10"]
                        [spyscope "0.1.3"]
                        [criterium "0.4.1"]]
 
@@ -16,5 +17,5 @@
                   [lein-immutant "0.14.1"]
                   [lein-exec "0.3.0"]
                   [lein-midje "3.1.1"]
-                  [cider/cider-nrepl "0.8.2"]
+                  [cider/cider-nrepl "0.10.0-SNAPSHOT"]
                   ]}}

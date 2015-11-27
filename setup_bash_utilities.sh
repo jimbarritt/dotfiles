@@ -18,4 +18,4 @@ brew install coreutils
 brew install tree
 brew install nmap
 brew install markdown
-
+brew install plantuml
