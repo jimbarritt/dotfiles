@@ -19,3 +19,5 @@ brew install tree
 brew install nmap
 brew install markdown
 brew install plantuml
+
+brew cask install universal-media-server
