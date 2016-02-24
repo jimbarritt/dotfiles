@@ -1,6 +1,6 @@
 {:user {:dependencies [[org.clojure/tools.namespace "0.2.11"]
-                       [org.clojure/tools.nrepl "0.2.10"]
-                       [spyscope "0.1.3"]
+                       [org.clojure/tools.nrepl "0.2.11"]
+                       [spyscope "0.1.5"]
                        [criterium "0.4.1"]]
 
         :injections [(require '(clojure.tools.namespace repl find))
