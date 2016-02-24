@@ -19,6 +19,6 @@ brew install tree
 brew install nmap
 brew install markdown
 brew install plantuml
-brew install berkeley-db
+brew install berkeley-db4
 
 brew cask install universal-media-server
