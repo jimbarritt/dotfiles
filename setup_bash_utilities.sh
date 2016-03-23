@@ -20,5 +20,8 @@ brew install nmap
 brew install markdown
 brew install plantuml
 brew install berkeley-db4
+brew install boost
+brew install libevent
+brew install qt
 
 brew cask install universal-media-server
