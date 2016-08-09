@@ -18,4 +18,5 @@
                   [lein-exec "0.3.0"]
                   [lein-midje "3.1.1"]
                   [cider/cider-nrepl "0.10.0-SNAPSHOT"]
+                  [lein-bikeshed "0.3.0"]
                   ]}}

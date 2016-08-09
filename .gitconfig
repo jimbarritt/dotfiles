@@ -20,3 +20,7 @@
 
 [core]
         pager = $(brew --prefix git)/share/git-core/contrib/diff-highlight/diff-highlight | less
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
