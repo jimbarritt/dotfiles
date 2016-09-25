@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+#   From http://tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
+#
 #   This file echoes a bunch of color codes to the 
 #   terminal to demonstrate what's available.  Each 
 #   line is the color code of one forground color,
