@@ -23,5 +23,10 @@ brew install berkeley-db4
 brew install boost
 brew install libevent
 brew install qt
+brew install bibtex2html
+brew install node
+brew install fish
+brew install irssi
 
-brew cask install universal-media-server
+
+# brew cask install universal-media-server
