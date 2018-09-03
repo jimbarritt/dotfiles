@@ -67,7 +67,7 @@ alias ll='ls -larthG'
 alias ld='ls -d */'
 alias du='du -h'
 alias ls='ls -G' #To get colorised listing
-alias emacs='emacsclient -n'
+#alias emacs='emacsclient -n'
 alias pywork='source ~/bin/pywork'
 
 #http://www.ibm.com/developerworks/linux/library/l-tip-prompt/
@@ -139,7 +139,7 @@ function winname {
 }
 
 ## This allows anything that creates a .profile file to work, like rvm
-source ~/.profile
+[[ -s "$HOME/.profile" ]] && source "$HOME/.profile"
 
 alias node="node -e \"require('repl').start({ignoreUndefined: true})\""
 
