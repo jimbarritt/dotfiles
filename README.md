@@ -18,6 +18,12 @@ also DOOM for emacs https://github.com/hlissner/emacs-doom-themes/blob/screensho
 
 based on NORD
 
+## Homebrew
+
+Vital for anything really
+
+https://brew.sh/
+
 ## Emacs
 
 THe next most important application is of course, emacs. 
