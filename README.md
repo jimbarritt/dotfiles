@@ -8,7 +8,15 @@ You can change the return key so that when its pressed with other keys it acts l
 
 Then you can also change the CAPS LOCK key to do the same thing. This means they continue to function normally except when pressed in conjunction with other keys which makes your fingers and typing so much better particularly in emacs.
 
-YOu can do this using the wonderful utility [karabiner](https://pqrs.org/osx/karabiner/) note that these modifications are called "complex modifications" and have to be imported from their website - all the buttons for this are on the UI.
+YOu can do this using the wonderful utility [karabiner](https://pqrs.org/osx/karabiner/) note that these modifications are called "complex modifications" and have to be imported from their website - all the buttons for this are on the UI.]
+
+## Color themes
+
+The NORD theme is very good https://raw.githubusercontent.com/arcticicestudio/nord-terminal-app/develop/src/xml/Nord.terminal
+
+also DOOM for emacs https://github.com/hlissner/emacs-doom-themes/blob/screenshots/README.md#doom-one-light-wip
+
+based on NORD
 
 ## Emacs
 
