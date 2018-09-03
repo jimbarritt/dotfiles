@@ -1,5 +1,10 @@
 # Jims dot files
 
+## INstall BRew
+
+## Use Brew to upgrade emacs on the command line
+
+
 ## Important Mac Keyboard Setup
 
 In order to have a sublime typing experience particularly in vim or emacs, you need to adjust the keyboard. It is a simple hack but it really makes a difference.
