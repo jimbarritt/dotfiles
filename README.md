@@ -24,7 +24,17 @@ Dont Follow these instructions https://superuser.com/questions/665494/how-to-mak
 
 There is now an "install for current user" option in ukelele - You need to quit and restart the system preferences and it shows up.
 
-Now I can type € 
+Now I can type € # or £ perfectly in any normal editor.
+
+https://apple.stackexchange.com/questions/44921/how-to-remove-or-disable-a-default-keyboard-layout
+
+There is one issue - it doesn't seem easy to remove the "default" keyboard layout from the list and the above link gets pretty indepth trying to solve it - however, you can just unclick the "show input source in menu bar" and it will disappear.
+
+This seems to be a pretty solid fix. The bundle I edited is called "British Coder" and is in this dot-files dir.
+
+So now in terminal or most other osx apps, you should be able to do navigation like in emacs with CTRL+n and p b, f etc and option key to do meta in the terminalk but still be able to tyope € # £ in normal editors.
+
+Next up update emacs so that it works the same way
 
 ## Color themes
  
