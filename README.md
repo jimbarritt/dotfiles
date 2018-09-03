@@ -1,6 +1,6 @@
 # Jims dot files
 
-## Important Mac Setup
+## Important Mac Keyboard Setup
 
 In order to have a sublime typing experience particularly in vim or emacs, you need to adjust the keyboard. It is a simple hack but it really makes a difference.
 
@@ -10,8 +10,24 @@ Then you can also change the CAPS LOCK key to do the same thing. This means they
 
 YOu can do this using the wonderful utility [karabiner](https://pqrs.org/osx/karabiner/) note that these modifications are called "complex modifications" and have to be imported from their website - all the buttons for this are on the UI.]
 
-## Color themes
+Remap option key to "META" in the terminal app so you cvan use emacs
 
+Also what is quite annoying if you have a UK keyboard is that the # symbol is on "OPTION+3" because the £ symbol is default.
+
+So you can switch the input source to ENGLISH US which means that it will now put th # on SHIFT+3 instead. the only downside is you cant now to OPT+2 for the euro symbol. SO this needs to be mapped back in emacs. You can get it if you really need it from the symbol picker.
+
+OR you can create a custom input source. Use this program https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=ukelele
+
+This allows you to create a layout from an existing one (British) and then just swap the £ for the #
+
+Dont Follow these instructions https://superuser.com/questions/665494/how-to-make-a-custom-keyboard-layout-in-os-x#665726
+
+There is now an "install for current user" option in ukelele - You need to quit and restart the system preferences and it shows up.
+
+Now I can type € 
+
+## Color themes
+ 
 The NORD theme is very good https://raw.githubusercontent.com/arcticicestudio/nord-terminal-app/develop/src/xml/Nord.terminal
 
 also DOOM for emacs https://github.com/hlissner/emacs-doom-themes/blob/screenshots/README.md#doom-one-light-wip
