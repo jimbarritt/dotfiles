@@ -56,34 +56,18 @@ also DOOM for emacs https://github.com/hlissner/emacs-doom-themes/blob/screensho
 based on NORD
 
 
-## Install 1password
-## Install firefox
+## 1Password
+## Firefox
 
-## Copy over ssh keys
-## INstall BRew
+## ssh keys
 
-## Use Brew to upgrade emacs on the command line
+## dot-files
 
+Checkout from [here](https://github.com/jimbarritt/dot-files)
 
-## Important Mac Keyboard Setup
-
-## Homebrew
-
-Vital for anything really
-
-https://brew.sh/
-
-## Emacs
-
-THe next most important application is of course, emacs. 
-
-I have many customisations in here but the most important is to map the right command key to be the meta key 
-
-## Bash
+Theres a script in there called `install.sh`
 
 The `.bashrc` file is where it all kicks off. This has a set of generic customisations for bash which should work on any machine. If there are customisations that are specific to a machine (i.e. they need a hard coded path, then this file sources the file `.bashrc_workstation`, so they can be stored there.
-
-## Git
 
 I have some aliases set up for git in `.gitconfig` particularly interesting is the "serve" option - see http://coderwall.com/p/eybtga. This means I just need to type:
 
@@ -92,5 +76,44 @@ I have some aliases set up for git in `.gitconfig` particularly interesting is t
 In a git rep dir and then people can do:
 
     git clone git://your.laptop.ip.or.hostname/
+
+
+
+
+
+## homebrew
+
+https://brew.sh/
+
+
+`/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+
+When you do this the first time it will force you to install the developer command line tools.
+
+## Emacs
+
+THe next most important application is of course, emacs.
+
+The best thing is to download the installer and run from [here](https://emacsformacosx.com/)
+
+Then need to check out [emax](git@github.com:ixcode/emax.git) and install it
+
+I have many customisations in here but the most important is to map the right command key to be the meta key 
+
+### Use Brew to upgrade emacs on the command line
+
+<<needs more work and thought>>
+
+Here is some code
+
+
+
+
+
+
+
+
+
+
 
 
