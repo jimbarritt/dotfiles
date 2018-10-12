@@ -1,22 +1,13 @@
 # New mac installation
 
-## Appearance
+## General OS Appearance
 
 - Dark menues
 - Grey highlight
 - Control bar shows F1 etc
 - fn key shows extended bar
 
-## Install 1password
-## Install firefox
-
-## Copy over ssh keys
-## INstall BRew
-
-## Use Brew to upgrade emacs on the command line
-
-
-## Important Mac Keyboard Setup
+## Keyboard
 
 In order to have a sublime typing experience particularly in vim or emacs, you need to adjust the keyboard. It is a simple hack but it really makes a difference.
 
@@ -24,7 +15,7 @@ You can change the return key so that when its pressed with other keys it acts l
 
 Then you can also change the CAPS LOCK key to do the same thing. This means they continue to function normally except when pressed in conjunction with other keys which makes your fingers and typing so much better particularly in emacs.
 
-YOu can do this using the wonderful utility [karabiner](https://pqrs.org/osx/karabiner/) note that these modifications are called "complex modifications" and have to be imported from their website - all the buttons for this are on the UI.]
+You can do this using the wonderful utility [karabiner](https://pqrs.org/osx/karabiner/) note that these modifications are called "complex modifications" and have to be imported from their website - all the buttons for this are on the UI.]
 
 Remap option key to "META" in the terminal app so you cvan use emacs
 
@@ -52,13 +43,29 @@ So now in terminal or most other osx apps, you should be able to do navigation l
 
 Next up update emacs so that it works the same way
 
-## Color themes
- 
+## Configure Terminal
+
 The NORD theme is very good https://raw.githubusercontent.com/arcticicestudio/nord-terminal-app/develop/src/xml/Nord.terminal
+
+Download it then preferences, import from terminal app. 
+
+When selected, set it to default and also select "option as meta" checkbox so you can 
 
 also DOOM for emacs https://github.com/hlissner/emacs-doom-themes/blob/screenshots/README.md#doom-one-light-wip
 
 based on NORD
+
+
+## Install 1password
+## Install firefox
+
+## Copy over ssh keys
+## INstall BRew
+
+## Use Brew to upgrade emacs on the command line
+
+
+## Important Mac Keyboard Setup
 
 ## Homebrew
 
