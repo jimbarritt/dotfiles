@@ -1,5 +1,16 @@
-# Jims dot files
+# New mac installation
 
+## Appearance
+
+- Dark menues
+- Grey highlight
+- Control bar shows F1 etc
+- fn key shows extended bar
+
+## Install 1password
+## Install firefox
+
+## Copy over ssh keys
 ## INstall BRew
 
 ## Use Brew to upgrade emacs on the command line
