@@ -67,6 +67,7 @@ alias ll='ls -larthG'
 alias ld='ls -d */'
 alias du='du -h'
 alias ls='ls -G' #To get colorised listing
+alias lv='ls -1' # listing 1 per line, as in 'vertical'
 #alias emacs='emacsclient -n'
 alias pywork='source ~/bin/pywork'
 
@@ -127,6 +128,7 @@ export PATH="/usr/local/heroku/bin:$PATH"
 ### For Supercollider
 export PATH="/Applications/SuperCollider/SuperCollider.app/Contents/Resources/:$PATH"
 
+export PATH="/Users/jim/Library/Python/2.7/bin/:$PATH"
 
 [[ -s "$HOME/.bashrc_workstation" ]] && source "$HOME/.bashrc_workstation"
 
