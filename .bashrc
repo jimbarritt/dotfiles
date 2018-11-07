@@ -140,6 +140,13 @@ function winname {
   printf "\e]2;$1\a"
 }
 
+# GoLang setup
+
+export GOPATH="${HOME}/Code/golang"
+export GOROOT="$(brew --prefix go@1.8)/libexec"
+export PATH="$PATH:${GOPATH}/bin/:${GOROOT}/bin"
+export PATH="$PATH:/Users/jmdb/.local/bin" # Haskel seems to install here for some reason
+
 ## This allows anything that creates a .profile file to work, like rvm
 [[ -s "$HOME/.profile" ]] && source "$HOME/.profile"
 
