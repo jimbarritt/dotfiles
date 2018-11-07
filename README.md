@@ -1,11 +1,12 @@
 # New mac installation
 
-## General OS Appearance
+## General OS Configuration
 
 - Dark menues
 - Grey highlight
 - Control bar shows F1 etc
 - fn key shows extended bar
+- Change hostname (preferences -> sharing)
 
 ## Keyboard
 
@@ -100,6 +101,14 @@ Then need to check out [emax](git@github.com:ixcode/emax.git) and install it
 
 I have many customisations in here but the most important is to map the right command key to be the meta key 
 
+To get eaf (and show browsers in your emacs, https://www.emacswiki.org/emacs/EmacsApplicationFramework
+
+```
+pip install xlib
+brew install pyqt5
+pip install pymediainfo
+```
+
 ### Use Brew to upgrade emacs on the command line
 
 <<needs more work and thought>>
@@ -117,3 +126,27 @@ Here is some code
 
 
 
+## IDES
+
+- IntelliJ
+- Goland
+- Omnigraffle
+
+## Utilities
+
+```
+brew install maven
+```
+## Apps
+
+- System monitor (app store)
+- Box - website
+- Drivesync - website
+- Virtualbox (`brew cask install virtualbox`)
+- Docker
+- Python (`brew install python`)
+- Jupyter (`brew install jupyter`)
+- Vagrant (https://www.vagrantup.com/docs/installation/) (`brew cask install vagrant`, `brew cask install vagrant-manager`)
+- Visual studio code
+- Fish (`brew install fish`)
+- redpill matrix screensaver https://github.com/lpar/RedPill/downloads
