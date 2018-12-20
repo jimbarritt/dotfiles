@@ -17,6 +17,6 @@
                   [lein-immutant "0.14.1"]
                   [lein-exec "0.3.0"]
                   [lein-midje "3.1.1"]
-                  [cider/cider-nrepl "0.15.0-snapshot"]
+                  [cider/cider-nrepl "0.18.0"]
                   [lein-bikeshed "0.3.0"]
                   ]}}
