@@ -152,3 +152,4 @@ export PATH="$PATH:/Users/jmdb/.local/bin" # Haskel seems to install here for so
 
 alias node="node -e \"require('repl').start({ignoreUndefined: true})\""
 
+alias tree="tree --dirsfirst"
