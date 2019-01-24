@@ -14,7 +14,9 @@
 	st = status
 	br = branch
         serve = !git daemon --reuseaddr --verbose  --base-path=. --export-all ./.git
-        lol = git log --format="* %C(yellow) %h %Creset %<(25)%an %<(60)%s %cd %GK" --date=iso
+        
+        lol = log --format="* %C(yellow) %h %Creset %<(25)%an %<(60)%s %cd %GK" --date=iso
+        
 [push]
 	default = matching
 
