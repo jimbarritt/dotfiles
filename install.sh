@@ -24,6 +24,18 @@ then
     unlink ~/.lein/profiles.clj
 fi
 
+if [ -e ~/.zshrc ] 
+then
+    unlink ~/.zshrc
+fi
+
+if [ ! -e ~/.oh-my-zsh ]
+then
+    echo "You need to have OH-MY-ZSH installed to continue!"
+    exit 300
+fi
+
+
 #if [ -e ~/.emacs.d ] 
 #then
 #    unlink ~/.emacs.d
@@ -39,14 +51,17 @@ fi
 
 
 
+
 ln -sv ${CURRENT_DIR}/bin ~/bin
 ln -sv ${CURRENT_DIR}/img ~/img
 #ln -sv ${CURRENT_DIR}/.emacs.d ~/.emacs.d
 ln -sv ${CURRENT_DIR}/.lein/profiles.clj ~/.lein/profiles.clj
 
+cp zsh/ix.zsh-theme ~/.oh-my-zsh/themes
+
 for file in .*
 do
-    if [[ ${file} != ".git" && ${file} != "." && ${file} != ".." && ${file} != ".emacs.d" && ${file} != ".lein" ]]
+    if [[ ${file} != ".git" && ${file} != "." && ${file} != ".." && ${file} != ".emacs.d" && ${file} != ".lein" && ${file} != "zsh" ]]
     then	
 	ln -svf ${CURRENT_DIR}/${file} ~/${file}
     fi
