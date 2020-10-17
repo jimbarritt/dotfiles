@@ -1,5 +1,9 @@
 # New mac installation
 
+Install oh-my-zsh
+
+https://ohmyz.sh/#install
+
 ## General OS Configuration
 
 - Dark menues
