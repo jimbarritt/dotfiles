@@ -142,17 +142,19 @@ function winname {
 
 # GoLang setup
 
-export GOPATH="${HOME}/Code/golang"
-export GOROOT="$(brew --prefix go@1.8)/libexec"
-export PATH="$PATH:${GOPATH}/bin/:${GOROOT}/bin"
+#export GOPATH="${HOME}/Code/golang"
+#export GOROOT="$(brew --prefix go@1.8)/libexec"
+#export PATH="$PATH:${GOPATH}/bin/:${GOROOT}/bin"
 export PATH="$PATH:/Users/jmdb/.local/bin" # Haskel seems to install here for some reason
 export PATH="${PATH}:/Library/TeX/texbin"
 
 ## This allows anything that creates a .profile file to work, like rvm
 [[ -s "$HOME/.profile" ]] && source "$HOME/.profile"
 
-alias node="node -e \"require('repl').start({ignoreUndefined: true})\""
+# alias node="node -e \"require('repl').start({ignoreUndefined: true})\""
 
 alias tree="tree --dirsfirst"
 alias xec="./xec.sh"
 
+alias intellij="open -a \"intelliJ Idea\" ."
+alias dc="docker-compose"
