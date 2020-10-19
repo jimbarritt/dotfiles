@@ -9,7 +9,7 @@ then
     unlink ~/bin
 fi
 
-if [ -e "install.sh" ] 
+if [ -e ~/img ] 
 then
     unlink ~/img
 fi
