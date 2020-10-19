@@ -57,7 +57,7 @@ ln -sv ${CURRENT_DIR}/img ~/img
 #ln -sv ${CURRENT_DIR}/.emacs.d ~/.emacs.d
 ln -sv ${CURRENT_DIR}/.lein/profiles.clj ~/.lein/profiles.clj
 
-cp zsh/ix.zsh-theme ~/.oh-my-zsh/themes
+cp zsh-themes/ix.zsh-theme ~/.oh-my-zsh/themes
 
 for file in .*
 do
