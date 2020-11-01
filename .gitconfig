@@ -21,7 +21,7 @@
 	default = matching
 
 [core]
-        pager = $(brew --prefix git)/share/git-core/contrib/diff-highlight/diff-highlight | less
+        pager = $(brew --prefix git)/share/git-core/contrib/diff-highlight/diff-highlight
 	autocrlf = input
 [filter "lfs"]
 	clean = git-lfs clean %f
