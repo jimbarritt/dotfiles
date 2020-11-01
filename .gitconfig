@@ -30,3 +30,6 @@
 [credential]
 	helper = !aws codecommit credential-helper $@
 	UseHttpPath = true
+[pager]
+        branch = false
+	log = false
