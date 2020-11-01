@@ -35,7 +35,15 @@ then
     exit 300
 fi
 
+if [ ! -e ~/.config ]
+then
+    mkdir ~/.config
+fi
 
+if [ -e ~/.config/kitty ]
+then
+    mv ~/.config/kitty ~/.config/kitty-old
+fi
 #if [ -e ~/.emacs.d ] 
 #then
 #    unlink ~/.emacs.d
@@ -51,7 +59,7 @@ fi
 
 
 
-
+ln -sv ${CURRENT_DIR}/kitty ~/.config/kitty
 ln -sv ${CURRENT_DIR}/bin ~/bin
 ln -sv ${CURRENT_DIR}/img ~/img
 #ln -sv ${CURRENT_DIR}/.emacs.d ~/.emacs.d
