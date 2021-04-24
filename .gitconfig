@@ -33,3 +33,5 @@
 [pager]
         branch = false
 	log = false
+[init]
+	templateDir = /Users/jmdb/.git-template
