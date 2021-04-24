@@ -64,7 +64,7 @@ ln -sv ${CURRENT_DIR}/bin ~/bin
 ln -sv ${CURRENT_DIR}/img ~/img
 #ln -sv ${CURRENT_DIR}/.emacs.d ~/.emacs.d
 ln -sv ${CURRENT_DIR}/.lein/profiles.clj ~/.lein/profiles.clj
-
+ln -sv ${CURRENT_DIR}/git-template ~/.git-template
 cp zsh-themes/ix.zsh-theme ~/.oh-my-zsh/themes
 
 for file in .*
