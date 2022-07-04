@@ -4,6 +4,19 @@ Install oh-my-zsh
 
 https://ohmyz.sh/#install
 
+# Step By Step
+
+- 1Password (from app store)
+- Karabiner (for keyboard shortcuts) `https://ke-complex-modifications.pqrs.org/#modifier-keys`
+- Brave
+- Homebrew (see below)
+
+```
+brew install cowsay
+brew install kitty
+
+```
+
 ## General OS Configuration
 
 - Dark menues
