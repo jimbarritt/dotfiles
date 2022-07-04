@@ -7,13 +7,21 @@ https://ohmyz.sh/#install
 # Step By Step
 
 - 1Password (from app store)
-- Karabiner (for keyboard shortcuts) `https://ke-complex-modifications.pqrs.org/#modifier-keys`
+- Connect accounts
+- Developer Tools
+- Upgrade systems
+- Karabiner (for keyboard shortcuts) `https://ke-complex-modifications.pqrs.org/#modifier-keys` for return as control
 - Brave
 - Homebrew (see below)
 
 ```
 brew install cowsay
 brew install kitty
+
+# Install oh-my-zsh
+# Airdrop ssh files
+
+git clone git@github.com:jimbarritt/dot-files.git
 
 ```
 
