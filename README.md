@@ -11,8 +11,9 @@ https://ohmyz.sh/#install
 - Developer Tools
 - Upgrade systems
 - Karabiner (for keyboard shortcuts) `https://ke-complex-modifications.pqrs.org/#modifier-keys` for return as control
-- Brave
 - Homebrew (see below)
+- SDKMAN https://sdkman.io/install
+- CLojure
 
 ```
 brew install cowsay
