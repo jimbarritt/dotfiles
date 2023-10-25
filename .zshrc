@@ -48,12 +48,13 @@ plugins=(
     zsh-autosuggestions
 )
 
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=118'
-
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
+
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=118'
+export ZSH_HIGHLIGHT_STYLES[comment]='fg=244'
 
 
 # clicolors
@@ -118,6 +119,8 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
     add-zsh-hook -Uz chpwd (){ print -Pn "\e]2;%m:%2~\a" }
 
 fi
+
+
 
 ENABLE_CORRECTION="true"
 
