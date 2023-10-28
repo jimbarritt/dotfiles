@@ -89,7 +89,8 @@ alias site='docker exec -it $(docker ps -qf ancestor=site-server) site'
 alias sitesh='docker exec -it $(docker ps -qf ancestor=site-server) bash'
 
 alias dc="docker-compose"
-alias ls="ls -lartG"
+alias ll="ls -larhtG"
+alias ls="ls -G"
 
 if [ -n "$INSIDE_EMACS" ]; then
     if [[ "$INSIDE_EMACS" = nil ]]; then
