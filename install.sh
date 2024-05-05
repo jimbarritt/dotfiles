@@ -75,6 +75,9 @@ do
     fi
 done
 
+mkdir -p ~/.config/karabiner
+cp karabiner.json ~/.config/karabiner
+
 echo "# Here is where you put local customisations" > ~/.bashrc_workstation
 
 echo "source ~/.bashrc"
