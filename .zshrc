@@ -10,34 +10,11 @@ if [ -f "$HOME/.config/.open_api_key" ]; then
   source "$HOME/.config/.open_api_key"
 fi
 
-export SITE_HOME=$HOME/Code/github/juxt-site/site
-export PATH=$SITE_HOME/bin:$SITE_HOME/server/bin:$PATH
-# Source site zshrc lazily: only source it when we `cd` into the site workspace or explicitly request it.
-SITE_ZSHRC="$SITE_HOME/etc/zsh/zshrc"
-if [ -f "$SITE_ZSHRC" ]; then
-  _site_zshrc_sourced=0
-  maybe_source_site_zshrc() {
-    if [ "$_site_zshrc_sourced" -eq 0 ] 2>/dev/null && [[ "$PWD" == "$SITE_HOME"* ]]; then
-      source "$SITE_ZSHRC"
-      _site_zshrc_sourced=1
-    fi
-  }
-  autoload -Uz add-zsh-hook
-  add-zsh-hook chpwd maybe_source_site_zshrc
-  # If we start inside the site, source it immediately
-  if [[ "$PWD" == "$SITE_HOME"* ]]; then
-    maybe_source_site_zshrc
-  fi
-  # provide a manual command to source it on demand
-  source-site-zshrc() { [ -f "$SITE_ZSHRC" ] && source "$SITE_ZSHRC" && _site_zshrc_sourced=1; }
-fi
-
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 
-ZSH_THEME="green-tinted"
 ZSH_DISABLE_COMPFIX="true"
 VI_MODE_SET_CURSOR=true
 VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
@@ -76,12 +53,28 @@ function clicolors() {
     c=''
 }
 
+ZSH_THEME="green-tinted"
+ZSH_DISABLE_COMPFIX=true
+OMZ_ASYNC_THRESHOLD=0
+# Disable async prompt updates
+DISABLE_ASYNC_PROMPT=true
 
+OMZ_ASYNC_DISABLE=true
+VI_MODE_SET_CURSOR=true
+VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
 
 # Standard plugin installation is handled by oh-my-zsh; source it now.
 source $ZSH/oh-my-zsh.sh
 
+unset -f _omz_async_request
+git_prompt_info() {
+    ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
+    ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
+    echo "$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$ZSH_THEME_GIT_PROMPT_SUFFIX"
+}
+
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=118'
+
 # Ensure ZSH_HIGHLIGHT_STYLES is an associative array before assigning
 if ! typeset -p ZSH_HIGHLIGHT_STYLES >/dev/null 2>&1; then
   typeset -A ZSH_HIGHLIGHT_STYLES
@@ -173,14 +166,6 @@ vterm_printf() {
 }
 
 
-if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
-    alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
-    autoload -U add-zsh-hook
-    add-zsh-hook -Uz chpwd (){ print -Pn "\e]2;%m:%2~\a" }
-
-fi
-
-
 
 ENABLE_CORRECTION="true"
 
@@ -260,10 +245,6 @@ zsh-plugins-setup() {
 # Provide a convenient alias to run the helpers quickly
 alias zpsetup='zsh-plugins-setup'
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
 # pnpm
 export PNPM_HOME="/Users/jmdb/Library/pnpm"
 case ":$PATH:" in
@@ -278,6 +259,7 @@ ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}]"
 ZSH_THEME_GIT_PROMPT_DIRTY=""
 ZSH_THEME_GIT_PROMPT_CLEAN=""
   
+
 PROMPT='%{$fg[green]%}%~ %{$fg[cyan]%}$(git_prompt_info)%{$reset_color%}
 $ '
 
