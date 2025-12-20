@@ -5,19 +5,62 @@ autoload -Uz compinit
 compinit
 
 
-source ~/.config/.open_api_key
+# Load local OpenAI key if present
+if [ -f "$HOME/.config/.open_api_key" ]; then
+  source "$HOME/.config/.open_api_key"
+fi
 
 export SITE_HOME=$HOME/Code/github/juxt-site/site
 export PATH=$SITE_HOME/bin:$SITE_HOME/server/bin:$PATH
-source $SITE_HOME/etc/zsh/zshrc
+# Source site zshrc lazily: only source it when we `cd` into the site workspace or explicitly request it.
+SITE_ZSHRC="$SITE_HOME/etc/zsh/zshrc"
+if [ -f "$SITE_ZSHRC" ]; then
+  _site_zshrc_sourced=0
+  maybe_source_site_zshrc() {
+    if [ "$_site_zshrc_sourced" -eq 0 ] 2>/dev/null && [[ "$PWD" == "$SITE_HOME"* ]]; then
+      source "$SITE_ZSHRC"
+      _site_zshrc_sourced=1
+    fi
+  }
+  autoload -Uz add-zsh-hook
+  add-zsh-hook chpwd maybe_source_site_zshrc
+  # If we start inside the site, source it immediately
+  if [[ "$PWD" == "$SITE_HOME"* ]]; then
+    maybe_source_site_zshrc
+  fi
+  # provide a manual command to source it on demand
+  source-site-zshrc() { [ -f "$SITE_ZSHRC" ] && source "$SITE_ZSHRC" && _site_zshrc_sourced=1; }
+fi
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 
-ZSH_THEME="ix"
+ZSH_THEME="green-tinted"
 ZSH_DISABLE_COMPFIX="true"
+VI_MODE_SET_CURSOR=true
+VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
+# Path to your oh-my-zsh installation. Export early so we can probe plugin dirs.
+export ZSH="$HOME/.oh-my-zsh"
+
+# Which plugins would you like to load?
+# We'll only enable plugins that actually exist to avoid oh-my-zsh warnings.
+# Desired plugins list:
+desired_plugins=(git zsh-syntax-highlighting zsh-autosuggestions, vi-mode)
+
+# Build plugins array from available plugin directories
+plugins=()
+for p in "${desired_plugins[@]}"; do
+  if [ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/$p" ] || [ -d "$ZSH/plugins/$p" ]; then
+    plugins+=($p)
+  fi
+done
+
+# Enable simple completion caching to speed up completion
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
+mkdir -p "$HOME/.zsh/cache"
 
 # colors, a lot of colors!
 function clicolors() {
@@ -35,28 +78,44 @@ function clicolors() {
 
 
 
-# Which plugins would you like to load?
-# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-# git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-# git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-plugins=(
-    git
-    zsh-syntax-highlighting
-    zsh-autosuggestions
-)
-
-
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+# Standard plugin installation is handled by oh-my-zsh; source it now.
 source $ZSH/oh-my-zsh.sh
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=118'
-export ZSH_HIGHLIGHT_STYLES[comment]='fg=244'
+# Ensure ZSH_HIGHLIGHT_STYLES is an associative array before assigning
+if ! typeset -p ZSH_HIGHLIGHT_STYLES >/dev/null 2>&1; then
+  typeset -A ZSH_HIGHLIGHT_STYLES
+fi
+ZSH_HIGHLIGHT_STYLES[comment]='fg=244'
 
+# Vi-mode cursor configuration
+# Blinking block in insert mode
+VI_MODE_CURSOR_INSERT=1
 
+# Steady block in normal mode  
+VI_MODE_CURSOR_NORMAL=2
+
+# Or use these custom functions for more control
+function zle-keymap-select {
+  if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
+    # Normal mode - steady block
+    echo -ne '\e[2 q'
+  elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] || [[ $1 = 'beam' ]]; then
+    # Insert mode - blinking block
+    echo -ne '\e[1 q'
+  fi
+}
+zle -N zle-keymap-select
+
+# Start with blinking block (insert mode)
+echo -ne '\e[1 q'
+
+# Also reset cursor on new prompt
+function zle-line-init {
+  echo -ne '\e[1 q'
+}
+zle -N zle-line-init
+bindkey -M viins '^G' vi-cmd-mode
 # clicolors
 
 # User configuration
@@ -153,6 +212,78 @@ fi
 
 
 
+# Helpers: update and compile zsh plugins for faster startup
+ZSH_PLUGINS_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins"
+_zsh_plugins_list=(zsh-syntax-highlighting zsh-autosuggestions)
+
+update-zsh-plugins() {
+  echo "Updating zsh plugins in: $ZSH_PLUGINS_DIR"
+  for p in "${_zsh_plugins_list[@]}"; do
+    if [ -d "$ZSH_PLUGINS_DIR/$p/.git" ]; then
+      printf "\nUpdating %s...\n" "$p"
+      git -C "$ZSH_PLUGINS_DIR/$p" pull --ff-only --recurse-submodules || git -C "$ZSH_PLUGINS_DIR/$p" fetch --all
+    elif [ -d "$ZSH_PLUGINS_DIR/$p" ]; then
+      printf "%s exists but is not a git repo (skipping)\n" "$p"
+    else
+      printf "%s is missing\n" "$p"
+    fi
+done
+}
+
+compile-zsh-plugins() {
+  if ! command -v zcompile >/dev/null 2>&1; then
+    echo "zcompile not available; skipping compilation"
+    return 0
+  fi
+  echo "Compiling plugin scripts to .zwc where possible..."
+  for p in "${_zsh_plugins_list[@]}"; do
+    plugdir="$ZSH_PLUGINS_DIR/$p"
+    if [ -d "$plugdir" ]; then
+      # compile any .zsh/.sh/plugin script files we find
+      for f in "$plugdir"/*.zsh "$plugdir"/*.sh "$plugdir"/*.plugin.zsh; do
+        [ -f "$f" ] || continue
+        printf "Compiling %s\n" "$f"
+        zcompile -q "$f" 2>/dev/null || true
+      done
+    fi
+done
+}
+
+export HOMEBREW_NO_ENV_HINTS=1
+
+# Combined helper
+zsh-plugins-setup() {
+  update-zsh-plugins
+  compile-zsh-plugins
+}
+
+# Provide a convenient alias to run the helpers quickly
+alias zpsetup='zsh-plugins-setup'
+
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# pnpm
+export PNPM_HOME="/Users/jmdb/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# Git prompt configuration - [branch] with bright branch name
+ZSH_THEME_GIT_PROMPT_PREFIX="[%{$fg_bold[cyan]%}"
+ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}]"
+ZSH_THEME_GIT_PROMPT_DIRTY=""
+ZSH_THEME_GIT_PROMPT_CLEAN=""
+  
+PROMPT='%{$fg[green]%}%~ %{$fg[cyan]%}$(git_prompt_info)%{$reset_color%}
+$ '
+
+export SDKMAN_DIR=$(brew --prefix sdkman-cli)/libexec
+[[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+
+export PATH="$HOME/.local/bin:$PATH"
+
+alias kotlin-app='gradle init --type kotlin-application --dsl kotlin'
