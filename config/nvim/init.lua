@@ -1,0 +1,8 @@
+-- Bootstrap configuration
+require("config.options")
+require("config.project")
+require("config.lazy")
+require("config.keymaps")
+require("config.autocmds")
+
+print("Jim's neovim is configured, running under MacOS")
