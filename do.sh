@@ -55,11 +55,20 @@ remove_symlink() {
   fi
 }
 
+move_file_to_backup() {
+  if [[ "$DRY_RUN" = true ]]; then
+    printf "[dry-run]: mv '%s' '%s-backed-up'\n" "$link" "$link"
+  else
+    printf "✓ Backed up link: %s\n" "$link"
+  fi
+}
+
 # TODO: implement this and an undo!
 backup_existing_file() {
-  local link="$2"
-  if [[ -e "$file" && ! -L "$file" ]]; then
+  local link="$1"
+  if [[ -e "$link" && ! -L "$link" ]]; then
     echo "A real file exists already @ [$link]. Backing it up for later"
+    move_file_to_backup $link
   fi
 }
 
@@ -96,6 +105,7 @@ link_all() {
   link_home zshrc
   link_home gitconfig
   link_config nvim
+  link_config kitty
 }
 
 
