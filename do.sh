@@ -36,30 +36,74 @@ create_symlink() {
   local target="$1"
   local link="$2"
   
-  if [ "$DRY_RUN" = true ]; then
-    printf "Would execute: ln -sf '%s' '%s'\n" "$target" "$link"
+  if [[ "$DRY_RUN" = true ]]; then
+    printf "[dry-run]: ln -sf '%s' '%s'\n" "$target" "$link"
   else
     ln -sf "$target" "$link"
     printf "✓ Created: %s -> %s\n" "$link" "$target"
   fi
 }
 
+remove_symlink() {
+  local link="$1"
+  
+  if [[ "$DRY_RUN" = true ]]; then
+    printf "[dry-run]: unlink '%s'\n" "$link"
+  else
+    unlink "$link"
+    printf "✓ Removed link: %s\n" "$link"
+  fi
+}
+
+# TODO: implement this and an undo!
+backup_existing_file() {
+  local link="$2"
+  if [[ -e "$file" && ! -L "$file" ]]; then
+    echo "A real file exists already @ [$link]. Backing it up for later"
+  fi
+}
 
 link_home() {
   local src=$1
 
   target="${DOTFILES_DIR}/home/${src}"
   link="${HOME}/.${src}"
+
+  backup_existing_file $link
   create_symlink $target $link 
   
 }
 
-link_all() {
-  echo "Linking dotfiles into your home dir @ [$HOME]"
+unlink_home() {
+  local src=$1
+
+  link="${HOME}/.${src}"
+  remove_symlink $link
 }
 
+link_config() {
+  local src=$1
+
+  target="${DOTFILES_DIR}/config/${src}"
+  link="${HOME}/.config/${src}"
+
+  backup_existing_file $link
+  create_symlink $target $link
+}
+
+link_all() {
+  echo "Linking dotfiles into your home dir @ [$HOME]"
+  link_home zshrc
+  link_home gitconfig
+  link_config nvim
+}
+
+
+# TODO: restore backups
 unlink_all() {
   echo "Putting everything back the way it was"
+  unlink_home zshrc
+  unlink_home gitconfig
 }
 
 main() {
