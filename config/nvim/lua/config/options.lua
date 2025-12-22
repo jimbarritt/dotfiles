@@ -36,6 +36,13 @@ vim.opt.smartcase = true
 vim.opt.incsearch = true
 vim.opt.hlsearch = true
 
+-- Spaces and tabs
+vim.opt.tabstop = 2        -- Tab displays as 2 spaces
+vim.opt.shiftwidth = 2     -- Indent with 2 spaces
+vim.opt.softtabstop = 2    -- Tab key inserts 2 spaces
+vim.opt.expandtab = true   -- Use spaces, not tabs
+vim.opt.smartindent = true -- Smart auto-indenting
+
 -- Status line
 vim.opt.laststatus = 2
 vim.opt.showmode = false  -- Disable mode in command line
