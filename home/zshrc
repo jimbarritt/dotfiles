@@ -292,7 +292,9 @@ if [[ "$HOMEBREW_INSTALLED" = true && "$SDKMAN_INSTALLED" = true ]]; then
   [[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
 else
   echo "Could not find one either hombrew ($HOMEBREW_INSTALLED) or sdkman ($SDKMAN_INSTALLED) - check your brew setup."
-  echo "Run: brew install sdkman-cli"
+  echo "Run:"
+  echo "brew tap sdkman/tap"
+  echo "brew install sdkman-cli"
 fi
 
 export PATH="$HOME/.local/bin:$PATH"
