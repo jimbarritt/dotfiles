@@ -3,7 +3,8 @@ return {
   'nvim-treesitter/nvim-treesitter',
   build = ':TSUpdate',
   config = function()
-    require('nvim-treesitter.configs').setup {
+    local configs = require('nvim-treesitter.configs')
+    configs.setup {
       -- Install parsers for these languages
       ensure_installed = {
         'kotlin',
