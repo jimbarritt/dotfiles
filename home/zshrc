@@ -145,6 +145,7 @@ alias sitesh='docker exec -it $(docker ps -qf ancestor=site-server) bash'
 alias dc="docker-compose"
 alias ll="ls -larhtG"
 alias ls="ls -G"
+alias li="ls -la | grep ^l | cut -c 53-"
 
 if [ -n "$INSIDE_EMACS" ]; then
     if [[ "$INSIDE_EMACS" = nil ]]; then
