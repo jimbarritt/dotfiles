@@ -1,6 +1,27 @@
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export TERM=xterm-256color
 
+check_pre_requisites() {
+  # Check for Homebrew
+  if command -v brew &> /dev/null; then
+    HOMEBREW_INSTALLED=true
+  else
+    HOMEBREW_INSTALLED=false
+  fi
+
+  if [[ $HOMEBREW_INSTALLED ]]; then
+    SDKMAN_PREFIX=$(brew --prefix sdkman-cli 2>/dev/null)
+  fi
+
+  # Check for SDKMAN
+  if [[ -n "$SDKMAN_PREFIX" ]]; then
+    SDKMAN_INSTALLED=true
+  else
+    SDKMAN_INSTALLED=false
+  fi
+}
+
+check_pre_requisites
 
 # Load local OpenAI key if present
 if [ -f "$HOME/.config/.open_api_key" ]; then
@@ -266,8 +287,13 @@ ZSH_THEME_GIT_PROMPT_CLEAN=""
 PROMPT='%{$fg[green]%}%~ %{$fg[cyan]%}$(git_prompt_info)%{$reset_color%}
 $ '
 
-export SDKMAN_DIR=$(brew --prefix sdkman-cli)/libexec
-[[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+if [[ "$HOMEBREW_INSTALLED" = true && "$SDKMAN_INSTALLED" = true ]]; then
+  export SDKMAN_DIR="$SDKMAN_PREFIX/libexec"
+  [[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+else
+  echo "Could not find one either hombrew ($HOMEBREW_INSTALLED) or sdkman ($SDKMAN_INSTALLED) - check your brew setup."
+  echo "Run: brew install sdkman-cli"
+fi
 
 export PATH="$HOME/.local/bin:$PATH"
 
