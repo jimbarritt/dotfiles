@@ -31,3 +31,12 @@ require("nvim-tree").setup({
   sync_root_with_cwd = false,  -- Changed to false
   respect_buf_cwd = false,     -- Changed to false
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {"java", "kotlin"},
+  callback = function()
+    vim.bo.shiftwidth = 4
+    vim.bo.tabstop = 4
+    vim.bo.softtabstop = 4
+  end,
+})

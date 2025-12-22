@@ -70,37 +70,17 @@ return {
       on_attach = on_attach,
     })
 
-    -- Kotlin
+    -- Kotlin (minimal config)
     vim.lsp.config('kotlin_language_server', {
       capabilities = capabilities,
       on_attach = on_attach,
-      settings = {
-        kotlin = {
-          compiler = {
-            jvm = {
-              target = "21"
-            }
-          },
-          externalSources = {
-            useKlsScheme = true,
-            autoConvertToKotlin = true,
-          },
-          indexing = {
-            enabled = true,
-          },
-          linting = {
-            debounceTime = 250,
-          },
-          completion = {
-            snippets = {
-              enabled = true,
-            },
-          },
-        },
-      },
-      root_dir = vim.fs.root(0, {'build.gradle.kts', 'build.gradle', 'settings.gradle.kts', 'settings.gradle', '.git'}),
     })
 
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "kotlin",
+      callback = function() vim.lsp.enable('kotlin_language_server') end,
+    })
+       
     -- Enable LSP servers on appropriate file types
     vim.api.nvim_create_autocmd("FileType", {
       pattern = {"typescript", "javascript", "typescriptreact", "javascriptreact"},
