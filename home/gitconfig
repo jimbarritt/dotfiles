@@ -1,7 +1,7 @@
 [user]
 	name = Jim Barritt
-	email = jimb@thoughtworks.com
-        signingkey = 42A0F567
+	email = jim.barritt@gmail.com
+  signingkey = 42A0F567
         
 [color]
 	diff = auto
@@ -10,28 +10,30 @@
 	interactive = auto
 
 [alias]
-        sm = submodule
+  sm = submodule
 	st = status
 	br = branch
-        serve = !git daemon --reuseaddr --verbose  --base-path=. --export-all ./.git
-        
-        lol = log --format='* %C(yellow) %h %Creset %<(22)%an %<(12)%cd %<(80,trunc)%s %GK' --date=format:'%y-%m-%d %H:%M' -15
+  serve = !git daemon --reuseaddr --verbose  --base-path=. --export-all ./.git
+      
+  lol = log --format='* %C(yellow) %h %Creset %<(22)%an %<(12)%cd %<(80,trunc)%s %GK' --date=format:'%y-%m-%d %H:%M' -15
         
 [push]
 	default = matching
 
 [core]
-        pager = $(brew --prefix git)/share/git-core/contrib/diff-highlight/diff-highlight
+  pager = $(brew --prefix git)/share/git-core/contrib/diff-highlight/diff-highlight
 	autocrlf = input
+
 [filter "lfs"]
 	clean = git-lfs clean %f
 	smudge = git-lfs smudge %f
 	required = true
+
 [credential]
 	helper = !aws codecommit credential-helper $@
 	UseHttpPath = true
+
 [pager]
-        branch = false
+  branch = false
 	log = false
-[init]
-	templateDir = /Users/jmdb/.git-template
+
