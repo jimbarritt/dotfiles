@@ -22,7 +22,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # Which plugins would you like to load?
 # We'll only enable plugins that actually exist to avoid oh-my-zsh warnings.
 # Desired plugins list:
-desired_plugins=(git zsh-syntax-highlighting zsh-autosuggestions vi-mode)
+desired_plugins=(git zsh-syntax-highlighting zsh-autosuggestions zsh-autopair vi-mode)
 
 # Build plugins array from available plugin directories
 plugins=()
