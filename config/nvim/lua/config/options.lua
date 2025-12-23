@@ -20,6 +20,8 @@ vim.opt.number = true
 -- vim.opt.numberwidth = 6
 vim.opt.relativenumber = true
 vim.opt.mouse = 'a'
+-- Always show sign column (prevents layout shift)
+vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
 vim.opt.linebreak = true
 

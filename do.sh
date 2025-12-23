@@ -118,8 +118,21 @@ unlink_all() {
   unlink_home gitconfig
 }
 
+install_zsh_plugins() {
+  local plugins_dir="${HOME}/.oh-my-zsh/custom/plugins"
+  
+  if [[ ! -d "${plugins_dir}/zsh-autopair" ]]; then
+    echo "Installing zsh-autopair plugin..."
+    git clone https://github.com/hlissner/zsh-autopair "${plugins_dir}/zsh-autopair"
+  else
+    echo "✓ zsh-autopair already installed"
+  fi
+}
+
 main() {
   slurp_arguments "$@"
+
+  install_zsh_plugins
 
   case $COMMAND in
     link)
