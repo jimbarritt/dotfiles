@@ -12,6 +12,10 @@ vim.keymap.set('n', '<C-b>', '<C-b>zz', { noremap = true, desc = 'Page up and ce
 vim.keymap.set('n', '<C-d>', '<C-d>zz', { noremap = true, desc = 'Half page down and center' })
 vim.keymap.set('n', '<C-u>', '<C-u>zz', { noremap = true, desc = 'Half page up and center' })
 
+-- Visual mode: indent and reselect
+vim.keymap.set('v', '<', '<gv', { noremap = true, desc = "Indent left and reselect" })
+vim.keymap.set('v', '>', '>gv', { noremap = true, desc = "Indent right and reselect" })
+
 -- Telescope keybindings
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Find files' })
@@ -21,18 +25,20 @@ vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Find buffers' })
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Find help' })
 vim.keymap.set('n', '<leader>fo', builtin.oldfiles, { desc = 'Find old files' })
 
--- Ctrl+G to exit insert mode (like Emacs cancel)
+-- Ctrl+G to exit mode (like Emacs cancel)
 vim.keymap.set('i', '<C-g>', '<Esc>', { noremap = true, silent = true })
+vim.keymap.set('v', '<C-g>', '<Esc>', { noremap = true, silent = true })
+vim.keymap.set('c', '<C-g>', '<C-c>', { noremap = true })
 
--- Add to your init.lua
 -- Insert blank line below (without entering insert mode)
 vim.keymap.set('n', '<Leader>o', 'o<Esc>', { noremap = true, silent = true })
 
 -- Insert blank line above (without entering insert mode)
 vim.keymap.set('n', '<Leader>O', 'O<Esc>', { noremap = true, silent = true })
 
--- Ctrl+G to exit command mode (like Emacs cancel)
-vim.keymap.set('c', '<C-g>', '<C-c>', { noremap = true })
+-- Clear search highlights with double Esc
+vim.keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR>', { noremap = true, silent = true, desc = "Clear search highlights" })
+vim.keymap.set('n', '<leader>/', ':nohlsearch<CR>', { noremap = true, silent = true, desc = "Clear search highlights" })
 
 -- Toggle nvim-tree
 vim.keymap.set('n', '<leader>n', ':NvimTreeToggle<CR>', { noremap = true, silent = true, desc = "Toggle file tree" })

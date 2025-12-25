@@ -16,13 +16,14 @@ return {
     config = function()
       require("mason-lspconfig").setup({
         ensure_installed = {
-          "ts_ls",           -- TypeScript/JavaScript
-          "html",            -- HTML
-          "rust_analyzer",   -- Rust
-          "clangd",          -- C/C++
-          "pyright",         -- Python
-          "jdtls",           -- Java
-          "kotlin_language_server", -- Kotlin
+          "ts_ls",                   -- TypeScript/JavaScript
+          "html",                    -- HTML
+          "rust_analyzer",           -- Rust
+          "clangd",                  -- C/C++
+          "pyright",                 -- Python
+          "jdtls",                   -- Java
+          "kotlin_language_server",  -- Kotlin
+          "bashls",                  -- Bash/Zsh 
         },
         automatic_installation = true,
       })
