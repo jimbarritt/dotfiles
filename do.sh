@@ -1,19 +1,19 @@
 #!/bin/sh
 
-DRY_RUN=false
-COMMAND=link
+DRY_RUN="false"
+CMD_TO_RUN="link"
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(unset CDPATH; cd -- "$(dirname -- "$0")" && pwd)"
 
 slurp_arguments() {
-  while [[ $# -gt 0 ]]; do
+  while [ $# -gt 0 ]; do
     case $1 in
       -d|--dry-run)
         DRY_RUN=true
         shift
         ;;
       link|unlink)
-	COMMAND=$1
+	CMD_TO_RUN=$1
 	shift
 	;;
       -h|--help)
@@ -33,10 +33,10 @@ slurp_arguments() {
 }
 
 create_symlink() {
-  local target="$1"
-  local link="$2"
+  target="$1"
+  link="$2"
   
-  if [[ "$DRY_RUN" = true ]]; then
+  if [ "$DRY_RUN" = "true" ]; then
     printf "[dry-run]: ln -sf '%s' '%s'\n" "$target" "$link"
   else
     ln -sf "$target" "$link"
@@ -45,9 +45,9 @@ create_symlink() {
 }
 
 remove_symlink() {
-  local link="$1"
+  link="$1"
   
-  if [[ "$DRY_RUN" = true ]]; then
+  if [ "$DRY_RUN" = "true" ]; then
     printf "[dry-run]: unlink '%s'\n" "$link"
   else
     unlink "$link"
@@ -56,48 +56,49 @@ remove_symlink() {
 }
 
 move_file_to_backup() {
-  if [[ "$DRY_RUN" = true ]]; then
-    printf "[dry-run]: mv '%s' '%s-backed-up'\n" "$link" "$link"
+  _link="$1"
+  if [ "$DRY_RUN" = "true" ]; then
+    printf "[dry-run]: mv '%s' '%s-backed-up'\n" "$_link" "$_link"
   else
-    printf "✓ Backed up link: %s\n" "$link"
+    printf "✓ Backed up link: %s\n" "$_link"
   fi
 }
 
 # TODO: implement this and an undo!
 backup_existing_file() {
-  local link="$1"
-  if [[ -e "$link" && ! -L "$link" ]]; then
-    echo "A real file exists already @ [$link]. Backing it up for later"
-    move_file_to_backup $link
+  _link="$1"
+  if [ -e "$_link" ] && [ ! -L "$_link" ]; then
+    echo "A real file exists already @ [$_link]. Backing it up for later"
+    move_file_to_backup "$_link"
   fi
 }
 
 link_home() {
-  local src=$1
+  _src="$1"
 
-  target="${DOTFILES_DIR}/home/${src}"
-  link="${HOME}/.${src}"
+  target="${DOTFILES_DIR}/home/${_src}"
+  _link="${HOME}/.${_src}"
 
-  backup_existing_file $link
-  create_symlink $target $link 
+  backup_existing_file "$_link"
+  create_symlink "$_target" "$_link"
   
 }
 
 unlink_home() {
-  local src=$1
+  _src="$1"
 
-  link="${HOME}/.${src}"
-  remove_symlink $link
+  _link="${HOME}/.${_src}"
+  remove_symlink "$_link"
 }
 
 link_config() {
-  local src=$1
+  _src="$1"
 
-  target="${DOTFILES_DIR}/config/${src}"
-  link="${HOME}/.config/${src}"
+  _target="${DOTFILES_DIR}/config/${_src}"
+  _link="${HOME}/.config/${_src}"
 
-  backup_existing_file $link
-  create_symlink $target $link
+  backup_existing_file "$_link"
+  create_symlink "$_target" "$_link"
 }
 
 link_all() {
@@ -106,6 +107,7 @@ link_all() {
   link_home gitconfig
   link_config nvim
   link_config kitty
+  link_config mise
 
   create_symlink "${DOTFILES_DIR}/home/oh-my-zsh/green-tinted.zsh-theme" "${HOME}/.oh-my-zsh/custom/themes/green-tinted.zsh-theme"
 }
@@ -119,11 +121,11 @@ unlink_all() {
 }
 
 install_zsh_plugins() {
-  local plugins_dir="${HOME}/.oh-my-zsh/custom/plugins"
+  _plugins_dir="${HOME}/.oh-my-zsh/custom/plugins"
   
-  if [[ ! -d "${plugins_dir}/zsh-autopair" ]]; then
+  if [ ! -d "${_plugins_dir}/zsh-autopair" ]; then
     echo "Installing zsh-autopair plugin..."
-    git clone https://github.com/hlissner/zsh-autopair "${plugins_dir}/zsh-autopair"
+    git clone https://github.com/hlissner/zsh-autopair "${_plugins_dir}/zsh-autopair"
   else
     echo "✓ zsh-autopair already installed"
   fi
@@ -134,7 +136,7 @@ main() {
 
   install_zsh_plugins
 
-  case $COMMAND in
+  case $CMD_TO_RUN in
     link)
       link_all
       ;;
@@ -142,7 +144,7 @@ main() {
       unlink_all
       ;;
     *)
-      echo "Invalid command [$command] don't know what to do. Panic!"
+      echo "Invalid command [$CMD_TO_RUN] don't know what to do. Panic!"
       exit 1
       ;;
   esac

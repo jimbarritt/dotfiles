@@ -76,6 +76,12 @@ return {
       on_attach = on_attach,
     })
 
+    -- Bash / Zsh
+    vim.lsp.config('bashls', {
+      capabilities = capabilities,
+      on_attach = on_attach,
+    })
+
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "kotlin",
       callback = function() vim.lsp.enable('kotlin_language_server') end,
