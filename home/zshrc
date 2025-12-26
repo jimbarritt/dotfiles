@@ -23,11 +23,13 @@ typeset -U path fpath
 # Which plugins would you like to load?
 # We'll only enable plugins that actually exist to avoid oh-my-zsh warnings.
 # Desired plugins list:
-desired_plugins=(git 
-                 zsh-syntax-highlighting
-                 zsh-autosuggestions
-                 zsh-autopair
-                 vi-mode)
+desired_plugins=(
+  git 
+  zsh-syntax-highlighting
+  zsh-autosuggestions
+  vi-mode
+  zsh-autopair
+)
 
 # Build plugins array from available plugin directories
 plugins=()
