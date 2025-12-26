@@ -12,6 +12,7 @@ fi
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 
 ZSH_DISABLE_COMPFIX="true"
+MODE_INDICATOR="%B%F{red}<N>%f%b"
 VI_MODE_SET_CURSOR=true
 VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
 # Path to your oh-my-zsh installation. Export early so we can probe plugin dirs.
