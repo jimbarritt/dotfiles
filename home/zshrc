@@ -71,7 +71,6 @@ VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
 # Standard plugin installation is handled by oh-my-zsh; source it now.
 source $ZSH/oh-my-zsh.sh
 
-
 autoload -Uz compinit
 compinit
 
@@ -83,6 +82,9 @@ autoload -Uz bracketed-paste-magic
 zle -N bracketed-paste bracketed-paste-magic
 
 unset -f _omz_async_request
+
+# Ensure RPROMPT is set
+RPROMPT='$(vi_mode_prompt_info)'
 
 git_prompt_info() {
     ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
@@ -274,9 +276,33 @@ ZSH_THEME_GIT_PROMPT_CLEAN=""
 PROMPT='%{$fg[green]%}%~ %{$fg[cyan]%}$(git_prompt_info)%{$reset_color%}
 $ '
 
+# Add the vi-mode indicator on the right
+RPROMPT='$(vi_mode_prompt_info)'
+
 export PATH="$HOME/.local/bin:$PATH"
 
 # Mise (version manager)
 eval "$(mise activate zsh)"
 
 alias kotlin-app='gradle init --type kotlin-application --dsl kotlin'
+
+# After everything else loads, override the hook
+function zle-keymap-select {
+  VI_KEYMAP=$KEYMAP
+  
+  # Keep cursor behavior
+  if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
+    echo -ne '\e[2 q'
+  elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] || [[ $1 = 'beam' ]]; then
+    echo -ne '\e[1 q'
+  fi
+  
+  zle reset-prompt
+}
+zle -N zle-keymap-select
+
+function zle-line-init {
+  VI_KEYMAP=main
+  zle reset-prompt
+}
+zle -N zle-line-init
