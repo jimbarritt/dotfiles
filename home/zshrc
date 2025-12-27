@@ -307,3 +307,6 @@ function zle-line-init {
   zle reset-prompt
 }
 zle -N zle-line-init
+
+# Set cursor to be a blinking block
+echo -ne '\e[1 q'
