@@ -1,6 +1,8 @@
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export TERM=xterm-256color
 
+alias reload="exec zsh"
+
 # Load local OpenAI key if present
 if [ -f "$HOME/.config/.open_api_key" ]; then
   source "$HOME/.config/.open_api_key"
@@ -156,15 +158,43 @@ bindkey -M viins '^G' vi-cmd-mode
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+if ! command -v eza &> /dev/null; then
+  echo "[!!]  eza not found defaulting to ls. Install with: brew install eza"
+
+  alias ll="ls -lahG"
+  alias ls="ls -aG"
+  alias li="ls -la | grep ^l | cut -c 53-"
+else
+  export EZA_COLORS="bu=0"
+  alias ls="eza -a"
+  #alias ll="eza -la --total-size --no-user"
+  #alias tree="eza -aG --tree -L 2 --color=always | less -RF"
+  unalias ll 2>/dev/null 
+  function ll() {
+    command eza -la --no-user --color=always "$@" | less -RFXS
+  }
+
+  # Size-calculating version
+  function lls() {
+    eza -la --no-user --total-size --color=always "$@" | less -RFXS
+  }
+
+  # Show user and group info for when you really need it
+  function llu() {
+    command eza -lag --color=always "$@" | less -RFXS
+  }
+
+  function tree() {
+    eza -aG --tree -L 2 --color=always "$@" | less -RFSX
+  } 
+  alias lt="tree"
+fi
+
 
 alias site='docker exec -it $(docker ps -qf ancestor=site-server) site'
 alias sitesh='docker exec -it $(docker ps -qf ancestor=site-server) bash'
 
 alias dc="docker-compose"
-alias ll="ls -larhtGF"
-alias ls="ls -GF"
-alias li="ls -la | grep ^l | cut -c 53-"
-alias reload="exec zsh"
 
 if [ -n "$INSIDE_EMACS" ]; then
     if [[ "$INSIDE_EMACS" = nil ]]; then
