@@ -29,4 +29,4 @@ test:  ## Check all the scripts pass shellcheck
 	@shellcheck do.sh
 	@echo "$(GREEN)[OK] do.sh passed shellcheck$(RESET)"
 	@shellcheck hooks/pre-commit
-	@echo "$(GREEN)[OK] do.sh passed shellcheck$(RESET)"
+	@echo "$(GREEN)[OK] hooks/pre-commit passed shellcheck$(RESET)"
