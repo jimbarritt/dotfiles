@@ -13,4 +13,4 @@ install:
 
 test:
 	@shellcheck do.sh
-	echo "$(GREEN)[OK] do.sh passed shellcheck$(RESET)"
+	@echo "$(GREEN)[OK] do.sh passed shellcheck$(RESET)"
