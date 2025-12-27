@@ -14,5 +14,5 @@ install:
 test:
 	@shellcheck do.sh
 	@echo "$(GREEN)[OK] do.sh passed shellcheck$(RESET)"
-	@shellcheck hooks/precommit
+	@shellcheck hooks/pre-commit
 	@echo "$(GREEN)[OK] do.sh passed shellcheck$(RESET)"
