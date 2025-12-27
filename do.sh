@@ -12,7 +12,7 @@ slurp_arguments() {
         DRY_RUN=true
         shift
         ;;
-      link|unlink)
+      install|link|unlink)
 	CMD_TO_RUN=$1
 	shift
 	;;
@@ -131,12 +131,23 @@ install_zsh_plugins() {
   fi
 }
 
+install_git_hooks() {
+  git config core.hooksPath hooks
+  echo "✓ Configured git hooks"
+}
+
+install() {
+  install_zsh_plugins
+  install_git_hooks
+}
+
 main() {
   slurp_arguments "$@"
 
-  install_zsh_plugins
-
   case $CMD_TO_RUN in
+    install)
+      install
+      ;;
     link)
       link_all
       ;;
