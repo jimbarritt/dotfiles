@@ -1,4 +1,4 @@
-.PHONY: help link link-dry-run
+.PHONY: help install test link link-dry-run
 
 # Color codes
 GREEN := \033[32m
@@ -7,6 +7,9 @@ RESET := \033[0m
 
 help:
 	@./do.sh help
+
+install:
+	@./do.sh install
 
 test:
 	@if shellcheck do.sh; then \
