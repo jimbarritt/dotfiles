@@ -1,8 +1,12 @@
 #!/bin/sh
 
-make test || {
+make test
+
+if [ $? -ne 0 ]; then
     echo ""
-    echo "Commit rejected: make test failed"
+    echo "Commit rejected: shellcheck failed"
     echo "Fix the issues or use 'git commit --no-verify' to skip"
     exit 1
-}
+fi
+
+exit 0
