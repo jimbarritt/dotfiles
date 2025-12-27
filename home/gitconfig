@@ -21,8 +21,29 @@
 	default = matching
 
 [core]
-  pager = $(brew --prefix git)/share/git-core/contrib/diff-highlight/diff-highlight
+  pager = delta
 	autocrlf = input
+
+[delta]
+  # Appearance
+  navigate = true    # Use n/N to navigate between diff sections
+  light = false      # Set to true if you use a light terminal theme
+  side-by-side = false  # Set to true if you prefer side-by-side diffs
+  line-numbers = true
+    
+  syntax-theme = Monokai Extended
+  
+  # Minimal visual noise
+  minus-style = "syntax #3f0001"
+  minus-emph-style = "syntax #901011"
+  plus-style = "syntax #002800"
+  plus-emph-style = "syntax #006000"
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default
 
 [filter "lfs"]
 	clean = git-lfs clean %f
