@@ -44,7 +44,12 @@ vim.opt.shiftwidth = 2     -- Indent with 2 spaces
 vim.opt.softtabstop = 2    -- Tab key inserts 2 spaces
 vim.opt.expandtab = true   -- Use spaces, not tabs
 vim.opt.smartindent = true -- Smart auto-indenting
-
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "make",
+  callback = function()
+    vim.opt_local.expandtab = false  -- Use real tabs in Makefiles
+  end,
+})
 -- Status line
 vim.opt.laststatus = 2
 vim.opt.showmode = false  -- Disable mode in command line

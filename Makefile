@@ -12,8 +12,5 @@ install:
 	@./do.sh install
 
 test:
-	@if shellcheck do.sh; then \
-		echo "$(GREEN)[OK] do.sh passed shellcheck$(RESET)"; \
-	else \
-		echo "$(RED)[!!] shellcheck found issues$(RESET)"; \
-	fi
+	@shellcheck do.sh
+	echo "$(GREEN)[OK] do.sh passed shellcheck$(RESET)"

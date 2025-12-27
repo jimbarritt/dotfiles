@@ -1,11 +1,8 @@
 #!/bin/sh
 
-make test
-
-if [ $? -ne 0 ]; then
-    echo ""
-    echo "Commit rejected: shellcheck failed"
-    echo "Fix the issues or use 'git commit --no-verify' to skip"
+if ! make test; then
+    echo "[PRE-COMMIT HOOK] - Commit rejected: 'make test' failed"
+    echo "[PRE-COMMIT HOOK] - Fix the issues or use 'git commit --no-verify' to skip"
     exit 1
 fi
 
