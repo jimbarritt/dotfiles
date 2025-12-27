@@ -1,0 +1,8 @@
+#!/bin/sh
+
+make test || {
+    echo ""
+    echo "Commit rejected: make test failed"
+    echo "Fix the issues or use 'git commit --no-verify' to skip"
+    exit 1
+}

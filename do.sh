@@ -3,7 +3,7 @@
 DRY_RUN="false"
 CMD_TO_RUN="link"
 
-DOTFILES_DIR="$(unset CDPATH; cd -- "$(dirname -- "$0")" && pwd)"
+[DOTFILES_DIR="$(unset CDPATH; cd -- "$(dirname -- "$0")" && pwd)"
 
 slurp_arguments() {
   while [ $# -gt 0 ]; do
