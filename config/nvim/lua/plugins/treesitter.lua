@@ -18,6 +18,7 @@ return {
         'c',
         'bash',
         'python',
+        'git_config'
       },
 
       -- Install parsers synchronously (only applied to `ensure_installed`)
