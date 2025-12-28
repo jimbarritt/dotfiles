@@ -38,6 +38,19 @@ return {
         relativenumber = true,
       },
 
+      update_focused_file = {
+        enable = true,
+        update_root = false,  -- don't change root when switching files
+        ignore_list = {},
+      },
+      
+      -- Optional: also sync when opening a new file
+      actions = {
+        open_file = {
+          quit_on_open = false,
+        },
+      },
+
       actions = {
         open_file = {
           quit_on_open = false,  -- Don't close tree on file open
