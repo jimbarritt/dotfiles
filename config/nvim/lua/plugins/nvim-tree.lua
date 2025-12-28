@@ -4,6 +4,8 @@ return {
     require("nvim-tree").setup({
       view = {
         width = 35,
+        number = true,
+        relativenumber = true,
       },
       renderer = {
         indent_width = 2,
@@ -34,7 +36,10 @@ return {
         enable = false,
       },
       filters = {
-        dotfiles = false,
+        dotfiles = true,
+        custom = {
+          "Library/Calendars"
+        }
       },
     })
     
