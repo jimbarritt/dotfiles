@@ -32,10 +32,17 @@ return {
     require("nvim-tree").setup({
       on_attach = on_attach,
 
+      sort = {
+        sorter = "name",
+        folders_first = true,
+        files_first = false,
+      },
+
       view = {
         width = 35,
         number = true,
         relativenumber = true,
+        signcolumn = "yes"
       },
 
       update_focused_file = {
@@ -50,6 +57,7 @@ return {
           quit_on_open = false,
         },
       },
+
 
       actions = {
         open_file = {
