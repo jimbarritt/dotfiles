@@ -57,22 +57,3 @@ vim.opt.showmode = false  -- Disable mode in command line
 -- Custom highlight groups for statusline
 vim.api.nvim_set_hl(0, 'StatusLineMode', { fg = '#000000', bg = '#88c0d0', bold = true })
 vim.api.nvim_set_hl(0, 'StatusLineNormal', { fg = '#d8dee9', bg = '#3b4252' })
-
--- Function to get current mode with color
-function _G.get_mode()
-  local mode_map = {
-    ['n']  = 'N',
-    ['i']  = 'I',
-    ['v']  = 'v',
-    ['V']  = 'V',
-    [''] = 'B',
-    ['c']  = 'C',
-    ['r']  = 'R',
-    ['t']  = 'T',
-  }
-  local mode = vim.api.nvim_get_mode().mode
-  return mode_map[mode] or mode
-end
-
--- Statusline with mode block effect
-vim.opt.statusline = '%#StatusLineMode# %{%v:lua.get_mode()%} %#StatusLineNormal# %t %h%m%r%=%l,%c %P '
