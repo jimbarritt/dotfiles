@@ -18,9 +18,26 @@ vim.keymap.set('v', '>', '>gv', { noremap = true, desc = "Indent right and resel
 
 -- Telescope keybindings
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Find files' })
-vim.keymap.set('n', '<C-p>', builtin.find_files, { desc = 'Find files' })
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Live grep' })
+
+local function get_git_root()
+  local git_root = vim.fn.system('git rev-parse --show-toplevel 2> /dev/null')
+  if vim.v.shell_error == 0 then
+    return vim.trim(git_root)
+  else
+    return vim.fn.getcwd()
+  end
+end
+
+vim.keymap.set('n', '<leader>ff', function()
+  builtin.find_files({ cwd = get_git_root() })
+end, { desc = 'Find files (git root or cwd)' })
+
+vim.keymap.set('n', '<leader>fg', function()
+  builtin.live_grep({ cwd = get_git_root() })
+end, { desc = 'Live grep (git root or cwd)' })
+
+vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', { desc = 'Toggle file explorer', silent = true })
+
 vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Find buffers' })
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Find help' })
 vim.keymap.set('n', '<leader>fo', builtin.oldfiles, { desc = 'Find old files' })
