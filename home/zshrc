@@ -179,7 +179,7 @@ else
     command eza -l --no-user --color=always "$@" | less
   }
 
-  function lla() {
+  function llh() {
     command eza -la --no-user --color=always "$@" | less
   }
 
@@ -349,3 +349,11 @@ zle -N zle-line-init
 
 # Set cursor to be a blinking block
 echo -ne '\e[1 q'
+
+# pnpm
+export PNPM_HOME="/Users/jmdb/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
