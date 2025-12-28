@@ -14,6 +14,14 @@ return {
               height = 0.8,
             },
           },
+          mappings = {
+            i = {  -- Insert mode
+              ["<C-g>"] = "close",
+            },
+            n = {  -- Normal mode
+              ["<C-g>"] = "close",
+            },
+          },
         },
       }
       -- Load fzf extension
