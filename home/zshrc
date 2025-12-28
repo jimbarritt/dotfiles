@@ -4,6 +4,8 @@ export TERM=xterm-256color
 export EDITOR="nvim"
 export VISUAL="nvim"
 
+export LESS='-F -R -X'
+
 alias reload="exec zsh"
 
 # Load local OpenAI key if present
@@ -169,17 +171,21 @@ if ! command -v eza &> /dev/null; then
   alias li="ls -la | grep ^l | cut -c 53-"
 else
   export EZA_COLORS="bu=0"
-  alias ls="eza -a"
+  alias ls="eza"
   #alias ll="eza -la --total-size --no-user"
   #alias tree="eza -aG --tree -L 2 --color=always | less -RF"
   unalias ll 2>/dev/null 
   function ll() {
-    command eza -la --no-user --color=always "$@" | less -RFXS
+    command eza -l --no-user --color=always "$@" | less
+  }
+
+  function lla() {
+    command eza -la --no-user --color=always "$@" | less
   }
 
   # Size-calculating version
   function lls() {
-    eza -la --no-user --total-size --color=always "$@" | less -RFXS
+    eza -la --no-user --total-size --color=always "$@" | less
   }
 
   # Show user and group info for when you really need it
