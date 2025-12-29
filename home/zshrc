@@ -199,9 +199,8 @@ else
   alias lt="tree"
 fi
 
-
-alias site='docker exec -it $(docker ps -qf ancestor=site-server) site'
-alias sitesh='docker exec -it $(docker ps -qf ancestor=site-server) bash'
+alias envim="nvim ~/.config/nvim"
+alias ezshrc="nvim ~/.zshrc"
 
 alias dc="docker-compose"
 

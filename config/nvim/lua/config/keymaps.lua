@@ -36,7 +36,7 @@ vim.keymap.set('n', '<leader>fg', function()
   builtin.live_grep({ cwd = get_git_root() })
 end, { desc = 'Live grep (git root or cwd)' })
 
-vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', { desc = 'Toggle file explorer', silent = true })
+vim.keymap.set('n', '<leader>fe', ':NvimTreeToggle<CR>', { desc = 'Toggle file explorer', silent = true })
 
 vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Find buffers' })
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Find help' })

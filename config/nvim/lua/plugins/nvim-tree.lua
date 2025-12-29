@@ -26,7 +26,7 @@ return {
       vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts('Close Directory'))
       vim.keymap.set('n', 'H', api.tree.toggle_hidden_filter, opts('Toggle Hidden'))
 
-      vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<CR>', opts('Toggle tree'))  -- Add this
+      vim.keymap.set('n', '<leader>fe', '<cmd>NvimTreeToggle<CR>', opts('Toggle tree'))  -- Add this
     end
     
     require("nvim-tree").setup({

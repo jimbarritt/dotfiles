@@ -24,7 +24,7 @@
 - Focus stays in tree when opening files
 
 **Keybindings**:
-- `<leader>e` - Toggle nvim-tree
+- `<leader>fe` - Toggle nvim-tree
 - `l` - Open file or expand directory
 - `o` - Open file or expand directory
 - `<Enter>` - Open file or expand directory
@@ -213,7 +213,7 @@ export LESS='-F -R -X'  # Auto-quit if one screen, handle colors, don't clear
 
 ### File Navigation
 1. Open nvim in project root: `nvim .`
-2. Toggle tree: `<leader>e`
+2. Toggle tree: `<leader>fe`
 3. Navigate with `j/k` or relative numbers
 4. Open files with `l` or `o` (focus stays in tree)
 5. Quick search: `<leader>ff` (files) or `<leader>fg` (content)
