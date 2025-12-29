@@ -194,8 +194,13 @@ else
   }
 
   function tree() {
+    eza -G --tree -L 2 --color=always "$@" | less -RFSX
+  } 
+
+  function treeh() {
     eza -aG --tree -L 2 --color=always "$@" | less -RFSX
   } 
+
   alias lt="tree"
 fi
 
