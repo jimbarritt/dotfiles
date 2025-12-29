@@ -76,7 +76,7 @@ backup_existing_file() {
 link_home() {
   _src="$1"
 
-  target="${DOTFILES_DIR}/home/${_src}"
+  _target="${DOTFILES_DIR}/home/${_src}"
   _link="${HOME}/.${_src}"
 
   backup_existing_file "$_link"
@@ -105,6 +105,8 @@ link_all() {
   echo "Linking dotfiles into your home dir @ [$HOME]"
   link_home zshrc
   link_home gitconfig
+  link_home tmux.conf
+
   link_config nvim
   link_config kitty
   link_config mise
