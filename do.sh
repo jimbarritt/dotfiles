@@ -131,6 +131,13 @@ install_zsh_plugins() {
   else
     echo "✓ zsh-autopair already installed"
   fi
+
+  if [ ! -d "${_plugins_dir}/zsh-syntax-highlighting" ]; then
+    echo "Installing zsh-syntax-highlighting plugin..."
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${_plugins_dir}/zsh-syntax-highlighting"
+  else
+    echo "✓ zsh-syntax-highlighting already installed"
+  fi
 }
 
 install_git_hooks() {
