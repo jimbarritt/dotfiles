@@ -44,6 +44,8 @@ plugins=()
 for p in "${desired_plugins[@]}"; do
   if [ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/$p" ] || [ -d "$ZSH/plugins/$p" ]; then
     plugins+=($p)
+  else
+    echo "ZSH Plugin [$p] not found, you need to install it."
   fi
 done
 
