@@ -2,7 +2,10 @@
 	name = Jim Barritt
 	email = jim.barritt@gmail.com
   signingkey = 42A0F567
-        
+
+[init]
+  defaultBranch = main
+
 [color]
 	diff = auto
 	status = auto
