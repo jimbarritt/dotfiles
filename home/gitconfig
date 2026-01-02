@@ -58,3 +58,6 @@
   branch = false
 	log = false
 
+# Include work config if it exists (checked last, so it overrides)
+[include]
+    path = ~/.gitconfig-work
