@@ -9,6 +9,8 @@ end
 -- Leader key
 vim.g.mapleader = " "
 
+vim.cmd("syntax off")
+
 -- UI settings
 vim.opt.compatible = false
 -- Cursor shapes: solid block in normal, blinking block in insert
@@ -22,6 +24,9 @@ vim.opt.mouse = 'a'
 vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
 vim.opt.linebreak = true
+
+vim.opt.ttyfast = true
+vim.opt.redrawtime = 1500
 
 -- Clipboard
 vim.opt.clipboard = 'unnamedplus'
