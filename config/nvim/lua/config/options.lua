@@ -5,8 +5,6 @@ if not is_mac then
   vim.notify("This configuration is optimized for macOS", vim.log.levels.WARN)
 end
 
--- Set colorscheme
-vim.cmd('colorscheme green-tinted')
 
 -- Leader key
 vim.g.mapleader = " "
@@ -57,3 +55,11 @@ vim.opt.showmode = false  -- Disable mode in command line
 -- Custom highlight groups for statusline
 vim.api.nvim_set_hl(0, 'StatusLineMode', { fg = '#000000', bg = '#88c0d0', bold = true })
 vim.api.nvim_set_hl(0, 'StatusLineNormal', { fg = '#d8dee9', bg = '#3b4252' })
+
+vim.schedule(function()
+  vim.notify = function(msg, level, opts)
+    -- Silent - do nothing, no popups ever
+  end
+end)
+-- Set colorscheme
+-- vim.cmd('colorscheme green-tinted')

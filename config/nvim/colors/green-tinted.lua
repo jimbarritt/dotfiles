@@ -1,6 +1,6 @@
--- Green Tinted Neovim Color Scheme
+-- Green Tinted Neovim Color Scheme - Optimized for function block navigation
+-- Based on cognitive load research and visual hierarchy principles
 -- Save this file as ~/.config/nvim/colors/green-tinted.lua
--- Then add `vim.cmd('colorscheme green-tinted')` to your init.lua
 
 vim.cmd('hi clear')
 if vim.fn.exists('syntax_on') then
@@ -10,42 +10,55 @@ end
 vim.g.colors_name = 'green-tinted'
 
 local colors = {
-  bg = '#0a1f0a',
-  fg = '#a8d5a8',
-  cursor = '#66ff66',
-  selection = '#1a4d1a',
+  -- Background & UI
+  bg = '#0d1f1a',
+  bg_light = '#132825',
+  bg_highlight = '#1a3d35',
+  fg = '#c8d8d0',
+  fg_dim = '#8fa89f',
+  cursor = '#7fd87f',
+  selection = '#2a4d45',
   
-  -- Normal colors
-  black = '#1a3d1a',
-  red = '#4d7a4d',
-  green = '#66b366',
-  yellow = '#7acc7a',
-  blue = '#52a852',
-  magenta = '#5cb35c',
-  cyan = '#70d970',
-  white = '#b8e6b8',
+  -- STRUCTURAL ANCHORS (Brightest - navigation beacons)
+  keyword = '#5ab85a',           -- Matches rainbow level 3 (if/then/end blocks)
+  keyword_control = '#88ff88',   -- Even brighter for return, break, continue
+  fn_decl = '#d8eb8b',          -- Yellow-green - function declarations stand out
+  bracket_top = '#7fd87f',       -- Matches rainbow level 1 (function/end delimiters)
   
-  -- Bright colors
-  bright_black = '#2d5c2d',
-  bright_red = '#6b9e6b',
-  bright_green = '#85cc85',
-  bright_yellow = '#a3e6a3',
-  bright_blue = '#70c270',
-  bright_magenta = '#7acc7a',
-  bright_cyan = '#99ff99',
-  bright_white = '#d9f2d9',
+  -- NAVIGATION (Medium brightness)
+  fn_call = '#88d8c8',          -- Medium cyan-green for function calls
+  param = '#a8d8b8',            -- Light green for parameters
+  type = '#88c8ff',             -- Light blue-green for types
+  constant = '#d8b888',         -- Warm tan-green for constants
+  property = '#98c8b8',         -- For object properties
   
-  -- UI colors
-  line_number = '#4d7a4d',
-  visual = '#1a4d1a',
-  comment = '#5cb35c',
-  string = '#85cc85',
-  function_name = '#70c270',
-  keyword = '#7acc7a',
-  type = '#66b366',
-  constant = '#99ff99',
+  -- CONTENT/NOISE REDUCTION (Dimmest)
+  variable = '#789878',         -- Muted sage green for variables
+  variable_local = '#6a8a6a',   -- Even more muted for locals
+  operator = '#5a7a6a',         -- Very subtle operators
+  punctuation = '#4a6a5a',      -- Barely visible punctuation
+  string = '#88a888',           -- Moderate green for strings
+  string_special = '#98b898',   -- Slightly brighter for escapes
+  number = '#98b8a8',           -- Subtle blue-green for numbers
+  comment = '#4a6860',          -- Muted gray-green for comments
+  
+  -- UI elements
+  line_number = '#4a6860',
+  visual = '#2a4d45',
+  
+  -- Special/Diagnostics
+  search = '#d8d888',
+  search_current = '#ffff88',
+  error = '#ff6b6b',
+  warning = '#ffb86b',
+  hint = '#88b8d8',
+  info = '#88d8d8',
+  
+  -- Legacy colors (kept for compatibility)
+  black = '#132825',
+  bright_black = '#1a3d35',
+  bright_white = '#e8f8f0',
 }
-
 local function hi(group, opts)
   local cmd = 'hi ' .. group
   if opts.fg then cmd = cmd .. ' guifg=' .. opts.fg end
@@ -56,18 +69,18 @@ local function hi(group, opts)
 end
 
 -- Editor highlights
-hi('Normal', { fg = colors.fg, bg = colors.bg })
-hi('NormalFloat', { fg = colors.fg, bg = colors.black })
+hi('Normal', { fg = colors.fg, bg = 'NONE' })
+hi('NormalFloat', { fg = colors.fg, bg = colors.bg_light })
 hi('Cursor', { fg = colors.bg, bg = colors.cursor })
-hi('CursorLine', { bg = colors.black })
-hi('CursorColumn', { bg = colors.black })
+hi('CursorLine', { bg = colors.bg_highlight })
+hi('CursorColumn', { bg = colors.bg_highlight })
 hi('LineNr', { fg = colors.line_number })
-hi('CursorLineNr', { fg = colors.bright_yellow })
+hi('CursorLineNr', { fg = colors.keyword })
 hi('Visual', { bg = colors.visual })
 hi('VisualNOS', { bg = colors.visual })
-hi('Search', { fg = colors.bg, bg = colors.bright_yellow })
-hi('IncSearch', { fg = colors.bg, bg = colors.cyan })
-hi('MatchParen', { fg = colors.bright_cyan, gui = 'bold' })
+hi('Search', { fg = colors.bg, bg = colors.search })
+hi('IncSearch', { fg = colors.bg, bg = colors.search_current })
+hi('MatchParen', { fg = colors.search_current })
 hi('StatusLine', { fg = colors.bright_white, bg = colors.bright_black })
 hi('StatusLineNC', { fg = colors.comment, bg = colors.black })
 hi('VertSplit', { fg = colors.bright_black })
@@ -82,74 +95,165 @@ hi('SignColumn', { bg = colors.bg })
 hi('Folded', { fg = colors.comment, bg = colors.black })
 hi('FoldColumn', { fg = colors.comment, bg = colors.bg })
 
--- Syntax highlights
+-- SYNTAX HIGHLIGHTS (Traditional Vim groups)
 hi('Comment', { fg = colors.comment, gui = 'italic' })
+
+-- Constants (medium brightness)
 hi('Constant', { fg = colors.constant })
 hi('String', { fg = colors.string })
 hi('Character', { fg = colors.string })
-hi('Number', { fg = colors.constant })
+hi('Number', { fg = colors.number })
 hi('Boolean', { fg = colors.constant })
-hi('Float', { fg = colors.constant })
-hi('Identifier', { fg = colors.fg })
-hi('Function', { fg = colors.function_name })
+hi('Float', { fg = colors.number })
+
+-- Identifiers (dimmed for noise reduction)
+hi('Identifier', { fg = colors.variable })
+hi('Function', { fg = colors.fn_decl })  -- Yellow-green - navigation anchor
+
+-- Statements (structural anchors - bright)
 hi('Statement', { fg = colors.keyword })
 hi('Conditional', { fg = colors.keyword })
 hi('Repeat', { fg = colors.keyword })
 hi('Label', { fg = colors.keyword })
-hi('Operator', { fg = colors.fg })
-hi('Keyword', { fg = colors.keyword })
-hi('Exception', { fg = colors.red })
-hi('PreProc', { fg = colors.magenta })
-hi('Include', { fg = colors.magenta })
-hi('Define', { fg = colors.magenta })
-hi('Macro', { fg = colors.magenta })
-hi('PreCondit', { fg = colors.magenta })
+hi('Operator', { fg = colors.operator })               -- Dimmed
+hi('Keyword', { fg = colors.keyword })                 -- Bright green
+hi('Exception', { fg = colors.keyword_control })
+
+-- PreProc
+hi('PreProc', { fg = colors.keyword })
+hi('Include', { fg = colors.keyword })
+hi('Define', { fg = colors.keyword })
+hi('Macro', { fg = colors.keyword })
+hi('PreCondit', { fg = colors.keyword })
+
+-- Types (medium brightness for navigation)
 hi('Type', { fg = colors.type })
 hi('StorageClass', { fg = colors.type })
 hi('Structure', { fg = colors.type })
 hi('Typedef', { fg = colors.type })
-hi('Special', { fg = colors.cyan })
-hi('SpecialChar', { fg = colors.cyan })
-hi('Tag', { fg = colors.cyan })
-hi('Delimiter', { fg = colors.fg })
+
+-- Special
+hi('Special', { fg = colors.bracket_top })
+hi('SpecialChar', { fg = colors.string_special })
+hi('Tag', { fg = colors.bracket_top })
+hi('Delimiter', { fg = colors.punctuation })           -- Dimmed
 hi('SpecialComment', { fg = colors.comment })
-hi('Debug', { fg = colors.red })
-hi('Underlined', { fg = colors.blue, gui = 'underline' })
-hi('Error', { fg = colors.bright_red, bg = colors.bg })
-hi('ErrorMsg', { fg = colors.bright_red })
-hi('WarningMsg', { fg = colors.yellow })
-hi('Todo', { fg = colors.bright_yellow, bg = colors.bg, gui = 'bold' })
+hi('Debug', { fg = colors.error })
+
+-- Misc
+hi('Underlined', { fg = colors.info, gui = 'underline' })
+hi('Error', { fg = colors.error, bg = colors.bg })
+hi('ErrorMsg', { fg = colors.error })
+hi('WarningMsg', { fg = colors.warning })
+hi('Todo', { fg = colors.search_current, bg = colors.bg })
 
 -- Diff
-hi('DiffAdd', { fg = colors.green, bg = colors.black })
-hi('DiffChange', { fg = colors.yellow, bg = colors.black })
-hi('DiffDelete', { fg = colors.red, bg = colors.black })
-hi('DiffText', { fg = colors.blue, bg = colors.black })
+hi('DiffAdd', { fg = colors.keyword, bg = colors.black })
+hi('DiffChange', { fg = colors.warning, bg = colors.black })
+hi('DiffDelete', { fg = colors.error, bg = colors.black })
+hi('DiffText', { fg = colors.info, bg = colors.black })
 
 -- Git signs
-hi('GitSignsAdd', { fg = colors.green })
-hi('GitSignsChange', { fg = colors.yellow })
-hi('GitSignsDelete', { fg = colors.red })
+hi('GitSignsAdd', { fg = colors.keyword })
+hi('GitSignsChange', { fg = colors.warning })
+hi('GitSignsDelete', { fg = colors.error })
 
--- Treesitter
-hi('@variable', { fg = colors.fg })
-hi('@variable.builtin', { fg = colors.magenta })
-hi('@function', { fg = colors.function_name })
-hi('@function.builtin', { fg = colors.function_name })
-hi('@keyword', { fg = colors.keyword })
-hi('@keyword.function', { fg = colors.keyword })
-hi('@string', { fg = colors.string })
-hi('@comment', { fg = colors.comment, gui = 'italic' })
-hi('@constant', { fg = colors.constant })
-hi('@type', { fg = colors.type })
-hi('@parameter', { fg = colors.fg })
-hi('@property', { fg = colors.cyan })
-hi('@punctuation.bracket', { fg = colors.fg })
-hi('@punctuation.delimiter', { fg = colors.fg })
+-- TREESITTER (Modern syntax highlighting)
+-- Variables (dimmest - noise reduction)
+hi('@variable', { fg = colors.variable })
+hi('@variable.builtin', { fg = colors.variable })
+hi('@variable.parameter', { fg = colors.param })       -- Medium for params
+hi('@variable.member', { fg = colors.property })
+
+-- Functions (Yellow-green for declarations, medium for calls)
+hi('@function', { fg = colors.fn_decl })               -- Yellow-green
+hi('@function.builtin', { fg = colors.fn_decl })
+hi('@function.call', { fg = colors.fn_call })          -- Medium cyan-green
+hi('@function.method', { fg = colors.fn_decl })
+hi('@function.method.call', { fg = colors.fn_call })
 hi('@constructor', { fg = colors.type })
 
--- LSP
-hi('DiagnosticError', { fg = colors.red })
-hi('DiagnosticWarn', { fg = colors.yellow })
-hi('DiagnosticInfo', { fg = colors.blue })
-hi('DiagnosticHint', { fg = colors.cyan })
+-- Keywords (bright green - structural anchors)
+hi('@keyword', { fg = colors.keyword })
+hi('@keyword.function', { fg = colors.keyword })       -- THIS SHOULD FIX 'function' in Lua
+hi('@keyword.return', { fg = colors.keyword_control })
+hi('@keyword.operator', { fg = colors.keyword })
+hi('@keyword.import', { fg = colors.keyword })
+hi('@keyword.repeat', { fg = colors.keyword })
+hi('@keyword.conditional', { fg = colors.keyword })
+
+-- Lua-specific keyword fixes (explicitly set to prevent red)
+hi('@keyword.function.lua', { fg = colors.keyword })   -- 'function' keyword
+hi('@keyword.lua', { fg = colors.keyword })            -- 'end', 'do', etc.
+
+-- Strings & literals
+hi('@string', { fg = colors.string })
+hi('@string.escape', { fg = colors.string_special })
+hi('@string.special', { fg = colors.string_special })
+hi('@character', { fg = colors.string })
+hi('@number', { fg = colors.number })
+hi('@boolean', { fg = colors.constant })
+hi('@float', { fg = colors.number })
+
+-- Types (medium - navigation)
+hi('@type', { fg = colors.type })
+hi('@type.builtin', { fg = colors.type })
+hi('@type.definition', { fg = colors.type })
+hi('@attribute', { fg = colors.type })
+
+-- Other identifiers
+hi('@constant', { fg = colors.constant })
+hi('@constant.builtin', { fg = colors.constant })
+hi('@namespace', { fg = colors.type })
+hi('@property', { fg = colors.property })
+hi('@parameter', { fg = colors.param })               -- Medium for navigation
+
+-- Operators & punctuation (dimmest - noise reduction)
+hi('@operator', { fg = colors.operator })
+hi('@punctuation.bracket', { fg = colors.bracket_top }) -- Bright for structure
+hi('@punctuation.delimiter', { fg = colors.punctuation }) -- Dim for commas etc
+hi('@punctuation.special', { fg = colors.punctuation })
+
+-- Comments
+hi('@comment', { fg = colors.comment, gui = 'italic' })
+hi('@comment.documentation', { fg = colors.comment, gui = 'italic' })
+
+-- LSP Semantic Tokens (additional layer - this might be causing the red!)
+-- Explicitly disable or set to our colors to prevent overrides
+hi('@lsp.type.function', { fg = colors.fn_decl })
+hi('@lsp.type.method', { fg = colors.fn_decl })
+hi('@lsp.type.parameter', { fg = colors.param })
+hi('@lsp.type.variable', { fg = colors.variable })
+hi('@lsp.type.property', { fg = colors.property })
+hi('@lsp.type.namespace', { fg = colors.type })
+hi('@lsp.type.type', { fg = colors.type })
+hi('@lsp.type.class', { fg = colors.type })
+hi('@lsp.type.enum', { fg = colors.type })
+hi('@lsp.type.interface', { fg = colors.type })
+hi('@lsp.type.keyword', { fg = colors.keyword })      -- Prevent LSP from making keywords red
+hi('@lsp.type.operator', { fg = colors.operator })
+hi('@lsp.type.comment', { fg = colors.comment })
+
+-- Additional LSP modifiers that might affect appearance
+hi('@lsp.mod.readonly', { fg = colors.constant })
+hi('@lsp.mod.defaultLibrary', { fg = colors.variable })
+
+-- LSP Diagnostics
+hi('DiagnosticError', { fg = colors.error })
+hi('DiagnosticWarn', { fg = colors.warning })
+hi('DiagnosticInfo', { fg = colors.info })
+hi('DiagnosticHint', { fg = colors.hint })
+hi('DiagnosticUnderlineError', { sp = colors.error, gui = 'underline' })
+hi('DiagnosticUnderlineWarn', { sp = colors.warning, gui = 'underline' })
+hi('DiagnosticUnderlineInfo', { sp = colors.info, gui = 'underline' })
+hi('DiagnosticUnderlineHint', { sp = colors.hint, gui = 'underline' })
+
+-- Telescope (if you use it)
+hi('TelescopeSelection', { fg = colors.bright_white, bg = colors.bg_highlight })
+hi('TelescopeMatching', { fg = colors.fn_decl })
+
+-- nvim-tree (if you use it)
+hi('NvimTreeFolderName', { fg = colors.type })
+hi('NvimTreeOpenedFolderName', { fg = colors.keyword })
+hi('NvimTreeRootFolder', { fg = colors.fn_decl })
+hi('NvimTreeSpecialFile', { fg = colors.fn_decl })
