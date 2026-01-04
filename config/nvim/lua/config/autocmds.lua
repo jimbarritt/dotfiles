@@ -1,27 +1,15 @@
--- Auto-save on focus lost
-vim.cmd([[autocmd FocusLost * silent! wa]])
-
--- Restore cursor position when opening files
-vim.cmd([[
-  autocmd BufReadPost *
-    \ if line("'\"") > 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
-]])
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = {"java", "kotlin"},
-  callback = function()
-    vim.bo.shiftwidth = 4
-    vim.bo.tabstop = 4
-    vim.bo.softtabstop = 4
-  end,
+vim.api.nvim_create_autocmd("FocusLost", {
+  pattern = "*",
+  command = "silent! wa",
 })
 
--- Gitconfig filetype detection
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-  pattern = {".gitconfig", "gitconfig", "*.gitconfig"},
+vim.api.nvim_create_autocmd("BufReadPost", {
+  pattern = "*",
   callback = function()
-    vim.bo.filetype = "gitconfig"
+    local mark = vim.api.nvim_buf_get_mark(0, '"')
+    local lcount = vim.api.nvim_buf_line_count(0)
+    if mark[1] > 0 and mark[1] <= lcount then
+      pcall(vim.api.nvim_win_set_cursor, 0, mark)
+    end
   end,
 })

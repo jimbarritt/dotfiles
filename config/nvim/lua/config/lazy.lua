@@ -13,6 +13,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+  { "LazyVim/LazyVim", import = "lazyvim.plugins" },
   -- Load modular plugin configs
   { import = "plugins" },
 })

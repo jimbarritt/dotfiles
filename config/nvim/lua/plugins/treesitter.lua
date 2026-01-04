@@ -1,28 +1,20 @@
 return {
   'nvim-treesitter/nvim-treesitter',
   build = ':TSUpdate',
+  event = { "BufReadPost", "BufNewFile" },
+  -- This 'config' function is what connects your 'opts' to the plugin
+  config = function(_, opts)
+    require('nvim-treesitter.configs').setup(opts)
+  end,
   opts = {
-    -- Install parsers for these languages
     ensure_installed = {
-      'kotlin',
-      'java',
-      'lua',
-      'vim',
-      'vimdoc',
-      'markdown',
-      'cpp',
-      'c',
-      'bash',
-      'python',
-      'git_config'
+      'kotlin', 'java', 'lua', 'vim', 'vimdoc', 
+      'markdown', 'cpp', 'c', 'bash', 'python', 'git_config'
     },
-    -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
-    -- Automatically install missing parsers when entering buffer
     auto_install = true,
     highlight = {
       enable = true,
-      -- Disable for very large files
       disable = function(lang, buf)
         local max_filesize = 100 * 1024 -- 100 KB
         local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
@@ -32,18 +24,7 @@ return {
       end,
       additional_vim_regex_highlighting = false,
     },
-    indent = {
-      enable = true
-    },
-    -- Incremental selection
-    incremental_selection = {
-      enable = true,
-      keymaps = {
-        init_selection = '<CR>',
-        node_incremental = '<CR>',
-        scope_incremental = '<TAB>',
-        node_decremental = '<S-TAB>',
-      },
-    },
+    indent = { enable = true },
+    -- ... rest of your incremental_selection config
   },
 }

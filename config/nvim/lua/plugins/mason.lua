@@ -1,7 +1,7 @@
 return {
   -- Mason: LSP server installer
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     config = function()
       require("mason").setup()
     end,
@@ -9,9 +9,9 @@ return {
 
   -- Mason-LSPConfig: Bridge between Mason and LSP config
   {
-    "williamboman/mason-lspconfig.nvim",
+    "mason-org/mason-lspconfig.nvim",
     dependencies = {
-      "williamboman/mason.nvim",
+      "mason-org/mason.nvim",
     },
     config = function()
       require("mason-lspconfig").setup({
@@ -24,6 +24,7 @@ return {
           "jdtls",                   -- Java
           "kotlin_language_server",  -- Kotlin
           "bashls",                  -- Bash/Zsh 
+          "lua_ls"      -- Lua
         },
         automatic_installation = true,
       })
