@@ -3,23 +3,43 @@ return {
   config = function()
     local function on_attach(bufnr)
       local api = require('nvim-tree.api')
-      
+
       local function opts(desc)
         return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
       end
 
       local function open_and_focus()
         local node = api.tree.get_node_under_cursor()
-        api.node.open.edit()
-        -- Only return focus if it's a file (not a directory)
-        if not node.nodes then
-          vim.cmd('wincmd p')
+        if not node or node.nodes then 
+          api.node.open.edit()
+          return 
         end
+
+        -- 1. Open the file but tell Nvim-Tree NOT to move the cursor
+        -- This is the native way to 'preview' a file
+        api.node.open.no_window_picker() 
+        
+        -- 2. Jump focus back immediately just in case the API moved it
+        vim.cmd('wincmd p')
+
+        -- 3. Fix the highlighting on the "First File"
+        vim.schedule(function()
+          -- Get the buffer number of the file we just opened
+          local bufnr = vim.fn.bufnr(node.absolute_path)
+          if bufnr ~= -1 then
+            -- Force detection without moving our cursor
+            vim.api.nvim_buf_call(bufnr, function()
+              if vim.bo.filetype == "" or vim.bo.filetype == "plaintex" then
+                vim.cmd("filetype detect")
+              end
+            end)
+          end
+        end)
       end
-      
+
       -- Default mappings
       api.config.mappings.default_on_attach(bufnr)
-      
+
       vim.keymap.set('n', 'l', open_and_focus, opts('Open'))
       vim.keymap.set('n', 'o', open_and_focus, opts('Open'))
       vim.keymap.set('n', '<cr>', open_and_focus, opts('Open'))
@@ -28,7 +48,7 @@ return {
 
       vim.keymap.set('n', '<leader>fe', '<cmd>NvimTreeToggle<CR>', opts('Toggle tree'))  -- Add this
     end
-    
+
     require("nvim-tree").setup({
       on_attach = on_attach,
 
