@@ -9,7 +9,7 @@ return {
     require("mason-lspconfig").setup({
       ensure_installed = {
         "lua_ls", "ts_ls", "html", "rust_analyzer",
-        "clangd", "pyright", "jdtls", "kotlin_language_server", "bashls",
+        "clangd", "pyright", "jdtls", "kotlin_language_server", "bashls", "marksman",
       },
     })
     vim.diagnostic.config({
@@ -72,6 +72,7 @@ return {
       jdtls = {},
       kotlin_language_server = {},
       bashls = {},
+      marksman = {},
     }
 
     -- 4. Automatically setup all servers using vim.lsp.config (Neovim 0.11+ API)
