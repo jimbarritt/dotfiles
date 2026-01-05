@@ -68,4 +68,4 @@ vim.schedule(function()
   end
 end)
 -- Set colorscheme
--- vim.cmd('colorscheme green-tinted')
+vim.cmd('colorscheme green-tinted')

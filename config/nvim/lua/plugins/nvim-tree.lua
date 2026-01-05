@@ -8,26 +8,21 @@ return {
         return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
       end
 
-      local function open_and_focus()
+      local function preview_file()
         local node = api.tree.get_node_under_cursor()
-        if not node or node.nodes then 
+        if not node or node.nodes then
           api.node.open.edit()
-          return 
+          return
         end
 
-        -- 1. Open the file but tell Nvim-Tree NOT to move the cursor
-        -- This is the native way to 'preview' a file
-        api.node.open.no_window_picker() 
-        
-        -- 2. Jump focus back immediately just in case the API moved it
+        -- Open the file but keep focus in tree
+        api.node.open.no_window_picker()
         vim.cmd('wincmd p')
 
-        -- 3. Fix the highlighting on the "First File"
+        -- Fix the highlighting on the "First File"
         vim.schedule(function()
-          -- Get the buffer number of the file we just opened
           local bufnr = vim.fn.bufnr(node.absolute_path)
           if bufnr ~= -1 then
-            -- Force detection without moving our cursor
             vim.api.nvim_buf_call(bufnr, function()
               if vim.bo.filetype == "" or vim.bo.filetype == "plaintex" then
                 vim.cmd("filetype detect")
@@ -37,12 +32,23 @@ return {
         end)
       end
 
+      local function open_and_switch_focus()
+        local node = api.tree.get_node_under_cursor()
+        if not node or node.nodes then
+          api.node.open.edit()
+          return
+        end
+
+        -- Open the file and switch focus to it
+        api.node.open.no_window_picker()
+        vim.cmd('wincmd l')  -- Move to the right window (the opened file)
+      end
+
       -- Default mappings
       api.config.mappings.default_on_attach(bufnr)
 
-      vim.keymap.set('n', 'l', open_and_focus, opts('Open'))
-      vim.keymap.set('n', 'o', open_and_focus, opts('Open'))
-      vim.keymap.set('n', '<cr>', open_and_focus, opts('Open'))
+      vim.keymap.set('n', 'l', preview_file, opts('Preview file'))
+      vim.keymap.set('n', '<cr>', open_and_switch_focus, opts('Open and focus'))
       vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts('Close Directory'))
       vim.keymap.set('n', 'H', api.tree.toggle_hidden_filter, opts('Toggle Hidden'))
 

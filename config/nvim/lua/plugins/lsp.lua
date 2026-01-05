@@ -54,7 +54,6 @@ return {
     if ok then capabilities = blink.get_lsp_capabilities(capabilities) end
 
     -- 3. Server Configurations
-    local lspconfig = require("lspconfig")
     local servers = {
       lua_ls = {
         settings = {
@@ -75,11 +74,11 @@ return {
       bashls = {},
     }
 
-    -- 4. Automatically setup all servers
+    -- 4. Automatically setup all servers using vim.lsp.config (Neovim 0.11+ API)
     for server, config in pairs(servers) do
       config.capabilities = capabilities
       config.on_attach = on_attach
-      lspconfig[server].setup(config)
+      vim.lsp.config(server, config)
     end
   end
 }
