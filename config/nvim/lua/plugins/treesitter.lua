@@ -24,7 +24,7 @@ return {
       end,
       additional_vim_regex_highlighting = false,
     },
-    indent = { enable = true },
+    indent = { enable = false },
     -- ... rest of your incremental_selection config
   },
 }

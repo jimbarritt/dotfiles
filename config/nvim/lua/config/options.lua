@@ -27,6 +27,7 @@ vim.opt.linebreak = true
 
 vim.opt.ttyfast = true
 vim.opt.redrawtime = 1500
+vim.opt.lazyredraw = true
 
 -- Clipboard
 vim.opt.clipboard = 'unnamedplus'
