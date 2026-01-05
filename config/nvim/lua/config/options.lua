@@ -9,7 +9,8 @@ end
 -- Leader key
 vim.g.mapleader = " "
 
-vim.cmd("syntax off")
+-- vim.cmd("syntax off")
+vim.cmd("syntax on")
 
 -- UI settings
 vim.opt.compatible = false
