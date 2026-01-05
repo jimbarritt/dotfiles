@@ -83,6 +83,10 @@ hi('IncSearch', { fg = colors.bg, bg = colors.search_current })
 hi('MatchParen', { fg = colors.search_current })
 hi('StatusLine', { fg = '#00ff00', bg = '#1a3a1a' })
 hi('StatusLineNC', { fg = '#00aa00', bg = '#1a3a1a' })
+
+-- Folding
+hi('Folded', { fg = colors.comment, bg = colors.bg_light })
+hi('UfoFoldingVirtText', { fg = colors.comment })
 hi('VertSplit', { fg = colors.bright_black })
 hi('Pmenu', { fg = colors.fg, bg = colors.black })
 hi('PmenuSel', { fg = colors.bright_white, bg = colors.bright_black })
