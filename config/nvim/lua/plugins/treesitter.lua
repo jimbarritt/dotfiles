@@ -1,15 +1,14 @@
 return {
   'nvim-treesitter/nvim-treesitter',
   build = ':TSUpdate',
-  event = { "BufReadPost", "BufNewFile" },
   -- This 'config' function is what connects your 'opts' to the plugin
   config = function(_, opts)
     require('nvim-treesitter.configs').setup(opts)
   end,
   opts = {
     ensure_installed = {
-      'kotlin', 'java', 'lua', 'vim', 'vimdoc', 
-      'markdown', 'cpp', 'c', 'bash', 'python', 'git_config'
+      'kotlin', 'java', 'lua', 'vim', 'vimdoc',
+      'markdown', 'markdown_inline', 'json', 'cpp', 'c', 'bash', 'python', 'git_config'
     },
     sync_install = false,
     auto_install = true,
