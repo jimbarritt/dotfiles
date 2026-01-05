@@ -95,7 +95,7 @@ hi('PmenuThumb', { bg = colors.bright_black })
 hi('TabLine', { fg = colors.comment, bg = colors.black })
 hi('TabLineFill', { bg = colors.black })
 hi('TabLineSel', { fg = colors.bright_white, bg = colors.bg })
-hi('SignColumn', { bg = colors.bg })
+hi('SignColumn', { bg = "NONE" })
 hi('Folded', { fg = colors.comment, bg = colors.black })
 hi('FoldColumn', { fg = colors.comment, bg = colors.bg })
 
