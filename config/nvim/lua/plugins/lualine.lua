@@ -2,6 +2,14 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function(_, opts)
+      require("lualine").setup(opts)
+      -- Refresh statusline for spinner animation
+      local timer = vim.uv.new_timer()
+      timer:start(0, 80, vim.schedule_wrap(function()
+        require("lualine").refresh()
+      end))
+    end,
     opts = function()
       local colors = {
         green = "#00ff00",
@@ -29,7 +37,11 @@ return {
       end
 
       local lsp_status = function()
-        return "LSP"
+        local clients = vim.lsp.get_clients({ bufnr = 0 })
+        if #clients == 0 then
+          return ""
+        end
+        return "(LSP)"
       end
 
       local green_theme = {
@@ -72,7 +84,32 @@ return {
           lualine_b = {},
           lualine_c = { "filename" },
           lualine_x = {},
-          lualine_y = { "location" },
+          lualine_y = {
+            {
+              lsp_status,
+              color = function()
+                local clients = vim.lsp.get_clients({ bufnr = 0 })
+                if #clients == 0 then
+                  return { fg = colors.dark_green }
+                end
+
+                local all_initialized = true
+                for _, client in ipairs(clients) do
+                  if not client.initialized then
+                    all_initialized = false
+                    break
+                  end
+                end
+
+                if all_initialized then
+                  return { fg = colors.dark_green }
+                else
+                  return { fg = colors.variable }
+                end
+              end
+            },
+            "location"
+          },
           lualine_z = { "progress" },
         },
       }
