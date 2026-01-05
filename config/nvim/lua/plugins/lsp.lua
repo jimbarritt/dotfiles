@@ -8,10 +8,21 @@ return {
     require("mason").setup()
     require("mason-lspconfig").setup({
       ensure_installed = {
-        "lua_ls", "ts_ls", "html", "rust_analyzer", 
+        "lua_ls", "ts_ls", "html", "rust_analyzer",
         "clangd", "pyright", "jdtls", "kotlin_language_server", "bashls",
       },
     })
+    vim.diagnostic.config({
+      virtual_text = true,
+      signs = true,
+      underline = true,
+      -- THE KEY: Don't refresh error highlights while in Insert/Visual changes
+      update_in_insert = false,
+      severity_sort = true,
+    })
+
+    -- Ensure the sign column doesn't "pop" in and out
+    vim.opt.signcolumn = "yes"
 
     -- 1. Shared on_attach (The Flicker Fix is here)
     local on_attach = function(client, bufnr)
