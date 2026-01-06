@@ -47,6 +47,12 @@ vim.keymap.set('i', '<C-g>', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('v', '<C-g>', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('c', '<C-g>', '<C-c>', { noremap = true })
 
+-- Insert mode navigation with Ctrl+hjkl
+vim.keymap.set('i', '<C-h>', '<Left>', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-j>', '<Down>', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-k>', '<Up>', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-l>', '<Right>', { noremap = true, silent = true })
+
 -- Insert blank line below (without entering insert mode)
 vim.keymap.set('n', '<Leader>o', 'o<Esc>', { noremap = true, silent = true })
 
