@@ -4,6 +4,7 @@ A modular, ergonomic Neovim setup optimized for Kotlin, TypeScript, and full-sta
 
 ## Philosophy
 
+
 This configuration follows these core principles:
 - **Reduced cognitive load** - consistent patterns, minimal context switching
 - **Ergonomic design** - optimized for left-handed trackpad + right-handed keyboard use
