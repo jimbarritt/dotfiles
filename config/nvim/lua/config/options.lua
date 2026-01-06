@@ -63,6 +63,20 @@ vim.opt.showmode = false  -- Disable mode in command line
 vim.api.nvim_set_hl(0, 'StatusLineMode', { fg = '#000000', bg = '#88c0d0', bold = true })
 vim.api.nvim_set_hl(0, 'StatusLineNormal', { fg = '#d8dee9', bg = '#3b4252' })
 
+-- Custom statuscolumn with git signs and folds
+local function get_statuscolumn()
+  return table.concat({
+    "%s",  -- Signs (gitsigns will display here)
+    "%=",  -- Right align everything after this
+    "%l",  -- Line number
+    "%=",  -- Right align fold indicators
+    "%{foldclosed(v:lnum) >= 0 ? ' ›' : ' '}",  -- Fold indicator only when fold is closed
+    " ",   -- Spacing
+  })
+end
+
+vim.opt.statuscolumn = get_statuscolumn()
+
 vim.schedule(function()
   vim.notify = function(msg, level, opts)
     -- Silent - do nothing, no popups ever
