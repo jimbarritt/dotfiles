@@ -13,7 +13,7 @@ return {
       },
     })
     vim.diagnostic.config({
-      virtual_text = true,
+      virtual_text = false,
       signs = true,
       underline = true,
       -- THE KEY: Don't refresh error highlights while in Insert/Visual changes
