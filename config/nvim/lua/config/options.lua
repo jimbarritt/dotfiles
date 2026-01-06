@@ -65,7 +65,7 @@ vim.api.nvim_set_hl(0, 'StatusLineNormal', { fg = '#d8dee9', bg = '#3b4252' })
 
 -- Custom statuscolumn with git signs and folds
 local function get_statuscolumn()
-  return table.concat({
+  local col = table.concat({
     "%s",  -- Signs (gitsigns will display here)
     "%=",  -- Right align everything after this
     "%l",  -- Line number
@@ -73,9 +73,25 @@ local function get_statuscolumn()
     "%{foldclosed(v:lnum) >= 0 ? ' ›' : ' '}",  -- Fold indicator only when fold is closed
     " ",   -- Spacing
   })
+  -- Wrap with clickable region for fold toggling
+  return "%@v:lua.require'config.statuscolumn'.click_fold@" .. col .. "%T"
 end
 
 vim.opt.statuscolumn = get_statuscolumn()
+
+-- Create statuscolumn module for click handling
+local statuscolumn = {}
+function statuscolumn.click_fold()
+  local pos = vim.fn.getmousepos()
+  if vim.fn.foldlevel(pos.line) > 0 then
+    vim.api.nvim_win_set_cursor(pos.winid, { pos.line, 1 })
+    vim.api.nvim_win_call(pos.winid, function()
+      vim.cmd("normal! za")
+    end)
+  end
+end
+
+package.loaded['config.statuscolumn'] = statuscolumn
 
 vim.schedule(function()
   vim.notify = function(msg, level, opts)
