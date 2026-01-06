@@ -12,9 +12,9 @@ vim.keymap.set('n', '<C-b>', '<C-b>zz', { noremap = true, desc = 'Page up and ce
 vim.keymap.set('n', '<C-d>', '<C-d>zz', { noremap = true, desc = 'Half page down and center' })
 vim.keymap.set('n', '<C-u>', '<C-u>zz', { noremap = true, desc = 'Half page up and center' })
 
--- Indent and stay in visual mode without the "top of block" jump
-vim.keymap.set("v", ">", ":<C-u>normal! >gv<CR>", { silent = true })
-vim.keymap.set("v", "<", ":<C-u>normal! <gv<CR>", { silent = true })
+-- Indent and stay in visual mode
+vim.keymap.set("v", ">", ">gv", { noremap = true, silent = true })
+vim.keymap.set("v", "<", "<gv", { noremap = true, silent = true })
 
 -- Telescope keybindings
 local builtin = require('telescope.builtin')
