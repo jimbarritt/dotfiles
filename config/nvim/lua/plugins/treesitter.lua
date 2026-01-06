@@ -24,6 +24,6 @@ return {
       additional_vim_regex_highlighting = false,
     },
     indent = { enable = false },
-    -- ... rest of your incremental_selection config
+    fold = { enable = true },
   },
 }
