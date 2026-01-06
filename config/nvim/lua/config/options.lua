@@ -63,6 +63,12 @@ vim.opt.showmode = false  -- Disable mode in command line
 vim.api.nvim_set_hl(0, 'StatusLineMode', { fg = '#000000', bg = '#88c0d0', bold = true })
 vim.api.nvim_set_hl(0, 'StatusLineNormal', { fg = '#d8dee9', bg = '#3b4252' })
 
+-- Folding
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldenable = true
+vim.opt.foldlevel = 99
+
 vim.schedule(function()
   vim.notify = function(msg, level, opts)
     -- Silent - do nothing, no popups ever
