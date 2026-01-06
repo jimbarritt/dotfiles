@@ -53,6 +53,10 @@ vim.keymap.set('i', '<C-j>', '<Down>', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-k>', '<Up>', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-l>', '<Right>', { noremap = true, silent = true })
 
+-- Emacs-style line navigation in insert mode
+vim.keymap.set('i', '<C-a>', '<C-o>^', { noremap = true, silent = true, desc = 'Start of text' })
+vim.keymap.set('i', '<C-e>', '<End>', { noremap = true, silent = true, desc = 'End of line' })
+
 -- Insert blank line below (without entering insert mode)
 vim.keymap.set('n', '<Leader>o', 'o<Esc>', { noremap = true, silent = true })
 
