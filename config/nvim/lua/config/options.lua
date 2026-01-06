@@ -82,12 +82,19 @@ vim.opt.statuscolumn = get_statuscolumn()
 -- Create statuscolumn module for click handling
 local statuscolumn = {}
 function statuscolumn.click_fold()
+  -- Get current window from global context (before getmousepos might affect it)
+  local cur_win = vim.api.nvim_get_current_win()
+  local cursor = vim.api.nvim_win_get_cursor(cur_win)
+
   local pos = vim.fn.getmousepos()
   if vim.fn.foldlevel(pos.line) > 0 then
-    vim.api.nvim_win_set_cursor(pos.winid, { pos.line, 1 })
     vim.api.nvim_win_call(pos.winid, function()
-      vim.cmd("normal! za")
+      -- Toggle fold on the clicked line
+      vim.fn.execute(pos.line .. "normal! za", "silent")
     end)
+
+    -- Restore cursor position AFTER fold toggle
+    vim.api.nvim_win_set_cursor(cur_win, cursor)
   end
 end
 
