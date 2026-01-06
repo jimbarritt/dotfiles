@@ -9,6 +9,10 @@ return {
         topdelete    = { text = '▎' },
         changedelete = { text = '▎' },
       },
+      sign_priority = 6,
+      numhl = false,
+      linehl = false,
+      attach_to_untracked = false,
     },
   },
 }

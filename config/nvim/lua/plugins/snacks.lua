@@ -3,6 +3,8 @@ return {
   opts = {
     statuscolumn = {
       enabled = true,
+      left = { "sign" },
+      right = { "fold" },
     },
   },
 }
