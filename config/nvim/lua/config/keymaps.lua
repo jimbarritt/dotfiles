@@ -46,6 +46,29 @@ vim.keymap.set('n', '<leader>fo', builtin.oldfiles, { desc = 'Find old files' })
 vim.keymap.set('i', '<C-g>', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('v', '<C-g>', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('c', '<C-g>', '<C-c>', { noremap = true })
+vim.keymap.set("n", "<C-g>", function()
+  vim.cmd("nohlsearch")
+
+  -- Get values with explicit fallbacks
+  local file = vim.fn.expand('%:~') or ""
+  local line = vim.fn.line('.')
+  local total = vim.fn.line('$')
+  local col = vim.fn.col('.')
+  
+  -- Convert to numbers, ensuring we never have nil
+  line = type(line) == "number" and line or 0
+  total = type(total) == "number" and total or 0  
+  col = type(col) == "number" and col or 0
+  
+  local percent = total > 0 and math.floor(line/total * 100) or 0
+  
+  local is_exec = vim.fn.executable(file) == 1
+  local status = is_exec and "[executable] " or "" 
+
+  print(string.format('"%s" %sline %d of %d --%d%%-- col %d', 
+    file, status, line, total, percent, col))
+
+end, { desc = "Clear highlights and show file info" })
 
 -- Insert mode navigation with Ctrl+hjkl
 vim.keymap.set('i', '<C-h>', '<Left>', { noremap = true, silent = true })
@@ -69,3 +92,7 @@ vim.keymap.set('n', '<leader>/', ':nohlsearch<CR>', { noremap = true, silent = t
 
 -- Toggle nvim-tree
 vim.keymap.set('n', '<leader>n', ':NvimTreeToggle<CR>', { noremap = true, silent = true, desc = "Toggle file tree" })
+
+-- LSP bindings
+vim.keymap.set("n", "grn", vim.lsp.buf.rename, { desc = "LSP Rename" })
+vim.keymap.set("n", "<S-F6>", vim.lsp.buf.rename, { desc = "LSP Rename" })
