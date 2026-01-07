@@ -65,8 +65,8 @@ vim.keymap.set("n", "<C-g>", function()
   local is_exec = vim.fn.executable(file) == 1
   local status = is_exec and "[executable] " or "" 
 
-  print(string.format('"%s" %sline %d of %d --%d%%-- col %d', 
-    file, status, line, total, percent, col))
+  print(string.format('"%s" %s(%d lines)', 
+    file, status, total ))
 
 end, { desc = "Clear highlights and show file info" })
 
