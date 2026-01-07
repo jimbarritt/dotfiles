@@ -140,6 +140,13 @@ zle -N zle-line-init
 bindkey -M viins '^G' vi-cmd-mode
 # clicolors
 
+tmux-named() {
+  local title="${1:-tmux}"
+  local session="${2:-$title}"
+  printf "\e]2;%s\e\\" "$title"
+  tmux new -s "$session" || tmux attach -t "$session"
+}
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
