@@ -12,6 +12,23 @@ return {
     local cmp = require('cmp')
     local luasnip = require('luasnip')
 
+    -- Load snippets from lua files
+    require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/snippets/" })
+    
+    -- Navigation keybindings for snippets
+    vim.keymap.set({"i", "s"}, "<C-k>", function()
+      if luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      end
+    end, { silent = true, desc = "Jump to next snippet placeholder" })
+    
+    vim.keymap.set({"i", "s"}, "<C-j>", function()
+      if luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      end
+    end, { silent = true, desc = "Jump to previous snippet placeholder" })
+    
+
     cmp.setup({
       snippet = {
         expand = function(args)
