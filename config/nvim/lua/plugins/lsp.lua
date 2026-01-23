@@ -14,7 +14,14 @@ return {
     })
     vim.diagnostic.config({
       virtual_text = false,
-      signs = true,
+      signs = {
+        text = {
+          [vim.diagnostic.severity.ERROR] = '●',
+          [vim.diagnostic.severity.WARN]  = '●',
+          [vim.diagnostic.severity.INFO]  = '●',
+          [vim.diagnostic.severity.HINT]  = '●',
+        },
+      },
       underline = true,
       -- THE KEY: Don't refresh error highlights while in Insert/Visual changes
       update_in_insert = false,
@@ -36,6 +43,7 @@ return {
 
       -- Keybindings (Consolidated)
       vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("Go to definition"))
+      vim.keymap.set("n", "gI", vim.lsp.buf.implementation, opts("Go to implementation"))
       vim.keymap.set("n", "gr", vim.lsp.buf.references, opts("Show references"))
       vim.keymap.set("n", "K", vim.lsp.buf.hover, opts("Hover documentation"))
       vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Rename symbol"))

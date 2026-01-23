@@ -95,4 +95,7 @@ vim.keymap.set('n', '<leader>n', ':NvimTreeToggle<CR>', { noremap = true, silent
 
 -- LSP bindings
 vim.keymap.set("n", "grn", vim.lsp.buf.rename, { desc = "LSP Rename" })
-vim.keymap.set("n", "<S-F6>", vim.lsp.buf.rename, { desc = "LSP Rename" })
+--vim.keymap.set("n", "<S-F6>", vim.lsp.buf.rename, { desc = "LSP Rename" })
+  vim.keymap.set("n", "<S-F6>", function()
+    vim.notify("S-F6 pressed!", vim.log.levels.INFO)
+  end, { desc = "Test S-F6" })
