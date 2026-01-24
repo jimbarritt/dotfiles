@@ -1,4 +1,4 @@
--- Telescope configuration 
+-- Telescope configuration
 return {
   {
     'nvim-telescope/telescope.nvim',
