@@ -50,9 +50,9 @@ Language servers are managed through a three-layer system:
 
 **Modular Plugin System**: Each plugin in `lua/plugins/` is independent. To enable/disable, simply add/remove the return statement or the entire file. The lazy.nvim configuration in `lua/config/lazy.lua` loads LazyVim base plugins plus all files in `lua/plugins/`.
 
-**Git Root Detection** (`lua/config/project.lua`): On startup, Neovim automatically detects and changes to the git repository root, providing project-aware context.
+**Git Root Detection** (`lua/config/project.lua`): On startup, Neovim automatically detects and changes to the git repository root, providing project-aware context. This ensures relative file paths and commands operate from the project root. If you need to disable this behavior, comment out or remove the call to `setup_project_root()` in `init.lua`.
 
-**Colorscheme Strategy**: Primary colorscheme is `green-tinted.lua` (custom, optimized for eye comfort). Fallbacks include Catppuccin and Tokyonight.
+**Colorscheme Strategy**: The primary colorscheme is `green-tinted.lua`, a custom colorscheme defined in `colors/green-tinted.lua` and optimized for eye comfort during extended use. This is loaded first in `lua/plugins/colorscheme.lua`. Fallback colorschemes (Catppuccin and Tokyonight) are available if issues occur. The custom colorscheme file uses direct color definitions rather than relying on theme plugins, making it lightweight and ensuring consistent visual feedback across the editor.
 
 ## Directory Structure
 
@@ -174,6 +174,7 @@ The shared `on_attach` function and `capabilities` will automatically apply to t
 ## Recent Development Focus
 
 Based on git history, recent work has focused on:
+- **Visual feedback refinements** (circles for LSP errors to improve diagnostic visibility, cursor position restoration on restart)
 - **Flicker prevention** in LSP rendering (disabling semantic tokens to prevent repainting over TreeSitter)
 - **Plugin ecosystem updates** (lazy.nvim and dependency management)
 - **Syntax highlighting improvements**
@@ -202,6 +203,20 @@ The configuration is designed for:
 - **~670 lines of Lua** across 19 custom configuration files
 - **45 plugin files** in lua/plugins/ directory
 
+## Quick Troubleshooting Checklist
+
+Use this checklist when things aren't working as expected:
+
+```
+[ ] Restart Neovim (many issues resolve with a fresh start)
+[ ] Run `:checkhealth` to diagnose system issues
+[ ] Check `:LspInfo` to confirm language servers are attached
+[ ] Run `:Lazy sync` to ensure plugins are up-to-date
+[ ] Run `:messages` to review error logs
+[ ] Verify required tools are installed (Node.js, Rust, etc.)
+[ ] Check git root detection: `:pwd` should show your project root
+```
+
 ## Troubleshooting Patterns
 
 **LSP Not Attaching**:
@@ -218,3 +233,11 @@ The configuration is designed for:
 **Performance Issues**:
 - Check `lua/plugins/snacks.nvim.lua` for bigfile detection settings
 - Verify TreeSitter parsers are installed and up-to-date
+
+**Cursor Position Not Restoring**:
+- This is handled by `lua/config/autocmds.lua`. If cursor position doesn't restore on restart, check that file-specific view state isn't being corrupted
+
+**Visual Glitches or LSP Circles Not Showing**:
+- Verify your terminal and font support the required glyphs
+- Check colorscheme is loading correctly: `:colorscheme` should show `green-tinted`
+- If you see rendering issues, try temporarily switching colorscheme: `:colorscheme catppuccin`
