@@ -29,7 +29,13 @@ local function get_git_root()
 end
 
 vim.keymap.set('n', '<leader>ff', function()
-  builtin.find_files({ cwd = get_git_root() })
+  builtin.find_files({
+    cwd = get_git_root(),
+    previewer = false,
+    path_display = function(_, path)
+      return path
+    end,
+  })
 end, { desc = 'Find files (git root or cwd)' })
 
 vim.keymap.set('n', '<leader>fg', function()
