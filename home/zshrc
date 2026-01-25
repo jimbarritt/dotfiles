@@ -213,8 +213,11 @@ else
   alias lt="tree"
 fi
 
-alias envim="nvim ~/.config/nvim"
-alias ezshrc="nvim ~/.zshrc"
+tab-title() { kitty @ set-tab-title "$1"; }
+
+alias e-nvim="nvim ~/.config/nvim"
+alias e-zshrc="nvim ~/.zshrc"
+
 
 alias dc="docker-compose"
 

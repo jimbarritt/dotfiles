@@ -32,6 +32,7 @@ vim.keymap.set('n', '<leader>ff', function()
   builtin.find_files({
     cwd = get_git_root(),
     previewer = false,
+    disable_devicons = true,
     path_display = function(_, path)
       return path
     end,
