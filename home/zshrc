@@ -215,9 +215,30 @@ fi
 
 tab-title() { kitty @ set-tab-title "$1"; }
 
-alias e-nvim="nvim ~/.config/nvim"
-alias e-zshrc="nvim ~/.zshrc"
+lnproj() {
+  if [ -z "$1" ]; then
+    echo "Usage: lnproj <directory-name>"
+    return 1
+  fi
 
+  # Check if we're already in the projects directory
+  case "$(pwd)" in
+    "$HOME/projects"*)
+      echo "Cannot link, already in projects!" >&2
+      return 1
+      ;;
+  esac
+
+  local source_dir="$(pwd)/$1"
+  local target_link="$HOME/projects/$1"
+
+  ln -sf "$source_dir" "$target_link"
+  echo "Linked: $source_dir -> $target_link"
+}
+
+alias envim="nvim ~/.config/nvim"
+alias ezshrc="nvim ~/.zshrc"
+alias athena="cd ~/projects/personal-assistant && claude"
 
 alias dc="docker-compose"
 
