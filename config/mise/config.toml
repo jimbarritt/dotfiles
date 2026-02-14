@@ -3,3 +3,9 @@ node = "latest"
 pnpm = "latest"
 "npm:@meza/adr-tools" = "latest"
 "npm:tsx" = "latest"
+"npm:wrangler" = "latest"
+
+[settings]
+
+[settings.npm]
+package_manager = "pnpm"
