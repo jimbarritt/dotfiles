@@ -5,6 +5,9 @@ pnpm = "latest"
 "npm:tsx" = "latest"
 "npm:wrangler" = "latest"
 awscli = { version = "latest", symlink_bins = "true" }
+rust = "latest"
+uv = "latest"
+python = "latest"
 
 [settings]
 
