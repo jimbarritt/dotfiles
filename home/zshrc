@@ -240,6 +240,8 @@ alias envim="nvim ~/.config/nvim"
 alias ezshrc="nvim ~/.zshrc"
 alias athena="cd ~/projects/personal-assistant && claude"
 
+alias claude-yolo='claude --dangerously-skip-permissions'
+alias glow='glow -p'
 alias dc="docker-compose"
 
 if [ -n "$INSIDE_EMACS" ]; then
