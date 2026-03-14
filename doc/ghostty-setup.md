@@ -35,6 +35,15 @@ Ported from the kitty `green-tinted.conf` theme — same 16 palette colours, bac
 
 `shell-integration = detect` with `shell-integration-features = no-cursor` — lets Ghostty detect the shell automatically but keeps cursor style control in the zsh config rather than letting the shell integration override it.
 
+## Window management
+
+No macOS titlebar buttons with `macos-titlebar-style = hidden`, so use keyboard shortcuts:
+
+| Shortcut | Action |
+|---|---|
+| `Cmd-w` | Close window |
+| `Cmd-q` | Quit Ghostty |
+
 ## Useful Ghostty commands
 
 ```sh
