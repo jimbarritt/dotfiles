@@ -35,8 +35,13 @@ Full reference: [git-config documentation](https://git-scm.com/docs/git-config)
     sm = submodule
     st = status
     br = branch
+    c  = commit -q
     serve = !git daemon --reuseaddr --verbose  --base-path=. --export-all ./.git
     lol = !git log --reverse --format='%C(yellow) %h %Creset %<(10)%an %<(12)%cd %<(80,trunc)%s' --date=format:'%y-%m-%d %H:%M' -15
+
+[advice]
+    statusHints = false
+    detachedHead = false
 
 [push]
     default = matching
@@ -113,8 +118,27 @@ Shortcuts for common commands. Aliases prefixed with `!` run shell commands rath
 | `sm`  | `submodule` | Shorthand for submodule operations |
 | `st`  | `status` | |
 | `br`  | `branch` | |
+| `c`   | `commit -q` | Quiet commit — suppresses the file stats summary, just shows the commit hash |
 | `serve` | `git daemon ...` | Serves the repo over the git protocol on your local machine, useful for quick local sharing |
 | `lol` | `git log ...` | A compact, coloured one-line log of the last 15 commits with author, date, and truncated subject |
+
+Note: you can't alias `commit` itself — git always runs built-in commands before checking aliases.
+
+### `[advice]`
+
+Suppresses git's instructional hints. These are helpful when learning but noisy once you know the workflow.
+
+- `statusHints = false` — removes the "use git add/rm to update what will be committed" lines from `git status`
+- `detachedHead = false` — suppresses the warning when checking out a specific commit
+
+Other advice keys worth knowing about (set to `false` to silence):
+
+| Key | What it suppresses |
+|-----|-------------------|
+| `pushUpdateRejected` | hints when a push is rejected |
+| `waitingForEditor` | "Waiting for your editor to close the file..." |
+| `resolveConflict` | merge conflict resolution instructions |
+| `addEmptyPathspec` | warning when `git add .` has nothing to add |
 
 ### `[push]`
 
