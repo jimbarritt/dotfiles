@@ -1,6 +1,34 @@
+# Prompt if shell is interactive but not launched from a known terminal
+_is_known_terminal() {
+  [[ -n "$KITTY_WINDOW_ID" ]] && return 0        # Kitty
+  [[ "$TERM_PROGRAM" == "vscode" ]] && return 0  # VS Code terminal
+  [[ -n "$TMUX" ]] && return 0                   # tmux session
+  [[ -n "$SSH_CONNECTION" ]] && return 0         # SSH
+  [[ "$TERM_PROGRAM" == "JetBrains-JediTerm" ]] && return 0  # IntelliJ / JetBrains IDEs
+  [[ -n "$INSIDE_EMACS" ]] && return 0  # Emacs (term/ansi-term/vterm)
+  return 1
+}
+
+if [[ $- == *i* ]] && ! _is_known_terminal; then
+  echo "!!  Shell launched from unsupported context (TERM_PROGRAM=${TERM_PROGRAM:-unset})"
+
+  if [[ ! -f "$HOME/.shellpwd" ]]; then
+    echo "X  ~/.shellpwd not found. Exiting."
+    exit 1
+  fi
+
+  read -rs "?Shell password: " _entered
+  echo
+  if [[ "$_entered" != "$(cat "$HOME/.shellpwd")" ]]; then
+    echo "X  Wrong password. Exiting."
+    exit 1
+  fi
+  unset _entered
+fi
+
+
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export TERM=xterm-256color
-
 export EDITOR="nvim"
 export VISUAL="nvim"
 
@@ -396,3 +424,8 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+
+[[ -d "/opt/homebrew/opt/libpq/bin" ]] && export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
+[[ -f "$HOME/.zshrc_work" ]] && source "$HOME/.zshrc_work"
