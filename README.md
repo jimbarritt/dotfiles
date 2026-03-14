@@ -92,9 +92,14 @@ based on NORD
 
 Checkout from [here](https://github.com/jimbarritt/dot-files)
 
-Theres a script in there called `install.sh`
+```sh
+just install           # install zsh plugins and git hooks
+just link              # symlink dotfiles into $HOME
+just link --dry-run    # preview what link would do
+just test              # shellcheck all scripts
+```
 
-The `.bashrc` file is where it all kicks off. This has a set of generic customisations for bash which should work on any machine. If there are customisations that are specific to a machine (i.e. they need a hard coded path, then this file sources the file `.bashrc_workstation`, so they can be stored there.
+Machine-local config goes in `~/.zshrc_work` (sourced at the end of `.zshrc`, not tracked here).
 
 I have some aliases set up for git in `.gitconfig` particularly interesting is the "serve" option - see http://coderwall.com/p/eybtga. This means I just need to type:
 

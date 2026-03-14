@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if ! make test; then
-    echo "[PRE-COMMIT HOOK] - Commit rejected: 'make test' failed"
+if ! just test; then
+    echo "[PRE-COMMIT HOOK] - Commit rejected: 'just test' failed"
     echo "[PRE-COMMIT HOOK] - Fix the issues or use 'git commit --no-verify' to skip"
     exit 1
 fi

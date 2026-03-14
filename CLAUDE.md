@@ -5,13 +5,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```sh
-make install        # Install zsh plugins and configure git hooks
-make link           # Symlink all dotfiles into $HOME
-make link-dry-run   # Preview what link would do
-make test           # Run shellcheck on do.sh and hooks/pre-commit
+just install          # Install zsh plugins and configure git hooks
+just link             # Symlink all dotfiles into $HOME
+just link --dry-run   # Preview what link would do
+just test             # Run shellcheck on do.sh and hooks/pre-commit
 ```
 
-`make test` runs on every commit via the pre-commit hook.
+`just test` runs on every commit via the pre-commit hook.
 
 ## How it works
 
