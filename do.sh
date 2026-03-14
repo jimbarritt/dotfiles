@@ -113,6 +113,7 @@ link_all() {
   link_config mise
 
   create_symlink "${DOTFILES_DIR}/home/oh-my-zsh/green-tinted.zsh-theme" "${HOME}/.oh-my-zsh/custom/themes/green-tinted.zsh-theme"
+  create_symlink "${DOTFILES_DIR}/bin" "${HOME}/bin"
 }
 
 

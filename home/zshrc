@@ -280,6 +280,7 @@ lnproj() {
 
 alias envim="nvim ~/.config/nvim"
 alias ezshrc="nvim ~/.zshrc"
+alias reload-tmux="tmux source-file ~/.tmux.conf"
 alias athena="cd ~/projects/personal-assistant && claude"
 
 alias claude-yolo='claude --dangerously-skip-permissions'
