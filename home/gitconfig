@@ -13,7 +13,8 @@
 	interactive = auto
 
 [alias]
-  cm = commit -q
+  com = commit -q
+  psh = push -q
   sm = submodule
 	st = status
 	br = branch

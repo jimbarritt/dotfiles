@@ -36,6 +36,7 @@ Full reference: [git-config documentation](https://git-scm.com/docs/git-config)
     st = status
     br = branch
     c  = commit -q
+    p  = push -q
     serve = !git daemon --reuseaddr --verbose  --base-path=. --export-all ./.git
     lol = !git log --reverse --format='%C(yellow) %h %Creset %<(10)%an %<(12)%cd %<(80,trunc)%s' --date=format:'%y-%m-%d %H:%M' -15
 
@@ -119,6 +120,7 @@ Shortcuts for common commands. Aliases prefixed with `!` run shell commands rath
 | `st`  | `status` | |
 | `br`  | `branch` | |
 | `c`   | `commit -q` | Quiet commit — suppresses the file stats summary, just shows the commit hash |
+| `p`   | `push -q` | Quiet push — suppresses the remote tracking info, just shows errors if any |
 | `serve` | `git daemon ...` | Serves the repo over the git protocol on your local machine, useful for quick local sharing |
 | `lol` | `git log ...` | A compact, coloured one-line log of the last 15 commits with author, date, and truncated subject |
 
