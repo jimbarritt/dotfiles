@@ -1,0 +1,22 @@
+ TMUX CHEATSHEET                              q to close
+
+ PANES
+  Ctrl-b %       Split vertical
+  Ctrl-b "       Split horizontal
+  Ctrl-b z       Zoom/unzoom pane
+  Ctrl-b x       Close pane
+  Ctrl-b o       Next pane
+  Ctrl-b q       Show pane numbers (press number to jump)
+
+ SESSIONS
+  Ctrl-b a       New session (prompt for name)
+  Ctrl-b s       Browse & switch sessions
+  Ctrl-b (  )    Previous / next session
+  Ctrl-b L       Toggle last session
+  Ctrl-b $       Rename session
+  Ctrl-b k       Kill current session (with confirmation)
+  Ctrl-b d       Detach session
+
+ OTHER
+  Ctrl-b b       Toggle status bar
+  Ctrl-b [       Scroll mode (q to exit)

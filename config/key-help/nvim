@@ -1,0 +1,28 @@
+ NVIM CHEATSHEET                              q to close
+
+ NAVIGATION
+  h j k l        Left / down / up / right
+  w  b           Next / previous word
+  0  $           Start / end of line
+  gg  G          Top / bottom of file
+  Ctrl-d  Ctrl-u Half page down / up
+  {  }           Previous / next paragraph
+
+ EDITING
+  i  a           Insert before / after cursor
+  o  O           New line below / above
+  u  Ctrl-r      Undo / redo
+  dd  yy         Delete / yank line
+  p  P           Paste below / above
+  ciw  diw       Change / delete inner word
+
+ SEARCH
+  /              Search forward
+  n  N           Next / previous match
+  *              Search word under cursor
+
+ FILES & BUFFERS
+  :w             Save
+  :q  :q!        Quit / force quit
+  :wq            Save and quit
+  :e <file>      Open file
