@@ -88,3 +88,7 @@ Running `tmux new -s name` from a shell inside tmux triggers a nesting warning. 
 | `Ctrl-b b` | Toggle status bar |
 | `Ctrl-b ?` | Show context-aware cheatsheet |
 | `Ctrl-b [` | Scroll mode (q to exit) |
+
+## Future
+
+- **tmux-resurrect** — saves and restores sessions, pane layouts, and working directories across reboots. Pair with **tmux-continuum** for auto-save/restore on startup.
