@@ -26,13 +26,23 @@ Key settings:
 
 ### Status bar
 
-Shows all sessions. Current session is highlighted with a darker background. Toggle with `Ctrl-b b`.
+Shows all sessions. Current session is highlighted with a darker green background. Toggle with `Ctrl-b b`.
 
 Implemented via `bin/tmux-session-list.sh` (symlinked to `~/bin/`), called from `status-left` with the current session name passed as an argument — needed because tmux's `#()` shell commands are shared across clients, so we pass `#{session_name}` as an arg to distinguish per-client.
 
-### Help popup
+### key-help popup
 
-`Ctrl-b ?` shows a cheatsheet popup (`home/tmux-help.txt` → `~/.tmux-help.txt`). Press `q` to close.
+`Ctrl-b ?` shows a context-aware cheatsheet popup. It detects what is running in the current pane and shows the matching cheatsheet. Press `q` to close.
+
+Cheatsheets live in `config/key-help/` → symlinked to `~/.config/key-help/`. One file per command name (e.g. `nvim`, `zsh`, `claude`). Falls back to `default` if no file matches.
+
+The popup uses `run-shell` to invoke `display-popup`, passing `#{pane_current_command}` as an argument. This is necessary because `display-popup`'s shell command argument does not expand tmux format strings — only `run-shell` does.
+
+Currently mapped commands:
+- `zsh` / `claude` → tmux cheatsheet (you're always in tmux context)
+- `nvim` → nvim cheatsheet
+
+To add a new cheatsheet: create `config/key-help/<command>` with a header line like `TOOL CHEATSHEET` and the content you want.
 
 ## Sessions
 
@@ -53,6 +63,7 @@ From inside tmux:
 | `Ctrl-b (` / `)` | Previous / next session |
 | `Ctrl-b L` | Toggle last session |
 | `Ctrl-b $` | Rename session |
+| `Ctrl-b k` | Kill current session (switches to next first) |
 | `Ctrl-b d` | Detach (session keeps running) |
 
 ### Creating sessions from inside tmux
@@ -75,5 +86,5 @@ Running `tmux new -s name` from a shell inside tmux triggers a nesting warning. 
 | Keybinding | Action |
 |---|---|
 | `Ctrl-b b` | Toggle status bar |
-| `Ctrl-b ?` | Show cheatsheet |
+| `Ctrl-b ?` | Show context-aware cheatsheet |
 | `Ctrl-b [` | Scroll mode (q to exit) |
