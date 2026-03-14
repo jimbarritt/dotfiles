@@ -3,8 +3,8 @@
 current="$1"
 tmux ls -F '#{session_name}' | while read -r name; do
   if [ "$name" = "$current" ]; then
-    printf '● %s  ' "$name"
+    printf '#[bg=#3a7a3a,fg=#000000] %s #[bg=#122912,fg=#4a7c4a] ' "$name"
   else
-    printf '○ %s  ' "$name"
+    printf ' %s  ' "$name"
   fi
 done
