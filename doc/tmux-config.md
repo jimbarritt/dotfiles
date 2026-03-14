@@ -1,12 +1,18 @@
 # tmux config
 
+## The prefix key
+
+Every tmux command starts with a **prefix key**, defaulting to `Ctrl-b`. It was chosen because it's rarely used in normal terminal apps — unlike `Ctrl-a` which GNU Screen used and which clashes with readline's "go to start of line". You can rebind it, but `Ctrl-b` is fine unless it conflicts with something you use regularly.
+
 ## Concepts
 
-tmux has three levels:
+tmux has three levels of nesting:
 
 - **Session** — top-level named workspace, persists after detach. Use one per project.
-- **Window** — a "tab" within a session, fills the full terminal.
-- **Pane** — a split within a window.
+- **Window** — a fullscreen layout within a session. You can only see one at a time. Mostly ignore these — one window per session is fine.
+- **Pane** — a split within a window. Use these when you want to see multiple things at once.
+
+**Practical mental model: sessions = projects, panes = splits. Ignore windows.**
 
 ## Our setup
 
@@ -14,45 +20,60 @@ Config lives at `home/tmux.conf` → symlinked to `~/.tmux.conf`.
 
 Key settings:
 
-- `status off` — status bar hidden by default (toggle with `Ctrl-b b`)
+- `status on` — status bar always visible, showing sessions
 - `mouse on` — click to select panes, scroll with trackpad
 - Terminal overrides for full colour and italic support (ghostty/kitty compatible)
 
-## Sessions (project workspaces)
+### Status bar
 
-| Command | Action |
+Shows all sessions. Current session is highlighted with a darker background. Toggle with `Ctrl-b b`.
+
+Implemented via `bin/tmux-session-list.sh` (symlinked to `~/bin/`), called from `status-left` with the current session name passed as an argument — needed because tmux's `#()` shell commands are shared across clients, so we pass `#{session_name}` as an arg to distinguish per-client.
+
+### Help popup
+
+`Ctrl-b ?` shows a cheatsheet popup (`home/tmux-help.txt` → `~/.tmux-help.txt`). Press `q` to close.
+
+## Sessions
+
+From outside tmux:
+
+```sh
+tmux new -s <name>        # create and attach
+tmux attach -t <name>     # reattach
+tmux ls                   # list sessions
+```
+
+From inside tmux:
+
+| Keybinding | Action |
 |---|---|
-| `tmux new -s <name>` | Create a named session |
-| `tmux attach -t <name>` | Attach to an existing session |
-| `tmux ls` | List sessions |
-| `Ctrl-b $` | Rename current session |
-| `Ctrl-b d` | Detach (session keeps running) |
+| `Ctrl-b a` | New session (prompts for name) |
 | `Ctrl-b s` | Browse and switch sessions |
 | `Ctrl-b (` / `)` | Previous / next session |
 | `Ctrl-b L` | Toggle last session |
+| `Ctrl-b $` | Rename session |
+| `Ctrl-b d` | Detach (session keeps running) |
 
-## Windows (tabs within a session)
+### Creating sessions from inside tmux
 
-See `tmux_cheatsheet.md` for the full window command reference.
+Running `tmux new -s name` from a shell inside tmux triggers a nesting warning. Use `Ctrl-b a` instead, which uses tmux's internal command system and avoids the issue.
 
-Key ones:
+## Panes
 
-| Command | Action |
-|---|---|
-| `Ctrl-b c` | New window |
-| `Ctrl-b ,` | Rename window |
-| `Ctrl-b n` / `p` | Next / previous window |
-| `Ctrl-b w` | Window list with preview |
-
-## Panes (splits)
-
-| Command | Action |
+| Keybinding | Action |
 |---|---|
 | `Ctrl-b %` | Split vertically |
 | `Ctrl-b "` | Split horizontally |
 | `Ctrl-b z` | Zoom/unzoom pane |
 | `Ctrl-b x` | Close pane |
+| `Ctrl-b o` | Next pane |
+| `Ctrl-b q` | Flash pane numbers, press number to jump |
 
-## Status bar
+## Other
 
-Hidden by default. Toggle with `Ctrl-b b`.
+| Keybinding | Action |
+|---|---|
+| `Ctrl-b b` | Toggle status bar |
+| `Ctrl-b ?` | Show cheatsheet |
+| `Ctrl-b [` | Scroll mode (q to exit) |

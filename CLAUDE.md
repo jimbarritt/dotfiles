@@ -13,6 +13,10 @@ just test             # Run shellcheck on do.sh and hooks/pre-commit
 
 `just test` runs on every commit via the pre-commit hook.
 
+## Repo location
+
+The canonical repo is at `~/Code/github/jimbarritt/dotfiles`. `~/projects/dotfiles` is a symlink to the same place — they are not separate clones.
+
 ## How it works
 
 `do.sh` is the main script. It symlinks files from two directories into the home directory:
