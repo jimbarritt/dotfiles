@@ -13,8 +13,8 @@
 	interactive = auto
 
 [alias]
-  com = commit -q
-  psh = push -q
+  com = commit 
+  psh = push
   sm = submodule
 	st = status
 	br = branch
@@ -65,6 +65,8 @@
 [advice]
       statusHints = false
       detachedHead = false
+      pushUpdateRejected = false
+      pushNonFFCurrent   = false
 
 # Include work config if it exists (checked last, so it overrides)
 [include]
