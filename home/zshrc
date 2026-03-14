@@ -1,31 +1,44 @@
 # Prompt if shell is interactive but not launched from a known terminal
+_process_tree_contains() {
+  local name=$1 pid=$PPID
+  for _level in 1 2 3; do
+    local comm=$(ps -o comm= -p $pid 2>/dev/null)
+    [[ "$comm" == *$name* ]] && return 0
+    pid=$(ps -o ppid= -p $pid 2>/dev/null | tr -d ' ')
+    [[ -z "$pid" || "$pid" == "1" ]] && break
+  done
+  return 1
+}
+
 _is_known_terminal() {
-  [[ -n "$KITTY_WINDOW_ID" ]] && return 0        # Kitty
-  [[ "$TERM_PROGRAM" == "vscode" ]] && return 0  # VS Code terminal
-  [[ -n "$TMUX" ]] && return 0                   # tmux session
-  [[ -n "$SSH_CONNECTION" ]] && return 0         # SSH
-  [[ "$TERM_PROGRAM" == "JetBrains-JediTerm" ]] && return 0  # IntelliJ / JetBrains IDEs
-  [[ -n "$INSIDE_EMACS" ]] && return 0  # Emacs (term/ansi-term/vterm)
+  [[ -n "$KITTY_WINDOW_ID" ]] && _process_tree_contains "kitty" && return 0
+  [[ "$TERM_PROGRAM" == "vscode" ]] && _process_tree_contains "electron" && return 0
+  [[ "$TERM_PROGRAM" == "JetBrains-JediTerm" ]] && _process_tree_contains "java" && return 0
+  [[ -n "$INSIDE_EMACS" ]] && _process_tree_contains "emacs" && return 0
+  [[ -n "$TMUX" ]] && _process_tree_contains "tmux" && return 0
+  [[ -n "$SSH_CONNECTION" ]] && return 0
   return 1
 }
 
 if [[ $- == *i* ]] && ! _is_known_terminal; then
-  echo "!!  Shell launched from unsupported context (TERM_PROGRAM=${TERM_PROGRAM:-unset})"
+  echo "  shell guard: unrecognised launch context (TERM_PROGRAM=${TERM_PROGRAM:-unset})"
 
   if [[ ! -f "$HOME/.shellpwd" ]]; then
-    echo "X  ~/.shellpwd not found. Exiting."
+    echo "  abort: ~/.shellpwd not found."
     exit 1
   fi
 
-  read -rs "?Shell password: " _entered
+  trap 'echo; echo "  abort: interrupted."; exit 1' INT
+  read -rs "? password: " _entered
   echo
+  trap - INT
+
   if [[ "$_entered" != "$(cat "$HOME/.shellpwd")" ]]; then
-    echo "X  Wrong password. Exiting."
+    echo "  abort: wrong password."
     exit 1
   fi
   unset _entered
 fi
-
 
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export TERM=xterm-256color
