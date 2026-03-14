@@ -13,6 +13,7 @@ _process_tree_contains() {
 _is_known_terminal() {
   [[ -n "$KITTY_WINDOW_ID" ]] && _process_tree_contains "kitty" && return 0
   [[ "$TERM_PROGRAM" == "vscode" ]] && _process_tree_contains "electron" && return 0
+  [[ "$TERM_PROGRAM" == "ghostty" ]] && _process_tree_contains "ghostty" && return 0
   [[ "$TERM_PROGRAM" == "JetBrains-JediTerm" ]] && _process_tree_contains "java" && return 0
   [[ -n "$INSIDE_EMACS" ]] && _process_tree_contains "emacs" && return 0
   [[ -n "$TMUX" ]] && _process_tree_contains "tmux" && return 0
