@@ -11,4 +11,4 @@ if [ ! -f "$FILE" ]; then
   FILE="${HELP_DIR}/default"
 fi
 
-LESS= less +1 "$FILE"
+LESS= less -~ +1 "$FILE"
