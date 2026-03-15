@@ -28,6 +28,15 @@ WINDOWS
  0-9     Switch to window by number
  w       Browse & switch windows
 
+SCROLL / COPY MODE  (enter: [ , exit: q)
+ h j k l    Move
+ v          Start selection
+ V          Select line
+ y          Copy selection
+ ]          Paste (outside scroll mode: Leader ])
+ /          Search forward
+ ?          Search backward
+
 OTHER
  b       Toggle status bar
- [       Scroll mode
+ [       Enter scroll/copy mode
