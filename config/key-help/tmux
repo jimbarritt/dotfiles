@@ -8,6 +8,9 @@ PANES
  x       Close pane
  o       Next pane
  q       Show pane numbers
+ { }     Swap pane left / right
+ !       Break pane out to its own window
+ :join-pane -s <win>  Pull pane in from another window
 
 SESSIONS
  a       New session
@@ -17,6 +20,13 @@ SESSIONS
  $       Rename session
  k       Kill current session
  d       Detach session
+
+WINDOWS
+ c       New window
+ ,       Rename window
+ n / p   Next / previous window
+ 0-9     Switch to window by number
+ w       Browse & switch windows
 
 OTHER
  b       Toggle status bar

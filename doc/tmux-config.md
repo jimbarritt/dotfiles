@@ -9,10 +9,12 @@ Every tmux command starts with a **prefix key**, defaulting to `Ctrl-b`. It was 
 tmux has three levels of nesting:
 
 - **Session** — top-level named workspace, persists after detach. Use one per project.
-- **Window** — a fullscreen layout within a session. You can only see one at a time. Mostly ignore these — one window per session is fine.
+- **Window** — a fullscreen layout within a session. You can only see one at a time. Use these for distinct named layouts within a project (e.g. "coding", "tests", "docs").
 - **Pane** — a split within a window. Use these when you want to see multiple things at once.
 
-**Practical mental model: sessions = projects, panes = splits. Ignore windows.**
+**Practical mental model: sessions = projects, windows = layouts, panes = splits.**
+
+Window names are fixed — auto-rename is disabled so names stay as whatever you set with `Ctrl-b ,`. New sessions start with a window named "home".
 
 ## Our setup
 
@@ -22,11 +24,15 @@ Key settings:
 
 - `status on` — status bar always visible, showing sessions
 - `mouse on` — click to select panes, scroll with trackpad
+- `automatic-rename off` — window names stay fixed
+- `cursor-style blinking-block` — blinking cursor in active pane
 - Terminal overrides for full colour and italic support (ghostty/kitty compatible)
 
 ### Status bar
 
-Shows all sessions. Current session is highlighted with a darker green background. Toggle with `Ctrl-b b`.
+Left side shows all sessions. Current session is highlighted with a darker green background. Toggle with `Ctrl-b b`.
+
+Right side shows: `<window name> | pane <n> (<current command>)`
 
 Implemented via `bin/tmux-session-list.sh` (symlinked to `~/bin/`), called from `status-left` with the current session name passed as an argument — needed because tmux's `#()` shell commands are shared across clients, so we pass `#{session_name}` as an arg to distinguish per-client.
 
@@ -38,11 +44,7 @@ Cheatsheets live in `config/key-help/` → symlinked to `~/.config/key-help/`. O
 
 The popup uses `run-shell` to invoke `display-popup`, passing `#{pane_current_command}` as an argument. This is necessary because `display-popup`'s shell command argument does not expand tmux format strings — only `run-shell` does.
 
-Currently mapped commands:
-- `zsh` / `claude` → tmux cheatsheet (you're always in tmux context)
-- `nvim` → nvim cheatsheet
-
-To add a new cheatsheet: create `config/key-help/<command>` with a header line like `TOOL CHEATSHEET` and the content you want.
+To add a new cheatsheet: create `config/key-help/<command>` with the content you want.
 
 ## Sessions
 
@@ -70,6 +72,16 @@ From inside tmux:
 
 Running `tmux new -s name` from a shell inside tmux triggers a nesting warning. Use `Ctrl-b a` instead, which uses tmux's internal command system and avoids the issue.
 
+## Windows
+
+| Keybinding | Action |
+|---|---|
+| `Ctrl-b c` | New window |
+| `Ctrl-b ,` | Rename window |
+| `Ctrl-b n` / `p` | Next / previous window |
+| `Ctrl-b 0-9` | Switch to window by number |
+| `Ctrl-b w` | Browse and switch windows |
+
 ## Panes
 
 | Keybinding | Action |
@@ -80,6 +92,11 @@ Running `tmux new -s name` from a shell inside tmux triggers a nesting warning. 
 | `Ctrl-b x` | Close pane |
 | `Ctrl-b o` | Next pane |
 | `Ctrl-b q` | Flash pane numbers, press number to jump |
+| `Ctrl-b {` / `}` | Swap pane left / right |
+| `Ctrl-b !` | Break pane out to its own window |
+| `Ctrl-b : join-pane -s <win>` | Pull pane in from another window |
+
+There is no browse-style picker for panes. Use `Ctrl-b q` to see numbers and jump, or `Ctrl-b o` to cycle.
 
 ## Other
 
