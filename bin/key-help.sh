@@ -5,6 +5,12 @@
 
 HELP_DIR="${HOME}/.config/key-help"
 CMD="${PANE_CMD:-${1:-default}}"
+
+# Map commands that share a cheatsheet
+case "$CMD" in
+  zsh|claude) CMD="tmux" ;;
+esac
+
 FILE="${HELP_DIR}/${CMD}"
 
 if [ ! -f "$FILE" ]; then
