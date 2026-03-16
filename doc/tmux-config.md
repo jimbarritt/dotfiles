@@ -34,7 +34,7 @@ Left side shows all sessions. Current session is highlighted with a darker green
 
 Right side shows: `<window name> | pane <n> (<current command>)`
 
-Implemented via `bin/tmux-session-list.sh` (symlinked to `~/bin/`), called from `status-left` with the current session name passed as an argument — needed because tmux's `#()` shell commands are shared across clients, so we pass `#{session_name}` as an arg to distinguish per-client.
+Implemented via `bin/tmux-session-list` (symlinked to `~/bin/`), called from `status-left` with the current session name passed as an argument — needed because tmux's `#()` shell commands are shared across clients, so we pass `#{session_name}` as an arg to distinguish per-client.
 
 ### key-help popup
 

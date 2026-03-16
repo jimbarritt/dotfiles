@@ -32,7 +32,7 @@ export PATH="/usr/local/Cellar/rabbitmq/3.0.4/sbin:$PATH"
 
 export SVN_EDITOR=emacs
 
-source ~/bin/git_completion.sh
+source ~/bin/git_completion
 
 # \u -- username
 #\W pwd

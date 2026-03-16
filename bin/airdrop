@@ -1,0 +1,22 @@
+#!/bin/sh
+# Send a file via AirDrop.
+# Usage: airdrop.sh <file>
+
+if [ -z "$1" ]; then
+  echo "Usage: airdrop <file>" >&2
+  exit 1
+fi
+
+if [ ! -f "$1" ]; then
+  echo "File not found: $1" >&2
+  exit 1
+fi
+
+ABSPATH=$(cd "$(dirname "$1")" && pwd)/$(basename "$1")
+
+osascript \
+  -e "use framework \"AppKit\"" \
+  -e "use scripting additions" \
+  -e "set theFile to POSIX file \"${ABSPATH}\"" \
+  -e "set theService to current application's NSSharingService's sharingServiceNamed:\"com.apple.share.AirDrop.send\"" \
+  -e "theService's performWithItems:{theFile}"
