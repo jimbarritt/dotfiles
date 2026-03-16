@@ -1,5 +1,13 @@
  NVIM CHEATSHEET                              q to close
 
+ WINDOWS (splits)
+  Ctrl-w s        Split horizontal
+  Ctrl-w v        Split vertical
+  Ctrl-w h/j/k/l  Navigate between windows
+  Ctrl-w q        Close window
+  Ctrl-w o        Close all other windows
+  Ctrl-w =        Equalise window sizes
+
  NAVIGATION
   h j k l        Left / down / up / right
   w  b           Next / previous word
