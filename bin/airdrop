@@ -1,6 +1,6 @@
 #!/bin/sh
 # Send a file via AirDrop.
-# Usage: airdrop.sh <file>
+# Usage: airdrop <file>
 
 if [ -z "$1" ]; then
   echo "Usage: airdrop <file>" >&2
@@ -13,10 +13,22 @@ if [ ! -f "$1" ]; then
 fi
 
 ABSPATH=$(cd "$(dirname "$1")" && pwd)/$(basename "$1")
+FILENAME=$(basename "$1")
+SOURCE="${HOME}/bin/airdrop.swift"
+CACHE_DIR="${HOME}/.cache/dotfiles-bin"
+BINARY="${CACHE_DIR}/airdrop"
 
-osascript \
-  -e "use framework \"AppKit\"" \
-  -e "use scripting additions" \
-  -e "set theFile to POSIX file \"${ABSPATH}\"" \
-  -e "set theService to current application's NSSharingService's sharingServiceNamed:\"com.apple.share.AirDrop.send\"" \
-  -e "theService's performWithItems:{theFile}"
+# Compile if binary is missing or source is newer
+if [ ! -f "$BINARY" ] || [ "$SOURCE" -nt "$BINARY" ]; then
+  echo "Compiling... (won't happen every time)" >&2
+  mkdir -p "$CACHE_DIR"
+  swiftc -o "$BINARY" "$SOURCE"
+fi
+
+echo "Sharing ${FILENAME} via AirDrop..." >&2
+"$BINARY" "$ABSPATH"
+case $? in
+  0) echo "Shared." >&2 ;;
+  2) echo "Cancelled." >&2 ;;
+  *) echo "Failed." >&2 ;;
+esac
