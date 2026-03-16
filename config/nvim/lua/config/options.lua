@@ -26,6 +26,9 @@ vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
 vim.opt.linebreak = true
 
+-- Auto-reload files changed on disk
+vim.opt.autoread = true
+
 vim.opt.ttyfast = true
 vim.opt.redrawtime = 1500
 vim.opt.lazyredraw = true
@@ -57,6 +60,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 -- Status line
 vim.opt.laststatus = 2
+vim.opt.cmdheight = 0     -- Hide command line when not in use
 vim.opt.showmode = false  -- Disable mode in command line
 
 -- Custom highlight groups for statusline

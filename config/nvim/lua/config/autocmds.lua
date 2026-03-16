@@ -1,3 +1,8 @@
+-- Trigger autoread check when returning to nvim or switching buffers
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+  command = "checktime",
+})
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "markdown",
   callback = function()
