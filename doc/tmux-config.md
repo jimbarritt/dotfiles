@@ -106,6 +106,33 @@ There is no browse-style picker for panes. Use `Ctrl-b q` to see numbers and jum
 | `Ctrl-b ?` | Show context-aware cheatsheet |
 | `Ctrl-b [` | Scroll mode (q to exit) |
 
+## tmux-sessionizer
+
+`bin/tmux-sessionizer` is a fuzzy project/session switcher. Run it to get an fzf
+picker combining existing tmux sessions and project subdirectories. Picking a
+directory creates a new session rooted there (if one doesn't exist) and switches
+to it. Picking an existing session switches straight to it. Works both inside and
+outside tmux.
+
+Project directories are configured at the top of the script:
+
+```bash
+PROJECT_DIRS=(
+    ~/projects
+    ~/Code/pleo-io
+)
+```
+
+You can also jump directly without the picker: `tmux-sessionizer <path>`.
+
+To wire it up as a keybinding in tmux:
+
+```
+bind-key f run-shell "tmux-sessionizer"
+```
+
+Requires `fzf` to be installed.
+
 ## Future
 
 - **tmux-resurrect** — saves and restores sessions, pane layouts, and working directories across reboots. Pair with **tmux-continuum** for auto-save/restore on startup.

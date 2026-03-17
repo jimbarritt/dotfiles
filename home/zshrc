@@ -189,6 +189,8 @@ tmux-named() {
   tmux new -s "$session" || tmux attach -t "$session"
 }
 
+tmux-new() { tmux new -s "${1:-$(basename $PWD)}"; }
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -286,6 +288,8 @@ alias athena="cd ~/projects/personal-assistant && claude"
 alias claude-yolo='claude --dangerously-skip-permissions'
 alias glow='glow -p'
 alias dc="docker-compose"
+
+export CLAUDE_CODE_MAX_OUTPUT_TOKENS=8192
 
 if [ -n "$INSIDE_EMACS" ]; then
     if [[ "$INSIDE_EMACS" = nil ]]; then
