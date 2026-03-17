@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# tmux-sessionizer — fuzzy jump to a project dir or existing tmux session
+#
+# Usage:
+#   tmux-sessionizer          — opens fzf picker
+#   tmux-sessionizer <path>   — jumps directly to that path
+
+PROJECT_DIRS=(
+    ~/projects
+    ~/Code/pleo-io
+)
+
+if [[ $# -eq 1 ]]; then
+    selected="$1"
+else
+    # Combine: existing tmux sessions + project dirs (depth 1)
+    sessions=$(tmux list-sessions -F "#{session_name}" 2>/dev/null)
+    dirs=$(find "${PROJECT_DIRS[@]}" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+
+    selected=$(
+        { echo "$sessions"; echo "$dirs"; } \
+        | sort -u \
+        | fzf --prompt="session > " \
+              --height=40% \
+              --reverse \
+              --border \
+              --preview='tmux list-windows -t {} 2>/dev/null || ls {}' \
+              --preview-window=right:40%
+    )
+fi
+
+[[ -z "$selected" ]] && exit 0
+
+# If it's a path, derive session name from basename
+if [[ -d "$selected" ]]; then
+    session_name=$(basename "$selected" | tr ' .' '_')
+    start_dir="$selected"
+else
+    # It's an existing session name
+    session_name="$selected"
+    start_dir="$HOME"
+fi
+
+if ! tmux has-session -t "$session_name" 2>/dev/null; then
+    tmux new-session -d -s "$session_name" -c "$start_dir"
+fi
+
+if [[ -n "$TMUX" ]]; then
+    tmux switch-client -t "$session_name"
+else
+    tmux attach-session -t "$session_name"
+fi
