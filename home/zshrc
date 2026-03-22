@@ -220,6 +220,7 @@ if ! command -v eza &> /dev/null; then
   echo "[!!]  eza not found defaulting to ls. Install with: brew install eza"
 
   alias ll="ls -lahG"
+  alias lda="ls -lad */"
   alias ls="ls -aG"
   alias li="ls -la | grep ^l | cut -c 53-"
 else
@@ -234,6 +235,15 @@ else
 
   function llh() {
     command eza -la --no-user --color=always "$@" | less
+  }
+
+  # List directories only, excluding .gitignore entries (project dirs)
+  function ldp() {
+    eza -lD --git-ignore --no-user --color=always "$@" | less
+  }
+  # List all directories including hidden
+  function lda() {
+    eza -laD --no-user --color=always "$@" | less
   }
 
   # Size-calculating version
