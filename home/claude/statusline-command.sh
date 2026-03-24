@@ -44,9 +44,15 @@ fi
 
 output="${output} - $(printf "${dim}%s${reset}" "$model")"
 
+bold='\033[1m'
 if [ -n "$ctx_remaining" ]; then
-  ctx_int=$(printf '%.0f' "$ctx_remaining")
-  output="${output} - $(printf "${dim}ctx:%s%%${reset}" "$ctx_int")"
+  ctx_remaining_int=$(printf '%.0f' "$ctx_remaining")
+  ctx_used=$((100 - ctx_remaining_int))
+  if [ "$ctx_used" -gt 50 ]; then
+    output="${output} - $(printf "${bold}ctx:%s%% !!${reset}" "$ctx_used")"
+  else
+    output="${output} - $(printf "${dim}ctx:%s%%${reset}" "$ctx_used")"
+  fi
 fi
 
 printf "%b\n" "$output"
