@@ -12,7 +12,13 @@ Save the current conversation session so it can be restored later, preserving fu
 
 ## What to capture
 
-Write a session file to `~/.claude/sessions/session-{timestamp}.md` where `{timestamp}` is the current time in ISO 8601 format (e.g. `2026-03-24T14-30-00`). Use hyphens instead of colons in the timestamp so it's filesystem-safe.
+Write a session file to `.claude-sessions/session-{timestamp}.md` (relative to the repo root). To get the timestamp, you MUST run this shell command:
+
+```sh
+date +%Y-%m-%dT%H-%M-%S%z
+```
+
+Do NOT guess or infer the current time from conversation context — always use the `date` command to get the real local time. Create the `.claude-sessions/` directory if it doesn't exist.
 
 The session file should contain:
 

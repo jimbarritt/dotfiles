@@ -12,7 +12,7 @@ Restore context from a previously saved session file so we can continue where we
 
 ## How to find the session
 
-Sessions are stored in `~/.claude/sessions/session-{timestamp}.md`.
+Sessions are stored in `.claude-sessions/session-{timestamp}.md` (relative to the repo root).
 
 - If `$ARGUMENTS` is empty or "latest": use the most recent session file (by filename sort)
 - If `$ARGUMENTS` is a partial timestamp (e.g. "2026-03-24"): find the closest match

@@ -8,6 +8,6 @@ Use `/save-session` and `/restore-session` to preserve and resume conversation c
 
 - **Before ending a conversation**: run `/save-session` with a brief description of what you were doing
 - **When starting a new conversation** that continues previous work: run `/restore-session latest`
-- Sessions are stored in `~/.claude/sessions/`
+- Sessions are stored in `.claude-sessions/` (relative to the repo root)
 
 When you notice a conversation is getting long or the user mentions stopping, proactively suggest saving the session.

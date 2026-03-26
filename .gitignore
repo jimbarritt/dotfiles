@@ -8,3 +8,4 @@ backups
 */eshell/lastdir
 .emacs.d/tramp
 .bash_local
+.claude-sessions
