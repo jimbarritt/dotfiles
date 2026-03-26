@@ -133,6 +133,48 @@ bind-key f run-shell "tmux-sessionizer"
 
 Requires `fzf` to be installed.
 
+## Symlink-preserving splits
+
+By default, when you split a pane (`Ctrl-b "` or `Ctrl-b %`), tmux opens the new pane in the current pane's working directory. It gets this from the OS via `/proc` (Linux) or `libproc` (macOS), which always resolves symlinks. So if you're in `~/projects/dotfiles` (a symlink to `~/Code/github/jimbarritt/dotfiles`), the new pane lands in the resolved path — which is confusing and breaks your mental model.
+
+### Why this is hard
+
+tmux's `#{pane_current_path}` is populated by querying the OS for the foreground process's cwd, and the OS always resolves symlinks. There's no tmux-native way to get the logical (symlink-preserving) path.
+
+We tried using **OSC 7** escape sequences (a terminal protocol for reporting the working directory) via a `chpwd` hook — tmux 3.4+ can use these to set `#{pane_current_path}`. This didn't work reliably on macOS with tmux 3.5a; the OS-level query kept winning.
+
+### What we did instead: pane user options
+
+The trick is to bypass `#{pane_current_path}` entirely and store the logical `$PWD` ourselves.
+
+**In `home/zshrc`** — a `chpwd` hook writes `$PWD` (which zsh keeps as the logical, symlink-preserving path) into a per-pane tmux user option:
+
+```zsh
+_tmux_set_pwd() {
+    if [[ -n "$TMUX" ]]; then
+        tmux set-option -p @pane_pwd "$PWD" 2>/dev/null
+    fi
+}
+autoload -U add-zsh-hook
+add-zsh-hook chpwd _tmux_set_pwd
+_tmux_set_pwd
+```
+
+The `autoload` is needed because `add-zsh-hook` may not be loaded yet at that point in zshrc. The initial `_tmux_set_pwd` call (outside chpwd) sets the option for the first shell in a pane, before any `cd` happens. The `2>/dev/null` suppresses errors when zsh runs outside tmux.
+
+**In `home/tmux.conf`** — the split bindings read from `@pane_pwd` instead of `#{pane_current_path}`:
+
+```
+bind-key '"' split-window -v -c "#{@pane_pwd}"
+bind-key %   split-window -h -c "#{@pane_pwd}"
+```
+
+User options (prefixed with `@`) are per-pane, so each pane tracks its own directory independently.
+
+### Why this works
+
+Zsh's `$PWD` variable preserves the logical path through symlinks — it tracks how you got there, not where the inode lives. By writing it directly into a tmux user option, we sidestep the OS-level path resolution entirely. The split command reads the stored string verbatim and passes it to the new shell as its starting directory.
+
 ## Future
 
 - **tmux-resurrect** — saves and restores sessions, pane layouts, and working directories across reboots. Pair with **tmux-continuum** for auto-save/restore on startup.

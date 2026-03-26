@@ -324,6 +324,17 @@ vterm_printf() {
 
 
 
+# Tell tmux the logical $PWD (preserves symlink paths) so split panes
+# open in the same directory without resolving symlinks.
+_tmux_set_pwd() {
+    if [[ -n "$TMUX" ]]; then
+        tmux set-option -p @pane_pwd "$PWD" 2>/dev/null
+    fi
+}
+autoload -U add-zsh-hook
+add-zsh-hook chpwd _tmux_set_pwd
+_tmux_set_pwd
+
 ENABLE_CORRECTION="true"
 
 # Uncomment the following line if you want to disable marking untracked files
