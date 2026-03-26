@@ -1,0 +1,53 @@
+#!/bin/bash
+# Toggle between presentation (light) and normal (dark) mode
+# Switches both Ghostty terminal and Neovim colorscheme in one go.
+#
+# Instead of editing the Ghostty config directly (which would dirty git),
+# this creates/removes an overlay file that the main config includes via
+# config-file = ?~/.config/ghostty/presentation
+
+set -euo pipefail
+
+PRESENTATION_FILE="$HOME/.config/ghostty/presentation"
+
+DARK_NVIM_COLORSCHEME="green-tinted"
+LIGHT_NVIM_COLORSCHEME="catppuccin-latte"
+
+ghostty_reload() {
+    # Ghostty reloads config on SIGUSR2 (since v1.2.0).
+    pkill -USR2 ghostty 2>/dev/null || true
+}
+
+nvim_set_colorscheme() {
+    local scheme="$1"
+    local bg="$2"
+    local tmpdir="${TMPDIR:-/tmp}"
+    while IFS= read -r -d '' sock; do
+        nvim --server "$sock" --remote-send "<Esc>:colorscheme ${scheme}<CR>:set background=${bg}<CR>" 2>/dev/null || true
+    done < <(find "$tmpdir" -name 'nvim.*.0' -type s -print0 2>/dev/null)
+}
+
+switch_to_light() {
+    cat > "$PRESENTATION_FILE" <<'EOF'
+# Presentation mode overrides (managed by bin/presentation-mode)
+theme = Catppuccin Latte
+background-opacity = 1
+background-blur-radius = 0
+EOF
+    ghostty_reload
+    nvim_set_colorscheme "$LIGHT_NVIM_COLORSCHEME" "light"
+    echo "Switched to presentation mode (light)"
+}
+
+switch_to_dark() {
+    rm -f "$PRESENTATION_FILE"
+    ghostty_reload
+    nvim_set_colorscheme "$DARK_NVIM_COLORSCHEME" "dark"
+    echo "Switched to normal mode (dark)"
+}
+
+if [ -f "$PRESENTATION_FILE" ]; then
+    switch_to_dark
+else
+    switch_to_light
+fi
