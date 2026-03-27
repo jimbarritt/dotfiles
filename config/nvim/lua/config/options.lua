@@ -28,6 +28,8 @@ vim.opt.linebreak = true
 
 -- Auto-reload files changed on disk
 vim.opt.autoread = true
+-- Low updatetime so CursorHold fires quickly (triggers checktime for live reload)
+vim.opt.updatetime = 300
 
 vim.opt.ttyfast = true
 vim.opt.redrawtime = 1500

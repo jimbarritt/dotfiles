@@ -1,73 +1,59 @@
 # Kotlin LSP Setup for Neovim
 
-## Installation Steps
+## Overview
 
-### 1. Install Kotlin Language Server
+This config uses the **JetBrains official Kotlin LSP** (kotlin-lsp) via the
+[kotlin.nvim](https://github.com/AlexandrosAlexiou/kotlin.nvim) plugin. This
+replaced the community `kotlin-language-server` (fwcd) which is now deprecated.
 
-**macOS (using Homebrew):**
-```bash
-brew install kotlin-language-server
-```
+The JetBrains LSP provides faster completions, inlay hints, better formatting,
+and improved diagnostics compared to the community server.
 
-**Manual Installation:**
-```bash
-# Download from GitHub releases
-# https://github.com/fwcd/kotlin-language-server/releases
+> **Status**: Pre-alpha / alpha. Best suited for Gradle-based JVM Kotlin
+> projects. Large projects may have slow initial indexing.
 
-# Or build from source
-git clone https://github.com/fwcd/kotlin-language-server
-cd kotlin-language-server
-./gradlew :server:installDist
+## Installation
 
-# Add to PATH
-export PATH="$PATH:$(pwd)/server/build/install/server/bin"
-```
+The LSP server is installed automatically via Mason. On first launch:
 
-### 2. Restart Neovim
+1. Mason will install `kotlin-lsp` (includes bundled JRE)
+2. The `kotlin.nvim` plugin configures the LSP client
+3. Open a `.kt` file and check `:LspInfo` to verify
+
+### Manual install (alternative)
 
 ```bash
-nvim
+# Download from https://github.com/Kotlin/kotlin-lsp/releases
+# Set environment variable to point to install directory:
+export KOTLIN_LSP_DIR=/path/to/kotlin-lsp
 ```
-
-The first time you open Neovim after this setup, lazy.nvim will automatically install all the plugins.
-
-### 3. Verify Installation
-
-Open a Kotlin file:
-```bash
-cd /Users/jmdb/Code/github/jimbarritt/article-endianness/kotlin-client
-nvim src/main/kotlin/Client.kt
-```
-
-Check LSP status:
-```
-:LspInfo
-```
-
-You should see `kotlin_language_server` attached to your buffer.
 
 ## Key Bindings
 
 ### Navigation
 - `gd` - Go to definition
-- `gD` - Go to declaration
-- `gi` - Go to implementation
+- `gI` - Go to implementation
 - `gr` - Find references
 
 ### Documentation
 - `K` - Show hover documentation
-- `<C-k>` - Show signature help
 
 ### Code Actions
 - `<leader>rn` - Rename symbol
 - `<leader>ca` - Code actions
 - `<leader>f` - Format file
 
+### Kotlin-specific (kotlin.nvim)
+- `:KotlinOrganizeImports` - Organize imports
+- `:KotlinFormat` - Format with Kotlin LSP
+
 ### Diagnostics
 - `[d` - Previous diagnostic
 - `]d` - Next diagnostic
 - `<leader>e` - Open diagnostic float
-- `<leader>q` - Add diagnostics to location list
+
+### LSP Management
+- `<leader>lr` - Restart LSP (useful when external tools modify files)
 
 ### Completion
 - `<C-Space>` - Trigger completion
@@ -75,28 +61,43 @@ You should see `kotlin_language_server` attached to your buffer.
 - `<S-Tab>` - Previous completion item
 - `<CR>` - Confirm completion
 
-## File Structure
+## Live Reload with External Tools (e.g. Claude)
 
-```
-~/.config/nvim/
-├── init.lua                         # Main config
-├── lua/
-│   └── plugins/
-│       ├── treesitter.lua          # Syntax highlighting
-│       ├── lsp.lua                 # Base LSP config
-│       ├── kotlin-lsp.lua          # Kotlin LSP specific
-│       └── completion.lua          # nvim-cmp completion
-└── KOTLIN_LSP_SETUP.md             # This file
-```
+When using nvim as a code viewer alongside AI coding assistants, the config
+handles external file changes through two mechanisms:
+
+### 1. Buffer auto-reload (file contents)
+
+- `autoread` is enabled
+- `updatetime` is set to 300ms
+- `checktime` fires on `FocusGained`, `BufEnter`, `CursorHold`, and
+  `CursorHoldI` events
+- This means buffers refresh within ~300ms of cursor inactivity, even without
+  switching focus
+
+### 2. LSP re-indexing (diagnostics and analysis)
+
+- `workspace/didChangeWatchedFiles` dynamic registration is enabled in LSP
+  capabilities
+- The LSP server receives filesystem change notifications and re-indexes
+  automatically
+- If diagnostics become stale, press `<leader>lr` to restart the LSP
 
 ## Troubleshooting
 
 ### LSP not starting
 
-Check if kotlin-language-server is in your PATH:
-```bash
-which kotlin-language-server
+```vim
+:LspInfo          " Check if kotlin-lsp is attached
+:Mason            " Verify kotlin-lsp is installed
+:messages         " Check for errors
 ```
+
+### Stale diagnostics after external changes
+
+1. Wait a moment — `didChangeWatchedFiles` should trigger re-indexing
+2. Move cursor to trigger `CursorHold` → `checktime`
+3. Press `<leader>lr` to restart the LSP as a last resort
 
 ### No syntax highlighting
 
@@ -105,43 +106,20 @@ Ensure Treesitter Kotlin parser is installed:
 :TSInstall kotlin
 ```
 
-### Completion not working
+### Slow startup on large projects
 
-Check if nvim-cmp is loaded:
-```
-:Lazy
-```
-
-Look for `nvim-cmp` in the list.
-
-### Cannot navigate to library sources (JDK, dependencies)
-
-The kotlin-language-server has limited support for navigating to decompiled sources in JAR files. While sources are downloaded to `~/.gradle/caches/`, the LSP may not index them properly.
-
-**Workaround options:**
-
-1. **Use hover documentation (K)** - Shows method signatures and documentation without navigating to source
-2. **Check dependency sources manually:**
-   ```bash
-   # Find and extract source jar
-   find ~/.gradle/caches -name "truth-*-sources.jar"
-   # Extract to temp location
-   unzip /path/to/truth-1.1.5-sources.jar -d /tmp/truth-sources
-   # Open in Neovim
-   nvim /tmp/truth-sources/com/google/common/truth/Truth.java
-   ```
-3. **Use IntelliJ IDEA** - For deep source navigation, IntelliJ has better support for library sources
-
-This is a known limitation of kotlin-language-server. For project files (your own Kotlin code), `gd` works correctly.
+The JetBrains LSP tokenizes the entire project on first load. This can take
+a few minutes for large codebases. Subsequent opens are faster due to caching.
 
 ## Features
 
-- ✅ Syntax highlighting (Treesitter)
-- ✅ Auto-completion
-- ✅ Go to definition
-- ✅ Find references
-- ✅ Hover documentation
-- ✅ Rename refactoring
-- ✅ Code actions
-- ✅ Diagnostics (errors/warnings)
-- ✅ Formatting
+- Syntax highlighting (Treesitter)
+- Auto-completion (via blink.cmp)
+- Go to definition / implementation / references
+- Hover documentation
+- Rename refactoring
+- Code actions
+- Diagnostics (errors/warnings)
+- Formatting
+- Import organization (kotlin.nvim)
+- Inlay hints (JetBrains LSP)

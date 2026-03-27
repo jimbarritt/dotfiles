@@ -101,6 +101,10 @@ vim.keymap.set('n', '<leader>/', ':nohlsearch<CR>', { noremap = true, silent = t
 vim.keymap.set('n', '<leader>n', ':NvimTreeToggle<CR>', { noremap = true, silent = true, desc = "Toggle file tree" })
 
 -- LSP bindings
+vim.keymap.set("n", "<leader>lr", function()
+  vim.cmd("LspRestart")
+  vim.notify("LSP restarted", vim.log.levels.INFO)
+end, { noremap = true, silent = true, desc = "Restart LSP" })
 vim.keymap.set("n", "grn", vim.lsp.buf.rename, { desc = "LSP Rename" })
 --vim.keymap.set("n", "<S-F6>", vim.lsp.buf.rename, { desc = "LSP Rename" })
   vim.keymap.set("n", "<S-F6>", function()
