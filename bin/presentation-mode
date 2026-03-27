@@ -11,7 +11,7 @@ set -euo pipefail
 PRESENTATION_FILE="$HOME/.config/ghostty/presentation"
 
 DARK_NVIM_COLORSCHEME="green-tinted"
-LIGHT_NVIM_COLORSCHEME="github_light_high_contrast"
+LIGHT_NVIM_COLORSCHEME="green-tinted-light"
 
 ghostty_reload() {
     # Ghostty reloads config on SIGUSR2 (since v1.2.0).
@@ -30,7 +30,7 @@ nvim_set_colorscheme() {
 switch_to_light() {
     cat > "$PRESENTATION_FILE" <<'EOF'
 # Presentation mode overrides (managed by bin/presentation-mode)
-theme = GitHub Light High Contrast
+theme = green-tinted-light
 background-opacity = 1
 background-blur-radius = 0
 EOF
