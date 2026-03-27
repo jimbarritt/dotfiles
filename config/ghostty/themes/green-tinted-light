@@ -1,0 +1,42 @@
+# Green Tinted Light — companion to green-tinted (dark)
+# Warm off-white background with subtle green tint.
+# Designed for high contrast readability (presentations, daylight).
+
+background = #f4f8f4
+foreground = #1a2b1a
+cursor-color = #0a7a0a
+cursor-text = #f4f8f4
+selection-background = #c8e0c8
+selection-foreground = #1a2b1a
+
+# Black (UI chrome, borders)
+palette = 0=#dce4dc
+palette = 8=#c4d0c4
+
+# Red (errors, deletions)
+palette = 1=#b83030
+palette = 9=#cc4444
+
+# Green (keywords, structural anchors)
+palette = 2=#1a7a1a
+palette = 10=#228b22
+
+# Yellow (warnings, constants)
+palette = 3=#7a6a00
+palette = 11=#8b7a00
+
+# Blue (types, links)
+palette = 4=#1a6a8a
+palette = 12=#2080a0
+
+# Magenta (special, decorators)
+palette = 5=#7a4a8a
+palette = 13=#8b5a9b
+
+# Cyan (function calls, navigation)
+palette = 6=#1a7a6a
+palette = 14=#20907a
+
+# White (foreground text)
+palette = 7=#1a2b1a
+palette = 15=#0a1a0a
