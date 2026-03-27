@@ -19,8 +19,8 @@ local c = {
   bg           = '#f4f8f4',          -- warm off-white, subtle green tint
   bg_light     = '#eaf0ea',          -- slightly darker for floats/popups
   bg_highlight = '#dce6dc',          -- cursor line, visual
-  fg           = '#1a2b1a',          -- dark green-black
-  fg_dim       = '#4a5e4a',          -- secondary text
+  fg           = '#111811',          -- near-black with green tint
+  fg_dim       = '#3a4e3a',          -- secondary text
   cursor       = '#0a7a0a',
   selection    = '#c8e0c8',
 
@@ -37,15 +37,15 @@ local c = {
   constant = '#7a5a00',             -- warm brown — constants
   property = '#3a6a5a',             -- muted teal — object properties
 
-  -- CONTENT / NOISE REDUCTION (lightest / least saturated)
-  variable       = '#4a6a4a',        -- muted sage
-  variable_local = '#5a7a5a',        -- even more muted
-  operator       = '#7a9a7a',        -- very subtle
-  punctuation    = '#8aaa8a',        -- barely there
-  string         = '#2a6a2a',        -- readable green for strings
-  string_special = '#1a5a3a',        -- slightly different for escapes
-  number         = '#3a6a5a',        -- blue-green for numbers
-  comment        = '#8a9e8a',        -- gray-green, italic
+  -- CONTENT / NOISE REDUCTION (lighter but still readable)
+  variable       = '#2a4a2a',        -- darker sage
+  variable_local = '#3a5a3a',        -- slightly lighter
+  operator       = '#5a7a5a',        -- visible but quiet
+  punctuation    = '#6a8a6a',        -- subdued but legible
+  string         = '#1a5a1a',        -- darker green for strings
+  string_special = '#0a4a2a',        -- slightly different for escapes
+  number         = '#2a5a4a',        -- blue-green for numbers
+  comment        = '#7a907a',        -- gray-green, italic
 
   -- UI elements
   line_number = '#9aae9a',

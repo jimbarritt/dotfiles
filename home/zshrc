@@ -144,13 +144,18 @@ git_prompt_info() {
     echo "$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$ZSH_THEME_GIT_PROMPT_SUFFIX"
 }
 
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=118'
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=2'
 
 # Ensure ZSH_HIGHLIGHT_STYLES is an associative array before assigning
 if ! typeset -p ZSH_HIGHLIGHT_STYLES >/dev/null 2>&1; then
   typeset -A ZSH_HIGHLIGHT_STYLES
 fi
 ZSH_HIGHLIGHT_STYLES[comment]='fg=244'
+ZSH_HIGHLIGHT_STYLES[arg0]='fg=2,none'
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=2,none'
+ZSH_HIGHLIGHT_STYLES[precommand]='fg=2,none'
+ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=2,none'
+ZSH_HIGHLIGHT_STYLES[autodirectory]='fg=2,none'
 
 # Vi-mode cursor configuration
 # Blinking block in insert mode

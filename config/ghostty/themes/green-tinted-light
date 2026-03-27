@@ -3,11 +3,11 @@
 # Designed for high contrast readability (presentations, daylight).
 
 background = #f4f8f4
-foreground = #1a2b1a
+foreground = #111811
 cursor-color = #0a7a0a
 cursor-text = #f4f8f4
 selection-background = #c8e0c8
-selection-foreground = #1a2b1a
+selection-foreground = #111811
 
 # Black (UI chrome, borders)
 palette = 0=#dce4dc
@@ -18,8 +18,8 @@ palette = 1=#b83030
 palette = 9=#cc4444
 
 # Green (keywords, structural anchors)
-palette = 2=#1a7a1a
-palette = 10=#228b22
+palette = 2=#0a5a0a
+palette = 10=#126a12
 
 # Yellow (warnings, constants)
 palette = 3=#7a6a00
@@ -38,5 +38,5 @@ palette = 6=#1a7a6a
 palette = 14=#20907a
 
 # White (foreground text)
-palette = 7=#1a2b1a
-palette = 15=#0a1a0a
+palette = 7=#111811
+palette = 15=#080e08
