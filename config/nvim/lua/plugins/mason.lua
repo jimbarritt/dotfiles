@@ -22,7 +22,8 @@ return {
           "clangd",         -- C/C++
           "pyright",        -- Python
           "jdtls",          -- Java
-          "kotlin_lsp",     -- Kotlin (JetBrains official)
+          -- kotlin_lsp installed via Homebrew, not Mason (JetBrains CDN blocks Mason downloads)
+          -- brew install JetBrains/utils/kotlin-lsp  →  set KOTLIN_LSP_DIR in ~/.zshrc_work
           "bashls",         -- Bash/Zsh
           "lua_ls",         -- Lua
           "marksman",       -- Markdown
