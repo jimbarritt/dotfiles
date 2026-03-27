@@ -9,7 +9,7 @@ return {
     require("mason-lspconfig").setup({
       ensure_installed = {
         "lua_ls", "ts_ls", "html", "rust_analyzer",
-        "clangd", "pyright", "jdtls", "kotlin_language_server", "bashls", "marksman",
+        "clangd", "pyright", "jdtls", "bashls", "marksman",
       },
     })
     vim.diagnostic.config({
@@ -56,10 +56,16 @@ return {
       vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, opts("Previous diagnostic"))
     end
 
-    -- 2. Capabilities (Blink.cmp)
+    -- 2. Capabilities (Blink.cmp + file watching)
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     local ok, blink = pcall(require, "blink.cmp")
     if ok then capabilities = blink.get_lsp_capabilities(capabilities) end
+
+    -- Enable workspace/didChangeWatchedFiles so the LSP re-indexes
+    -- when external tools (e.g. Claude) modify project files on disk.
+    capabilities.workspace = capabilities.workspace or {}
+    capabilities.workspace.didChangeWatchedFiles = capabilities.workspace.didChangeWatchedFiles or {}
+    capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
 
     -- 3. Server Configurations
     local servers = {
@@ -78,7 +84,7 @@ return {
       clangd = {},
       pyright = {},
       jdtls = {},
-      kotlin_language_server = {},
+      -- Kotlin LSP is managed by kotlin.nvim plugin (JetBrains official LSP)
       bashls = {},
       marksman = {},
     }
@@ -89,5 +95,9 @@ return {
       config.on_attach = on_attach
       vim.lsp.config(server, config)
     end
+
+    -- Export shared config for use by kotlin.nvim and other external LSP plugins
+    _G._lsp_on_attach = on_attach
+    _G._lsp_capabilities = capabilities
   end
 }

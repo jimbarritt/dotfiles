@@ -1,6 +1,12 @@
--- Trigger autoread check when returning to nvim or switching buffers
-vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
-  command = "checktime",
+-- Trigger autoread check when returning to nvim, switching buffers, or idle
+-- CursorHold/CursorHoldI fire after 'updatetime' ms of inactivity, enabling
+-- near-live reload when external tools (e.g. Claude) modify files on disk.
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+  callback = function()
+    if vim.fn.mode() ~= "c" then
+      vim.cmd("checktime")
+    end
+  end,
 })
 
 vim.api.nvim_create_autocmd("FileType", {
