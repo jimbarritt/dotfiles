@@ -1,9 +1,19 @@
 #!/bin/sh
 # Called from tmux status-left with the current session name as $1
 current="$1"
+mode=$(tmux show-option -gqv @theme_mode)
+
+if [ "$mode" = "light" ]; then
+  active_fmt='#[bg=#338833,fg=#ffffff]'
+  reset_fmt='#[bg=#d8e8d8,fg=#338833]'
+else
+  active_fmt='#[bg=#3a7a3a,fg=#000000]'
+  reset_fmt='#[bg=#122912,fg=#4a7c4a]'
+fi
+
 tmux ls -F '#{session_created} #{session_name}' | sort -n | sed 's/^[0-9]* //' | while read -r name; do
   if [ "$name" = "$current" ]; then
-    printf '#[bg=#3a7a3a,fg=#000000] %s #[bg=#122912,fg=#4a7c4a] ' "$name"
+    printf '%s %s %s ' "$active_fmt" "$name" "$reset_fmt"
   else
     printf ' %s  ' "$name"
   fi

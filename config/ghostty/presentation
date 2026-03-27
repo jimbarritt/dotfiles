@@ -1,0 +1,4 @@
+# Presentation mode overrides (managed by bin/presentation-mode)
+theme = green-tinted-light
+background-opacity = 1
+background-blur-radius = 0

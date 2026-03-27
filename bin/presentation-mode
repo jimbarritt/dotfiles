@@ -18,6 +18,20 @@ ghostty_reload() {
     pkill -USR2 ghostty 2>/dev/null || true
 }
 
+tmux_set_theme() {
+    local mode="$1"
+    if ! tmux info &>/dev/null; then return; fi
+    if [ "$mode" = "light" ]; then
+        tmux set -g @theme_mode "light"
+        tmux set -g status-style "bg=#d8e8d8,fg=#338833"
+        tmux set -g message-style "bg=#c0d8c0,fg=#226622"
+    else
+        tmux set -g @theme_mode ""
+        tmux set -g status-style "bg=#122912,fg=#4a7c4a"
+        tmux set -g message-style "bg=#1a3a1a,fg=#7ab87a"
+    fi
+}
+
 nvim_set_colorscheme() {
     local scheme="$1"
     local bg="$2"
@@ -35,6 +49,7 @@ background-opacity = 1
 background-blur-radius = 0
 EOF
     ghostty_reload
+    tmux_set_theme "light"
     nvim_set_colorscheme "$LIGHT_NVIM_COLORSCHEME" "light"
     echo "Switched to presentation mode (light)"
 }
@@ -42,6 +57,7 @@ EOF
 switch_to_dark() {
     rm -f "$PRESENTATION_FILE"
     ghostty_reload
+    tmux_set_theme "dark"
     nvim_set_colorscheme "$DARK_NVIM_COLORSCHEME" "dark"
     echo "Switched to normal mode (dark)"
 }
