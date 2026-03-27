@@ -5,13 +5,6 @@ return {
     "mason-org/mason-lspconfig.nvim",
   },
   config = function()
-    require("mason").setup()
-    require("mason-lspconfig").setup({
-      ensure_installed = {
-        "lua_ls", "ts_ls", "html", "rust_analyzer",
-        "clangd", "pyright", "jdtls", "bashls", "marksman",
-      },
-    })
     vim.diagnostic.config({
       virtual_text = false,
       signs = {
