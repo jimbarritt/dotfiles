@@ -9,6 +9,17 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHo
   end,
 })
 
+-- Background timer: polls for file changes every second even when nvim has no
+-- focus and the cursor isn't moving. Uses libuv (vim.uv) so it works without
+-- any user interaction. The vim.schedule wrapper ensures checktime runs on the
+-- main thread (required for modifying buffers).
+local poll_timer = vim.uv.new_timer()
+poll_timer:start(1000, 1000, vim.schedule_wrap(function()
+  if vim.fn.mode() ~= "c" and vim.api.nvim_get_mode().blocking == false then
+    pcall(vim.cmd, "checktime")
+  end
+end))
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "markdown",
   callback = function()
