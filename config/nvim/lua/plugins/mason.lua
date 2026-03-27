@@ -22,7 +22,7 @@ return {
           "clangd",                  -- C/C++
           "pyright",                 -- Python
           "jdtls",                   -- Java
-          "kotlin_language_server",  -- Kotlin
+          "kotlin-lsp",              -- Kotlin (JetBrains official)
           "bashls",                  -- Bash/Zsh 
           "lua_ls"      -- Lua
         },
