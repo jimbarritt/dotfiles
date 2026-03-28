@@ -39,9 +39,9 @@ return {
           return
         end
 
-        -- Open the file and switch focus to it
+        -- Open the file, switch focus to it, and close the tree
         api.node.open.no_window_picker()
-        vim.cmd('wincmd l')  -- Move to the right window (the opened file)
+        api.tree.close()
       end
 
       -- Default mappings
@@ -131,14 +131,14 @@ return {
         local dir = "#0a3a6a"
         local dim = "#6a806a"
         vim.api.nvim_set_hl(0, "NvimTreeNormal", { bg = "NONE", fg = fg })
-        vim.api.nvim_set_hl(0, "NvimTreeFolderName", { fg = dir })
-        vim.api.nvim_set_hl(0, "NvimTreeOpenedFolderName", { fg = dir, bold = true })
-        vim.api.nvim_set_hl(0, "NvimTreeEmptyFolderName", { fg = dir })
+        vim.api.nvim_set_hl(0, "NvimTreeFolderName", { fg = "#1a7f37" })
+        vim.api.nvim_set_hl(0, "NvimTreeOpenedFolderName", { fg = "#2d6a3f" })
+        vim.api.nvim_set_hl(0, "NvimTreeEmptyFolderName", { fg = "#4a9f5f" })
         vim.api.nvim_set_hl(0, "NvimTreeSymlink", { fg = dir })
         vim.api.nvim_set_hl(0, "NvimTreeSymlinkFolderName", { fg = dir })
         vim.api.nvim_set_hl(0, "NvimTreeFolderIcon", { fg = dir })
         vim.api.nvim_set_hl(0, "NvimTreeNormalFile", { fg = fg })
-        vim.api.nvim_set_hl(0, "NvimTreeExecFile", { fg = fg })
+        vim.api.nvim_set_hl(0, "NvimTreeExecFile", { fg = "#8a6b3e" })
         vim.api.nvim_set_hl(0, "NvimTreeSpecialFile", { fg = fg })
         vim.api.nvim_set_hl(0, "NvimTreeIndentMarker", { fg = "#a0c8a0" })
       else
@@ -162,6 +162,17 @@ return {
     vim.api.nvim_create_autocmd("ColorScheme", {
       callback = function()
         vim.defer_fn(apply_tree_colors, 50)
+      end,
+    })
+
+    -- Rename NvimTree buffer to the root directory name
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "NvimTree",
+      callback = function(args)
+        vim.schedule(function()
+          local root = vim.fn.fnamemodify(vim.fn.getcwd(), ':t')
+          pcall(vim.api.nvim_buf_set_name, args.buf, root)
+        end)
       end,
     })
   end,

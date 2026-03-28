@@ -34,6 +34,10 @@ vim.keymap.set('n', '<leader>ff', function()
     previewer = false,
     disable_devicons = true,
     path_display = function(_, path)
+      local parts = vim.split(path, '/')
+      if #parts > 2 then
+        return table.concat(parts, '/', #parts - 1)
+      end
       return path
     end,
   })
@@ -45,7 +49,31 @@ end, { desc = 'Live grep (git root or cwd)' })
 
 vim.keymap.set('n', '<leader>fe', ':NvimTreeToggle<CR>', { desc = 'Toggle file explorer', silent = true })
 
-vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Find buffers' })
+vim.keymap.set('n', '<leader>fb', function()
+  builtin.buffers({
+    show_all_buffers = false,
+    sort_mru = true,
+    bufnr_width = 0,
+    entry_maker = function(entry)
+      local make_entry = require('telescope.make_entry')
+      local e = make_entry.gen_from_buffer({ bufnr_width = 0 })(entry)
+      if e then
+        e.ordinal = e.filename or ''
+        e.display = function(ent)
+          local name = ent.filename or '[No Name]'
+          -- Show last 2 path components
+          local parts = vim.split(name, '/')
+          if #parts > 2 then
+            name = table.concat(parts, '/', #parts - 1)
+          end
+          local modified = vim.bo[ent.bufnr].modified and ' [+]' or ''
+          return name .. ':' .. ent.lnum .. modified
+        end
+      end
+      return e
+    end,
+  })
+end, { desc = 'Find buffers' })
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Find help' })
 vim.keymap.set('n', '<leader>fo', builtin.oldfiles, { desc = 'Find old files' })
 

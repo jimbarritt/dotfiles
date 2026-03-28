@@ -16,32 +16,30 @@
 
 **Features**:
 - No icons, pure text
-- Green color scheme
+- Green color scheme (adapts to light/dark mode)
 - Clean tree lines (│ ├ └)
 - Relative line numbers
-- Directory hijacking (opens tree when `nvim ~`)
 - Hidden files toggleable
-- Focus stays in tree when opening files
+- Statusline shows project directory name (not `NvimTree_1`)
 
 **Keybindings**:
 - `<leader>fe` - Toggle nvim-tree
-- `l` - Open file or expand directory
-- `o` - Open file or expand directory
-- `<Enter>` - Open file or expand directory
+- `l` - Preview file (focus stays in tree)
+- `<Enter>` - Open file and close tree
 - `h` - Close directory / navigate to parent
 - `H` - Toggle hidden files
 - `q` - Close nvim-tree
 - `d` - Delete file/directory
 - `r` - Rename file/directory
 - `a` - Create new file/directory (add `/` at end for directory)
-- `m` - Mark for copy/cut operations
 - Standard vim navigation: `j/k`, relative numbers for jumps
 
 **Configuration Highlights**:
 - Width: 35 columns
 - Symlink arrow: ` -> `
 - Indent width: 2 spaces
-- Colors: Green (#50fa7b) with light green accents (#7fc87f)
+- Light mode: Closed folders green (#1a7f37), open folders darker green (#2d6a3f)
+- Dark mode: Green (#50fa7b) with light green accents (#7fc87f)
 - Filters: Hidden files by default, excludes Library/Calendars
 
 ### Telescope (Fuzzy Finder)
@@ -55,9 +53,9 @@
 - Preview window for files
 
 **Keybindings**:
-- `<leader>ff` - Find files (from git root)
+- `<leader>ff` - Find files (from git root, shortened paths)
 - `<leader>fg` - Live grep / search in files (from git root)
-- `<leader>fb` - Find open buffers
+- `<leader>fb` - Find open buffers (clean display: path, line number, `[+]` if modified)
 - `<leader>fr` - Recent files
 - `<leader>fh` - Help tags
 

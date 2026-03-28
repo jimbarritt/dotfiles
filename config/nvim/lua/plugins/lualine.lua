@@ -86,7 +86,17 @@ local function build_opts()
     sections = {
       lualine_a = { mode },
       lualine_b = {},
-      lualine_c = { "filename" },
+      lualine_c = {
+        {
+          "filename",
+          fmt = function(name, ctx)
+            if vim.bo.filetype == "NvimTree" then
+              return vim.fn.fnamemodify(vim.fn.getcwd(), ':t')
+            end
+            return name
+          end,
+        },
+      },
       lualine_x = {},
       lualine_y = {
         {
