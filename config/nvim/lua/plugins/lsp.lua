@@ -120,6 +120,28 @@ return {
       vim.lsp.config(server, config)
     end
 
+    -- Clean quickfix format: just filename and line content, aligned
+    vim.o.quickfixtextfunc = "v:lua.QfTextFunc"
+    function _G.QfTextFunc(info)
+      local items = vim.fn.getqflist({ id = info.id, items = 1 }).items
+      local results = {}
+      -- First pass: find max label length for alignment
+      local max_label = 0
+      for i = info.start_idx, info.end_idx do
+        local item = items[i]
+        local label = vim.fn.fnamemodify(vim.fn.bufname(item.bufnr), ":t") .. ":" .. item.lnum
+        if #label > max_label then max_label = #label end
+      end
+      -- Second pass: build formatted lines
+      for i = info.start_idx, info.end_idx do
+        local item = items[i]
+        local label = vim.fn.fnamemodify(vim.fn.bufname(item.bufnr), ":t") .. ":" .. item.lnum
+        local text = vim.trim(item.text or "")
+        table.insert(results, string.format("%-" .. max_label .. "s  %s", label, text))
+      end
+      return results
+    end
+
     -- Export shared config for use by kotlin.nvim and other external LSP plugins
     _G._lsp_on_attach = on_attach
     _G._lsp_capabilities = capabilities
