@@ -114,10 +114,11 @@ return {
         special_files = {},
       },
       git = {
-        enable = false,
+        enable = true,
       },
       filters = {
         dotfiles = true,
+        git_ignored = true,
         custom = {
           "Library/Calendars",
         },

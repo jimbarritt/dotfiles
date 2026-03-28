@@ -156,7 +156,7 @@ return {
 
     -- Check that the LSP actually starts — show a popup if it fails
     vim.defer_fn(function()
-      local clients = vim.lsp.get_clients({ name = "kotlin_lsp" })
+      local clients = vim.lsp.get_clients({ name = "kotlin_ls" })
       if #clients == 0 then
         -- Gather diagnostic info
         local diag_lines = {
