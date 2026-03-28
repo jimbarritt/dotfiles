@@ -14,19 +14,58 @@ and improved diagnostics compared to the community server.
 
 ## Installation
 
-The LSP server is installed automatically via Mason. On first launch:
+kotlin-lsp is installed via Homebrew (not Mason, because JetBrains CDN blocks
+Mason downloads). The nvim plugin handles detection automatically.
 
-1. Mason will install `kotlin-lsp` (includes bundled JRE)
-2. The `kotlin.nvim` plugin configures the LSP client
-3. Open a `.kt` file and check `:LspInfo` to verify
+### First time on a new machine
 
-### Manual install (alternative)
+1. Install kotlin-lsp:
+   ```bash
+   brew install JetBrains/utils/kotlin-lsp
+   ```
+2. Open a `.kt` file in nvim
+3. The plugin auto-detects the installation via `brew --prefix kotlin-lsp`
+4. It writes `export KOTLIN_LSP_DIR="..."` to `~/.zshrc_machine`
+5. It sets the env var in the current nvim session so the LSP starts immediately
+6. Reload your shell so future terminals pick up the env var
 
-```bash
-# Download from https://github.com/Kotlin/kotlin-lsp/releases
-# Set environment variable to point to install directory:
-export KOTLIN_LSP_DIR=/path/to/kotlin-lsp
+### What happens on subsequent launches
+
+- `~/.zshrc_machine` is sourced by `.zshrc`, so `KOTLIN_LSP_DIR` is set before nvim starts
+- The plugin reads the env var directly — fast path, no brew calls
+- If the env var is missing but `~/.zshrc_machine` already has the export (e.g. tmux
+  inherited an old environment), the plugin reads the value from the file and sets
+  it for the session, with a reminder to reload your shell
+
+### Detection flow (in `lua/plugins/kotlin.lua`)
+
 ```
+KOTLIN_LSP_DIR env var set and valid?
+  → yes: use it (fast path)
+  → no: Mason dir exists?
+    → yes: use Mason
+    → no: ~/.zshrc_machine already has the export?
+      → yes: use saved value, set env var, remind to reload shell
+      → no: run brew --prefix kotlin-lsp
+        → found: write to ~/.zshrc_machine, set env var, show message
+        → not found: show popup with install instructions
+```
+
+### Error detection
+
+10 seconds after the plugin loads, it checks whether a `kotlin_lsp` client is
+running. If not, it shows a diagnostic popup with:
+- The `KOTLIN_LSP_DIR` value and resolved directory
+- Whether the LSP binary exists
+- Last 5 lines from the LSP log
+- A pointer to `:LspLog` for full details
+
+### Machine-specific config (`~/.zshrc_machine`)
+
+`~/.zshrc_machine` is sourced by `.zshrc` for machine-specific exports that vary
+per machine (e.g. Homebrew paths). It is not tracked in git. The kotlin.lua plugin
+auto-populates it on first detection. `~/.zshrc_work` is sourced after it for
+work-specific config.
 
 ## Key Bindings
 
@@ -39,7 +78,7 @@ export KOTLIN_LSP_DIR=/path/to/kotlin-lsp
 - `K` - Show hover documentation
 
 ### Code Actions
-- `<leader>rn` - Rename symbol
+- `<leader>rn` or `grn` - Rename symbol
 - `<leader>ca` - Code actions
 - `<leader>f` - Format file
 
@@ -89,9 +128,23 @@ handles external file changes through two mechanisms:
 
 ```vim
 :LspInfo          " Check if kotlin-lsp is attached
-:Mason            " Verify kotlin-lsp is installed
-:messages         " Check for errors
+:LspLog           " Check LSP log for errors
+:messages         " Check for startup errors
 ```
+
+The plugin will show a diagnostic popup after 10 seconds if the LSP fails to
+start. Check the popup for details.
+
+### Known harmless warnings in LspLog
+
+```
+WARNING: package sun.awt.windows not in java.desktop
+WARNING: package sun.awt.X11 not in java.desktop
+WARNING: package com.sun.java.swing.plaf.gtk not in java.desktop
+```
+
+These are Java stderr warnings about GUI packages and can be safely ignored.
+The LSP starts and works correctly despite them.
 
 ### Stale diagnostics after external changes
 
@@ -110,6 +163,17 @@ Ensure Treesitter Kotlin parser is installed:
 
 The JetBrains LSP tokenizes the entire project on first load. This can take
 a few minutes for large codebases. Subsequent opens are faster due to caching.
+
+### Go-to-definition jumps to top of file
+
+Known kotlin-lsp limitation: when the target file hasn't been opened/indexed
+yet, go-to-definition may jump to line 0. It works correctly once the file
+has been opened at least once.
+
+### Rename gives "Buffer newer than edits" error
+
+A custom `textDocument/rename` handler in `lsp.lua` strips stale
+`textDocument.version` from rename responses to work around this kotlin-lsp bug.
 
 ## Features
 
