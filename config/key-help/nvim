@@ -15,6 +15,9 @@
   gg  G          Top / bottom of file
   Ctrl-d  Ctrl-u Half page down / up
   {  }           Previous / next paragraph
+  f<char>         Find char forwards on line
+  F<char>         Find char backwards on line
+  ;  ,           Repeat last f/F same / opposite direction
 
  EDITING
   i  a           Insert before / after cursor
@@ -28,6 +31,17 @@
   /              Search forward
   n  N           Next / previous match
   *              Search word under cursor
+
+ LSP
+  gd             Go to definition
+  gI             Go to implementation
+  gr             Show references
+  K              Hover documentation
+  Space rn       Rename symbol
+  Space ca       Code action
+  Space f        Format file
+  Space e        Show line diagnostics
+  ]d  [d         Next / previous diagnostic
 
  FILES & BUFFERS
   :w             Save

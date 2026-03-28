@@ -28,6 +28,22 @@ return {
     -- Ensure the sign column doesn't "pop" in and out
     vim.opt.signcolumn = "yes"
 
+    -- Workaround: kotlin-lsp sends stale document versions with rename edits,
+    -- causing "Buffer newer than edits" errors. Strip versions so Neovim applies them.
+    local rename_handler = vim.lsp.handlers["textDocument/rename"]
+    vim.lsp.handlers["textDocument/rename"] = function(err, result, ctx, config)
+      if result then
+        if result.documentChanges then
+          for _, change in ipairs(result.documentChanges) do
+            if change.textDocument then
+              change.textDocument.version = nil
+            end
+          end
+        end
+      end
+      return rename_handler(err, result, ctx, config)
+    end
+
     -- 1. Shared on_attach — runs for ALL LSP clients via LspAttach autocmd
     local function on_attach(client, bufnr)
       -- DISABLE SEMANTIC TOKENS: This stops the LSP from "repainting" over Treesitter
@@ -42,7 +58,9 @@ return {
       vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("Go to definition"))
       vim.keymap.set("n", "gI", vim.lsp.buf.implementation, opts("Go to implementation"))
       vim.keymap.set("n", "gr", vim.lsp.buf.references, opts("Show references"))
-      vim.keymap.set("n", "K", vim.lsp.buf.hover, opts("Hover documentation"))
+      vim.keymap.set("n", "K", function()
+        vim.lsp.buf.hover({ border = "rounded", pad_left = 1, pad_right = 1 })
+      end, opts("Hover documentation"))
       vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Rename symbol"))
       vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("Code action"))
       vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format { async = true } end, opts("Format file"))
