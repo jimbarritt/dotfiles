@@ -86,16 +86,7 @@ return {
             if f then
               f:write("\n" .. export_line .. "\n")
               f:close()
-              vim.schedule(function()
-                show_popup({
-                  "Kotlin LSP detected via Homebrew.",
-                  "",
-                  "Written to ~/.zshrc_machine:",
-                  "  " .. export_line,
-                  "",
-                  "Press q to close",
-                })
-              end)
+              vim.api.nvim_echo({{"Kotlin LSP detected — written to ~/.zshrc_machine. Reload your shell.", "Normal"}}, true, {})
             end
           end
         end
@@ -110,7 +101,9 @@ return {
           "Install via Homebrew:",
           "  brew install JetBrains/utils/kotlin-lsp",
           "",
-          "Then reload nvim — it will be detected automatically.",
+          "Then restart nvim — it will be detected automatically.",
+          "",
+          "After first restart, reload your shell.",
           "",
           "Press q to close",
         }, "WarningMsg")
@@ -128,7 +121,7 @@ return {
           "Reinstall via:",
           "  brew install JetBrains/utils/kotlin-lsp",
           "",
-          "Then reload nvim.",
+          "Then restart nvim.",
           "",
           "Press q to close",
         }, "WarningMsg")
