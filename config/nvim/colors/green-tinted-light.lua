@@ -90,6 +90,13 @@ hi('MatchParen',   { fg = c.search_current, gui = 'bold' })
 hi('StatusLine',   { fg = '#1f2328', bg = '#f6f8fa' })
 hi('StatusLineNC', { fg = '#656d76', bg = '#f6f8fa' })
 
+-- Messages & prompts
+hi('Title',        { fg = c.fg, gui = 'bold' })
+hi('MoreMsg',      { fg = '#1a7a2a' })
+hi('ModeMsg',      { fg = c.fg, gui = 'bold' })
+hi('Question',     { fg = '#1a7a2a' })
+hi('FloatTitle',   { fg = c.fg, gui = 'bold' })
+
 -- Folding & chrome
 hi('Folded',       { fg = c.comment, bg = c.bg_light })
 hi('UfoFoldingVirtText', { fg = c.comment })
