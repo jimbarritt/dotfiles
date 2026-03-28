@@ -77,14 +77,6 @@ return {
         ignore_list = {},
       },
       
-      -- Optional: also sync when opening a new file
-      actions = {
-        open_file = {
-          quit_on_open = false,
-        },
-      },
-
-
       actions = {
         open_file = {
           quit_on_open = false,  -- Don't close tree on file open
