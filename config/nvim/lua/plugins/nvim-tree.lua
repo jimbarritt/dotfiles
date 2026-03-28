@@ -106,7 +106,7 @@ return {
           symlink_arrow = " -> ",
         },
         indent_markers = {
-          enable = false,
+          enable = true,
           inline_arrows = true,
           icons = {
             corner = "└",  -- Single char only

@@ -62,7 +62,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 -- Status line
 vim.opt.laststatus = 2
-vim.opt.cmdheight = 0     -- Hide command line when not in use
+vim.opt.cmdheight = 1     -- Show command line (avoids truncated messages)
 vim.opt.showmode = false  -- Disable mode in command line
 
 -- Custom highlight groups for statusline

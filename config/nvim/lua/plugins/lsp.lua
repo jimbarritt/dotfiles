@@ -19,14 +19,18 @@ return {
       -- THE KEY: Don't refresh error highlights while in Insert/Visual changes
       update_in_insert = false,
       severity_sort = true,
+      float = {
+        border = "rounded",
+        source = true,
+      },
     })
 
     -- Ensure the sign column doesn't "pop" in and out
     vim.opt.signcolumn = "yes"
 
-    -- 1. Shared on_attach (The Flicker Fix is here)
-    local on_attach = function(client, bufnr)
-      -- DISBALE SEMANTIC TOKENS: This stops the LSP from "repainting" over Treesitter
+    -- 1. Shared on_attach — runs for ALL LSP clients via LspAttach autocmd
+    local function on_attach(client, bufnr)
+      -- DISABLE SEMANTIC TOKENS: This stops the LSP from "repainting" over Treesitter
       if client.supports_method("textDocument/semanticTokens") then
         vim.lsp.semantic_tokens.stop(bufnr, client.id)
       end
@@ -48,6 +52,15 @@ return {
       vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, opts("Next diagnostic"))
       vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, opts("Previous diagnostic"))
     end
+
+    vim.api.nvim_create_autocmd("LspAttach", {
+      callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if client then
+          on_attach(client, args.buf)
+        end
+      end,
+    })
 
     -- 2. Capabilities (Blink.cmp + file watching)
     local capabilities = vim.lsp.protocol.make_client_capabilities()

@@ -15,14 +15,13 @@ return {
     local has_env = env_dir ~= nil and vim.fn.isdirectory(env_dir .. "/lib") == 1
 
     if not has_mason and not has_env then
-      vim.notify(
-        "kotlin-lsp not found. Install via Homebrew:\n"
-          .. "  brew install JetBrains/utils/kotlin-lsp\n"
-          .. "Then add to ~/.zshrc_work:\n"
-          .. "  export KOTLIN_LSP_DIR=$(brew --prefix kotlin-lsp)",
-        vim.log.levels.WARN,
-        { title = "Kotlin LSP" }
-      )
+      vim.api.nvim_echo({
+        { "Kotlin LSP not found.\n", "WarningMsg" },
+        { "Install via Homebrew:\n", "Normal" },
+        { "  brew install JetBrains/utils/kotlin-lsp\n", "String" },
+        { "Then add to ~/.zshrc_work:\n", "Normal" },
+        { "  export KOTLIN_LSP_DIR=$(brew --prefix kotlin-lsp)/libexec\n", "String" },
+      }, true, {})
       return
     end
 
