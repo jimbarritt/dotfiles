@@ -16,53 +16,53 @@ vim.o.background = 'light'
 
 local c = {
   -- Background & UI
-  bg           = '#f4f8f4',          -- warm off-white, subtle green tint
-  bg_light     = '#eaf0ea',          -- slightly darker for floats/popups
-  bg_highlight = '#dce6dc',          -- cursor line, visual
-  fg           = '#111811',          -- near-black with green tint
-  fg_dim       = '#3a4e3a',          -- secondary text
-  cursor       = '#0a7a0a',
-  selection    = '#c8e0c8',
+  bg           = '#ffffff',          -- pure white
+  bg_light     = '#f0f4f0',          -- slightly darker for floats/popups
+  bg_highlight = '#e8efe8',          -- cursor line, visual
+  fg           = '#1f2328',          -- GitHub default text
+  fg_dim       = '#656d76',          -- GitHub secondary text
+  cursor       = '#0550ae',
+  selection    = '#ddf4ff',
 
-  -- STRUCTURAL ANCHORS (darkest — navigation beacons)
-  keyword         = '#1a7a1a',       -- dark green — if/then/end
-  keyword_control = '#0a5a0a',       -- even darker for return/break/continue
-  fn_decl         = '#5a6a00',       -- dark olive — function declarations pop
-  bracket_top     = '#2a8a2a',       -- bright structural brackets
+  -- STRUCTURAL ANCHORS — GitHub red for keywords
+  keyword         = '#cf222e',       -- GitHub keyword red
+  keyword_control = '#cf222e',       -- same red for return/break
+  fn_decl         = '#8250df',       -- GitHub purple for function declarations
+  bracket_top     = '#1f2328',       -- brackets match default text
 
-  -- NAVIGATION (medium)
-  fn_call  = '#1a6a7a',             -- teal — function calls
-  param    = '#2a6a3a',             -- forest green — parameters
-  type     = '#1a5a8a',             -- blue-green — types
-  constant = '#7a5a00',             -- warm brown — constants
-  property = '#3a6a5a',             -- muted teal — object properties
+  -- NAVIGATION
+  fn_call  = '#1f2328',             -- GitHub doesn't highlight calls
+  param    = '#1f2328',             -- params are default text
+  type     = '#0550ae',             -- GitHub blue for types
+  constant = '#0550ae',             -- constants are blue
+  property = '#1f2328',             -- properties are default text
 
-  -- CONTENT / NOISE REDUCTION (lighter but still readable)
-  variable       = '#2a4a2a',        -- darker sage
-  variable_local = '#3a5a3a',        -- slightly lighter
-  operator       = '#5a7a5a',        -- visible but quiet
-  punctuation    = '#6a8a6a',        -- subdued but legible
-  string         = '#1a5a1a',        -- darker green for strings
-  string_special = '#0a4a2a',        -- slightly different for escapes
-  number         = '#2a5a4a',        -- blue-green for numbers
-  comment        = '#7a907a',        -- gray-green, italic
+  -- CONTENT
+  variable       = '#1f2328',        -- default text
+  variable_local = '#1f2328',        -- default text
+  operator       = '#1f2328',        -- default text
+  punctuation    = '#1f2328',        -- default text
+  string         = '#0a3069',        -- GitHub dark blue for strings
+  string_special = '#0550ae',        -- escapes slightly lighter blue
+  number         = '#0550ae',        -- numbers are blue
+  comment        = '#6e7781',        -- GitHub gray for comments
 
   -- UI elements
-  line_number = '#9aae9a',
-  visual      = '#c8e0c8',
+  line_number = '#8c959f',
+  visual      = '#ddf4ff',
 
   -- Diagnostics
-  search         = '#e8e888',
-  search_current = '#d8d848',
-  error          = '#cc3333',
-  warning        = '#b87a00',
-  hint           = '#2a7a9a',
-  info           = '#1a8a7a',
+  search         = '#fff8c5',
+  search_current = '#ffdf5d',
+  error          = '#cf222e',
+  warning        = '#9a6700',
+  hint           = '#0550ae',
+  info           = '#0550ae',
 
   -- Legacy
-  black        = '#eaf0ea',
-  bright_black = '#dce6dc',
-  bright_white = '#0a1a0a',
+  black        = '#f6f8fa',
+  bright_black = '#eaeef2',
+  bright_white = '#1f2328',
 }
 
 local function hi(group, opts)
@@ -87,8 +87,8 @@ hi('VisualNOS',    { bg = c.visual })
 hi('Search',       { fg = c.fg, bg = c.search })
 hi('IncSearch',    { fg = c.fg, bg = c.search_current })
 hi('MatchParen',   { fg = c.search_current, gui = 'bold' })
-hi('StatusLine',   { fg = '#1a5a1a', bg = '#d8e8d8' })
-hi('StatusLineNC', { fg = '#4a7a4a', bg = '#e0eae0' })
+hi('StatusLine',   { fg = '#1f2328', bg = '#f6f8fa' })
+hi('StatusLineNC', { fg = '#656d76', bg = '#f6f8fa' })
 
 -- Folding & chrome
 hi('Folded',       { fg = c.comment, bg = c.bg_light })
@@ -253,10 +253,20 @@ hi('TelescopeSelection', { fg = c.fg, bg = c.bg_highlight })
 hi('TelescopeMatching',  { fg = c.fn_decl, gui = 'bold' })
 
 -- ── nvim-tree ───────────────────────────────────────────────────────
+hi('Directory',                  { fg = c.type })
 hi('NvimTreeFolderName',       { fg = c.type })
 hi('NvimTreeOpenedFolderName', { fg = c.keyword })
 hi('NvimTreeRootFolder',       { fg = c.fn_decl })
 hi('NvimTreeSpecialFile',      { fg = c.fn_decl })
+hi('NvimTreeNormal',           { fg = c.fg })
+hi('NvimTreeNormalNC',         { fg = c.fg })
+hi('NvimTreeExecFile',         { fg = c.keyword, gui = 'bold' })
+hi('NvimTreeSymlink',          { fg = c.fn_call })
+hi('NvimTreeGitDirty',         { fg = c.constant })
+hi('NvimTreeGitNew',           { fg = c.keyword })
+hi('NvimTreeIndentMarker',     { fg = c.punctuation })
+hi('NonText',                  { fg = c.punctuation })
+hi('EndOfBuffer',              { fg = c.punctuation })
 
 -- ── Markdown ────────────────────────────────────────────────────────
 hi('@markup.heading',   { fg = c.fn_decl, gui = 'bold' })

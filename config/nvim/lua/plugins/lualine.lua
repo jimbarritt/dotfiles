@@ -1,12 +1,12 @@
 local function get_colors()
   if vim.o.background == "light" then
     return {
-      green = "#006600",
-      dark_green = "#338833",
-      forest = "#228822",
-      bg_green = "#d8e8d8",
+      green = "#0550ae",
+      dark_green = "#0550ae",
+      forest = "#8250df",
+      bg_green = "#f6f8fa",
       black = "#ffffff",
-      gray = "#808080",
+      gray = "#656d76",
     }
   else
     return {

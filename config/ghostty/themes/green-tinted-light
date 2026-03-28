@@ -2,7 +2,7 @@
 # Warm off-white background with subtle green tint.
 # Designed for high contrast readability (presentations, daylight).
 
-background = #f4f8f4
+background = #ffffff
 foreground = #111811
 cursor-color = #0a7a0a
 cursor-text = #f4f8f4
@@ -13,9 +13,9 @@ selection-foreground = #111811
 palette = 0=#dce4dc
 palette = 8=#c4d0c4
 
-# Red (errors, deletions)
-palette = 1=#b83030
-palette = 9=#cc4444
+# Red (errors, unstaged changes)
+palette = 1=#8a3a3a
+palette = 9=#9a4a4a
 
 # Green (keywords, structural anchors)
 palette = 2=#0a5a0a

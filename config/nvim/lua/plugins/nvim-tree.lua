@@ -106,7 +106,7 @@ return {
           symlink_arrow = " -> ",
         },
         indent_markers = {
-          enable = true,
+          enable = false,
           inline_arrows = true,
           icons = {
             corner = "└",  -- Single char only
@@ -132,19 +132,44 @@ return {
       },
     })
     
-    local green = "#50fa7b"
-    local light_green = "#7fc87f"
-    
-    vim.api.nvim_set_hl(0, "NvimTreeNormal", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "NvimTreeFolderName", { fg = green })
-    vim.api.nvim_set_hl(0, "NvimTreeOpenedFolderName", { fg = green, bold = true })
-    vim.api.nvim_set_hl(0, "NvimTreeEmptyFolderName", { fg = green })
-    vim.api.nvim_set_hl(0, "NvimTreeSymlink", { fg = green })
-    vim.api.nvim_set_hl(0, "NvimTreeSymlinkFolderName", { fg = green })
-    vim.api.nvim_set_hl(0, "NvimTreeFolderIcon", { fg = green })
-    vim.api.nvim_set_hl(0, "NvimTreeNormalFile", { fg = green })
-    vim.api.nvim_set_hl(0, "NvimTreeExecFile", { fg = green })
-    vim.api.nvim_set_hl(0, "NvimTreeSpecialFile", { fg = green })
-    vim.api.nvim_set_hl(0, "NvimTreeIndentMarker", { fg = light_green })
+    local function apply_tree_colors()
+      if vim.o.background == "light" then
+        local fg = "#111811"
+        local dir = "#0a3a6a"
+        local dim = "#6a806a"
+        vim.api.nvim_set_hl(0, "NvimTreeNormal", { bg = "NONE", fg = fg })
+        vim.api.nvim_set_hl(0, "NvimTreeFolderName", { fg = dir })
+        vim.api.nvim_set_hl(0, "NvimTreeOpenedFolderName", { fg = dir, bold = true })
+        vim.api.nvim_set_hl(0, "NvimTreeEmptyFolderName", { fg = dir })
+        vim.api.nvim_set_hl(0, "NvimTreeSymlink", { fg = dir })
+        vim.api.nvim_set_hl(0, "NvimTreeSymlinkFolderName", { fg = dir })
+        vim.api.nvim_set_hl(0, "NvimTreeFolderIcon", { fg = dir })
+        vim.api.nvim_set_hl(0, "NvimTreeNormalFile", { fg = fg })
+        vim.api.nvim_set_hl(0, "NvimTreeExecFile", { fg = fg })
+        vim.api.nvim_set_hl(0, "NvimTreeSpecialFile", { fg = fg })
+        vim.api.nvim_set_hl(0, "NvimTreeIndentMarker", { fg = "#ffffff" })
+      else
+        local green = "#50fa7b"
+        local light_green = "#7fc87f"
+        vim.api.nvim_set_hl(0, "NvimTreeNormal", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "NvimTreeFolderName", { fg = green })
+        vim.api.nvim_set_hl(0, "NvimTreeOpenedFolderName", { fg = green, bold = true })
+        vim.api.nvim_set_hl(0, "NvimTreeEmptyFolderName", { fg = green })
+        vim.api.nvim_set_hl(0, "NvimTreeSymlink", { fg = green })
+        vim.api.nvim_set_hl(0, "NvimTreeSymlinkFolderName", { fg = green })
+        vim.api.nvim_set_hl(0, "NvimTreeFolderIcon", { fg = green })
+        vim.api.nvim_set_hl(0, "NvimTreeNormalFile", { fg = green })
+        vim.api.nvim_set_hl(0, "NvimTreeExecFile", { fg = green })
+        vim.api.nvim_set_hl(0, "NvimTreeSpecialFile", { fg = green })
+        vim.api.nvim_set_hl(0, "NvimTreeIndentMarker", { fg = light_green })
+      end
+    end
+
+    apply_tree_colors()
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      callback = function()
+        vim.defer_fn(apply_tree_colors, 50)
+      end,
+    })
   end,
 }

@@ -8,6 +8,7 @@ if vim.fn.exists('syntax_on') then
 end
 
 vim.g.colors_name = 'green-tinted'
+vim.o.background = 'dark'
 
 local colors = {
   -- Background & UI
