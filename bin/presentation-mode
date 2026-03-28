@@ -48,6 +48,7 @@ theme = green-tinted-light
 background-opacity = 1.0
 background-blur-radius = 0
 window-theme = light
+font-family = Monaspace Neon
 font-thicken = true
 adjust-cell-height = 9
 EOF

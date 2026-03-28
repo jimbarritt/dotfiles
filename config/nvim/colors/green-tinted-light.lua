@@ -45,7 +45,7 @@ local c = {
   string         = '#0a3069',        -- GitHub dark blue for strings
   string_special = '#0550ae',        -- escapes slightly lighter blue
   number         = '#0550ae',        -- numbers are blue
-  comment        = '#6e7781',        -- GitHub gray for comments
+  comment        = '#59636e',        -- GitHub comment gray (slightly darker)
 
   -- UI elements
   line_number = '#8c959f',
@@ -80,8 +80,8 @@ hi('NormalFloat',  { fg = c.fg, bg = c.bg_light })
 hi('Cursor',       { fg = c.bg, bg = c.cursor })
 hi('CursorLine',   { bg = c.bg_highlight })
 hi('CursorColumn', { bg = c.bg_highlight })
-hi('LineNr',       { fg = c.line_number })
-hi('CursorLineNr', { fg = c.keyword })
+hi('LineNr',       { fg = '#656d76' })
+hi('CursorLineNr', { fg = '#1a7a2a' })
 hi('Visual',       { bg = c.visual })
 hi('VisualNOS',    { bg = c.visual })
 hi('Search',       { fg = c.fg, bg = c.search })
@@ -105,7 +105,7 @@ hi('SignColumn',   { bg = c.bg })
 hi('FoldColumn',   { fg = c.comment, bg = c.bg })
 
 -- ── Traditional syntax ──────────────────────────────────────────────
-hi('Comment',   { fg = c.comment, gui = 'italic' })
+hi('Comment',   { fg = c.comment })
 
 hi('Constant',  { fg = c.constant })
 hi('String',    { fg = c.string })
@@ -169,9 +169,9 @@ hi('@variable.member',    { fg = c.property })
 
 -- Functions
 hi('@function',             { fg = c.fn_decl })
-hi('@function.builtin',     { fg = c.fn_decl })
+hi('@function.builtin',     { fg = c.fn_call })
 hi('@function.call',        { fg = c.fn_call })
-hi('@function.method',      { fg = c.fn_decl })
+hi('@function.method',      { fg = c.fn_call })
 hi('@function.method.call', { fg = c.fn_call })
 hi('@constructor',          { fg = c.type })
 
@@ -207,6 +207,7 @@ hi('@attribute',       { fg = c.type })
 hi('@constant',         { fg = c.constant })
 hi('@constant.builtin', { fg = c.constant })
 hi('@namespace',        { fg = c.type })
+hi('@module',           { fg = c.fn_decl })
 hi('@property',         { fg = c.property })
 hi('@parameter',        { fg = c.param })
 
@@ -217,11 +218,11 @@ hi('@punctuation.delimiter', { fg = c.punctuation })
 hi('@punctuation.special',   { fg = c.punctuation })
 
 -- Comments
-hi('@comment',               { fg = c.comment, gui = 'italic' })
-hi('@comment.documentation', { fg = c.comment, gui = 'italic' })
+hi('@comment',               { fg = c.comment })
+hi('@comment.documentation', { fg = c.comment })
 
 -- ── LSP Semantic Tokens ─────────────────────────────────────────────
-hi('@lsp.type.function',  { fg = c.fn_decl })
+hi('@lsp.type.function',  { fg = c.type })
 hi('@lsp.type.method',    { fg = c.fn_decl })
 hi('@lsp.type.parameter', { fg = c.param })
 hi('@lsp.type.variable',  { fg = c.variable })
@@ -306,6 +307,10 @@ hi('markdownLink',   { fg = c.type })
 hi('@keyword.kotlin',          { fg = c.keyword })
 hi('@lsp.type.keyword.kotlin', { fg = c.keyword })
 hi('@lsp.keyword.kotlin',      { fg = c.keyword })
+hi('@lsp.typemod.class.declaration',           { fg = c.fn_decl })
+hi('@lsp.typemod.class.declaration.kotlin',    { fg = c.fn_decl })
+hi('@lsp.typemod.function.declaration',        { fg = c.fn_decl })
+hi('@lsp.typemod.function.declaration.kotlin', { fg = c.fn_decl })
 hi('@type.kotlin',             { fg = c.type })
 hi('@function.kotlin',         { fg = c.fn_decl })
 hi('@property.kotlin',         { fg = c.property })

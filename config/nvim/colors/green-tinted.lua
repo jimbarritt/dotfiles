@@ -101,7 +101,7 @@ hi('Folded', { fg = colors.comment, bg = colors.black })
 hi('FoldColumn', { fg = colors.comment, bg = colors.bg })
 
 -- SYNTAX HIGHLIGHTS (Traditional Vim groups)
-hi('Comment', { fg = colors.comment, gui = 'italic' })
+hi('Comment', { fg = colors.comment })
 
 -- Constants (medium brightness)
 hi('Constant', { fg = colors.constant })
@@ -220,8 +220,8 @@ hi('@punctuation.delimiter', { fg = colors.punctuation }) -- Dim for commas etc
 hi('@punctuation.special', { fg = colors.punctuation })
 
 -- Comments
-hi('@comment', { fg = colors.comment, gui = 'italic' })
-hi('@comment.documentation', { fg = colors.comment, gui = 'italic' })
+hi('@comment', { fg = colors.comment })
+hi('@comment.documentation', { fg = colors.comment })
 
 -- LSP Semantic Tokens (additional layer - this might be causing the red!)
 -- Explicitly disable or set to our colors to prevent overrides
