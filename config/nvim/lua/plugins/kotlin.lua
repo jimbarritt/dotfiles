@@ -65,32 +65,43 @@ return {
     elseif has_mason then
       lsp_dir = mason_lib
     else
-      -- No env var — try to detect via Homebrew
-      local brew_prefix = vim.fn.system("brew --prefix kotlin-lsp 2>/dev/null"):gsub("%s+$", "")
-      if vim.v.shell_error == 0 and brew_prefix ~= "" then
-        local detected_dir = brew_prefix .. "/libexec"
-        if vim.fn.isdirectory(detected_dir .. "/lib") == 1 then
-          lsp_dir = detected_dir
-          -- Write to ~/.zshrc_machine so future shells pick it up
-          local machine_rc = os.getenv("HOME") .. "/.zshrc_machine"
-          local export_line = 'export KOTLIN_LSP_DIR="' .. detected_dir .. '"'
-          -- Read existing content to avoid duplicating
-          local existing = ""
-          local f = io.open(machine_rc, "r")
-          if f then
-            existing = f:read("*a")
-            f:close()
-          end
-          if not existing:find("KOTLIN_LSP_DIR") then
-            f = io.open(machine_rc, "a")
-            if f then
-              f:write("\n" .. export_line .. "\n")
-              f:close()
-              vim.api.nvim_echo({{"Kotlin LSP detected — written to ~/.zshrc_machine. Reload your shell.", "Normal"}}, true, {})
+      -- No env var — check if ~/.zshrc_machine already has the export (user hasn't reloaded shell)
+      local machine_rc = os.getenv("HOME") .. "/.zshrc_machine"
+      local existing = ""
+      local f = io.open(machine_rc, "r")
+      if f then
+        existing = f:read("*a")
+        f:close()
+      end
+      local saved_dir = existing:match('export KOTLIN_LSP_DIR="([^"]+)"')
+      if saved_dir and vim.fn.isdirectory(saved_dir .. "/lib") == 1 then
+        -- Already written but shell not reloaded — use saved value directly
+        lsp_dir = saved_dir
+        vim.api.nvim_echo({{"No KOTLIN_LSP_DIR env var — setting manually. Reload your shell.", "WarningMsg"}}, true, {})
+      else
+        -- Try to detect via Homebrew
+        local brew_prefix = vim.fn.system("brew --prefix kotlin-lsp 2>/dev/null"):gsub("%s+$", "")
+        if vim.v.shell_error == 0 and brew_prefix ~= "" then
+          local detected_dir = brew_prefix .. "/libexec"
+          if vim.fn.isdirectory(detected_dir .. "/lib") == 1 then
+            lsp_dir = detected_dir
+            local export_line = 'export KOTLIN_LSP_DIR="' .. detected_dir .. '"'
+            if not existing:find("KOTLIN_LSP_DIR") then
+              f = io.open(machine_rc, "a")
+              if f then
+                f:write("\n" .. export_line .. "\n")
+                f:close()
+                vim.api.nvim_echo({{"Kotlin LSP detected — written to ~/.zshrc_machine. Reload your shell.", "Normal"}}, true, {})
+              end
             end
           end
         end
       end
+    end
+
+    -- Set the env var for this nvim session so kotlin.nvim can find it
+    if lsp_dir and not os.getenv("KOTLIN_LSP_DIR") then
+      vim.fn.setenv("KOTLIN_LSP_DIR", lsp_dir)
     end
 
     if not lsp_dir then
@@ -142,5 +153,42 @@ return {
         end,
       },
     })
+
+    -- Check that the LSP actually starts — show a popup if it fails
+    vim.defer_fn(function()
+      local clients = vim.lsp.get_clients({ name = "kotlin_lsp" })
+      if #clients == 0 then
+        -- Gather diagnostic info
+        local diag_lines = {
+          "Kotlin LSP failed to start.",
+          "",
+          "KOTLIN_LSP_DIR: " .. (os.getenv("KOTLIN_LSP_DIR") or "(not set)"),
+          "Resolved dir:   " .. lsp_dir,
+        }
+        -- Check for the server binary
+        local bin = lsp_dir .. "/bin/kotlin-lsp"
+        if vim.fn.filereadable(bin) == 1 then
+          table.insert(diag_lines, "Binary:         " .. bin .. " (found)")
+        else
+          table.insert(diag_lines, "Binary:         " .. bin .. " (NOT FOUND)")
+        end
+        -- Check LspLog for recent errors
+        local log_path = vim.fn.stdpath("log") .. "/lsp.log"
+        if vim.fn.filereadable(log_path) == 1 then
+          table.insert(diag_lines, "")
+          table.insert(diag_lines, "Recent LSP log (last 5 lines):")
+          local log_lines = vim.fn.readfile(log_path)
+          local start = math.max(1, #log_lines - 4)
+          for i = start, #log_lines do
+            table.insert(diag_lines, "  " .. log_lines[i])
+          end
+        end
+        table.insert(diag_lines, "")
+        table.insert(diag_lines, "Check :LspLog for full details.")
+        table.insert(diag_lines, "")
+        table.insert(diag_lines, "Press q to close")
+        show_popup(diag_lines, "WarningMsg")
+      end
+    end, 10000)
   end,
 }
