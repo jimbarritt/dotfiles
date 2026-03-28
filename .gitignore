@@ -9,3 +9,4 @@ backups
 .emacs.d/tramp
 .bash_local
 .claude-sessions
+config/ghostty/presentation

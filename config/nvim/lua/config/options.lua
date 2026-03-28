@@ -111,5 +111,10 @@ vim.schedule(function()
     -- Silent - do nothing, no popups ever
   end
 end)
--- Set colorscheme
-vim.cmd('colorscheme green-tinted')
+-- Set colorscheme — match presentation mode if active
+if vim.fn.filereadable(vim.fn.expand("~/.config/ghostty/presentation")) == 1 then
+  vim.opt.background = "light"
+  vim.cmd('colorscheme green-tinted-light')
+else
+  vim.cmd('colorscheme green-tinted')
+end

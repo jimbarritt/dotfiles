@@ -147,7 +147,7 @@ return {
         vim.api.nvim_set_hl(0, "NvimTreeNormalFile", { fg = fg })
         vim.api.nvim_set_hl(0, "NvimTreeExecFile", { fg = fg })
         vim.api.nvim_set_hl(0, "NvimTreeSpecialFile", { fg = fg })
-        vim.api.nvim_set_hl(0, "NvimTreeIndentMarker", { fg = "#ffffff" })
+        vim.api.nvim_set_hl(0, "NvimTreeIndentMarker", { fg = "#a0c8a0" })
       else
         local green = "#50fa7b"
         local light_green = "#7fc87f"
