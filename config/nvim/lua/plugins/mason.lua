@@ -23,7 +23,7 @@ return {
           "pyright",        -- Python
           "jdtls",          -- Java
           -- kotlin_lsp installed via Homebrew, not Mason (JetBrains CDN blocks Mason downloads)
-          -- brew install JetBrains/utils/kotlin-lsp  →  set KOTLIN_LSP_DIR in ~/.zshrc_work
+          -- brew install JetBrains/utils/kotlin-lsp  →  auto-detected on nvim startup
           "bashls",         -- Bash/Zsh
           "lua_ls",         -- Lua
           "marksman",       -- Markdown

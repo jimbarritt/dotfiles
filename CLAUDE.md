@@ -34,4 +34,4 @@ When adding support for a new terminal, add a clause to `_is_known_terminal` tha
 
 ## Machine-local overrides
 
-`~/.zshrc_work` is sourced at the end of `zshrc` if it exists — use it for machine-specific config that shouldn't live in this repo.
+`~/.zshrc_machine` is sourced at the end of `zshrc` for machine-specific config (e.g. paths that differ per machine). It is auto-populated by nvim plugins (e.g. `kotlin.lua` writes `KOTLIN_LSP_DIR` here on first detection). `~/.zshrc_work` is sourced after it for work-specific config. Neither file is tracked in the repo.

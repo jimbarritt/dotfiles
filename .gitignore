@@ -10,3 +10,4 @@ backups
 .bash_local
 .claude-sessions
 config/ghostty/presentation
+home/zshrc_machine

@@ -99,7 +99,7 @@ just link --dry-run    # preview what link would do
 just test              # shellcheck all scripts
 ```
 
-Machine-local config goes in `~/.zshrc_work` (sourced at the end of `.zshrc`, not tracked here).
+Machine-specific config (paths that vary per machine) goes in `~/.zshrc_machine`. Work-specific config goes in `~/.zshrc_work`. Both are sourced at the end of `.zshrc` and not tracked here. Some nvim plugins auto-populate `~/.zshrc_machine` (e.g. Kotlin LSP path detection).
 
 I have some aliases set up for git in `.gitconfig` particularly interesting is the "serve" option - see http://coderwall.com/p/eybtga. This means I just need to type:
 

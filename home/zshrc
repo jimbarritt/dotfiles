@@ -473,4 +473,5 @@ esac
 
 [[ -d "/opt/homebrew/opt/libpq/bin" ]] && export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 
+[[ -f "$HOME/.zshrc_machine" ]] && source "$HOME/.zshrc_machine"
 [[ -f "$HOME/.zshrc_work" ]] && source "$HOME/.zshrc_work"
