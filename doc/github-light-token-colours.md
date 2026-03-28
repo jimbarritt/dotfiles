@@ -119,6 +119,13 @@ for the Kotlin treesitter grammar to assign a different capture (e.g. `@keyword.
 or `@type.annotation`) to the parameter type colon. Left as black for now since it
 also affects `,` between parameters which should stay black.
 
+## TODO
+
+- [ ] Resolve `@lsp.type.method` ambiguity (constructor vs method call)
+- [ ] Resolve type annotation colon vs return type colon
+- [ ] Resolve string interpolation LSP override (the TextMate context hierarchy problem)
+- [ ] Fix `less` status bar highlighting in tmux popup light mode — currently shows light green, needs appropriate light-mode colours
+
 ## Diagnostic Tool
 
 Run `:luafile ~/.config/nvim/lua/colorscheme/diagnose.lua` with cursor on any
