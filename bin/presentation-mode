@@ -11,7 +11,7 @@ set -euo pipefail
 PRESENTATION_FILE="$HOME/.config/ghostty/presentation"
 
 DARK_NVIM_COLORSCHEME="green-tinted"
-LIGHT_NVIM_COLORSCHEME="green-tinted-light"
+LIGHT_NVIM_COLORSCHEME="github-light"
 
 ghostty_reload() {
     # Ghostty reloads config on SIGUSR2 (since v1.2.0).
@@ -25,10 +25,14 @@ tmux_set_theme() {
         tmux set -g @theme_mode "light"
         tmux set -g status-style "bg=#d8e8d8,fg=#338833"
         tmux set -g message-style "bg=#c0d8c0,fg=#226622"
+        tmux set -g popup-style "bg=#f0f4f0,fg=#1f2328"
+        tmux set -g popup-border-style "bg=#f0f4f0,fg=#338833"
     else
         tmux set -g @theme_mode ""
         tmux set -g status-style "bg=#122912,fg=#4a7c4a"
         tmux set -g message-style "bg=#1a3a1a,fg=#7ab87a"
+        tmux set -g popup-style "bg=#0d1f1a,fg=#c8d8d0"
+        tmux set -g popup-border-style "bg=#0d1f1a,fg=#4a6860"
     fi
 }
 
