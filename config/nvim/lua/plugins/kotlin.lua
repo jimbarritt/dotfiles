@@ -140,7 +140,23 @@ return {
       return
     end
 
+    -- Resolve bundled JRE from the detected lsp_dir
+    -- Old layout: libexec/bin/kotlin-lsp + libexec/jre/...
+    -- New layout: libexec/kotlin-lsp.sh  + libexec/jre/...
+    -- Either way, jre lives alongside lib/ under lsp_dir.
+    local jre_base = lsp_dir .. "/jre"
+    local bundled_jre = nil
+    if vim.fn.isdirectory(jre_base) == 1 then
+      local candidate = jre_base .. "/Contents/Home"  -- macOS layout
+      if vim.fn.isdirectory(candidate) == 1 then
+        bundled_jre = candidate
+      elseif vim.fn.isdirectory(jre_base .. "/bin") == 1 then
+        bundled_jre = jre_base  -- Linux layout
+      end
+    end
+
     require("kotlin").setup({
+      jre_path = bundled_jre,  -- use brew-bundled JRE if available
       lsp = {
         on_attach = function(client, bufnr)
           -- Re-use the shared on_attach from lsp.lua
@@ -165,12 +181,16 @@ return {
           "KOTLIN_LSP_DIR: " .. (os.getenv("KOTLIN_LSP_DIR") or "(not set)"),
           "Resolved dir:   " .. lsp_dir,
         }
-        -- Check for the server binary
-        local bin = lsp_dir .. "/bin/kotlin-lsp"
-        if vim.fn.filereadable(bin) == 1 then
-          table.insert(diag_lines, "Binary:         " .. bin .. " (found)")
+        -- Check for the server binary (old layout: bin/kotlin-lsp, new: kotlin-lsp.sh)
+        local bin_old = lsp_dir .. "/bin/kotlin-lsp"
+        local bin_new = lsp_dir .. "/kotlin-lsp.sh"
+        if vim.fn.filereadable(bin_old) == 1 then
+          table.insert(diag_lines, "Binary:         " .. bin_old .. " (found)")
+        elseif vim.fn.filereadable(bin_new) == 1 then
+          table.insert(diag_lines, "Binary:         " .. bin_new .. " (found)")
         else
-          table.insert(diag_lines, "Binary:         " .. bin .. " (NOT FOUND)")
+          table.insert(diag_lines, "Binary:         " .. bin_old .. " (NOT FOUND)")
+          table.insert(diag_lines, "                " .. bin_new .. " (NOT FOUND)")
         end
         -- Check LspLog for recent errors
         local log_path = vim.fn.stdpath("log") .. "/lsp.log"
