@@ -10,12 +10,23 @@ return {
 
       local function preview_file()
         local node = api.tree.get_node_under_cursor()
-        if not node or node.nodes then
+        if not node then return end
+
+        -- Directory: expand and drill through single-child dirs
+        if node.nodes then
           api.node.open.edit()
+          -- Keep expanding while the directory has exactly one child and it's a dir
+          vim.schedule(function()
+            local current = api.tree.get_node_under_cursor()
+            while current and current.nodes and #current.nodes == 1 and current.nodes[1].nodes then
+              api.node.open.edit()
+              current = api.tree.get_node_under_cursor()
+            end
+          end)
           return
         end
 
-        -- Open the file but keep focus in tree
+        -- File: open but keep focus in tree
         api.node.open.no_window_picker()
         vim.cmd('wincmd p')
 

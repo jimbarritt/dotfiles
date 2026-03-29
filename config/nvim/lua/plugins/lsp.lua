@@ -120,6 +120,18 @@ return {
       vim.lsp.config(server, config)
     end
 
+    -- Close quickfix window when selecting an entry (e.g. from gr references)
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "qf",
+      callback = function(args)
+        vim.keymap.set("n", "<CR>", function()
+          local line = vim.fn.line(".")
+          vim.cmd("cclose")
+          vim.cmd(line .. "cc")
+        end, { buffer = args.buf, noremap = true, silent = true })
+      end,
+    })
+
     -- Clean quickfix format: just filename and line content, aligned
     vim.o.quickfixtextfunc = "v:lua.QfTextFunc"
     function _G.QfTextFunc(info)
