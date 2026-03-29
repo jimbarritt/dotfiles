@@ -19,12 +19,13 @@ Mason downloads). The nvim plugin handles detection automatically.
 
 ### First time on a new machine
 
-1. Install kotlin-lsp:
+1. Install kotlin-lsp (cask is preferred — the formula from the JetBrains tap
+   is outdated):
    ```bash
-   brew install JetBrains/utils/kotlin-lsp
+   brew install --cask kotlin-lsp
    ```
 2. Open a `.kt` file in nvim
-3. The plugin auto-detects the installation via `brew --prefix kotlin-lsp`
+3. The plugin auto-detects the installation (checks cask, then formula, then Mason)
 4. It writes `export KOTLIN_LSP_DIR="..."` to `~/.zshrc_machine`
 5. It sets the env var in the current nvim session so the LSP starts immediately
 6. Reload your shell so future terminals pick up the env var
@@ -44,21 +45,32 @@ KOTLIN_LSP_DIR env var set and valid?
   → yes: use it (fast path)
   → no: Mason dir exists?
     → yes: use Mason
-    → no: ~/.zshrc_machine already has the export?
-      → yes: use saved value, set env var, remind to reload shell
-      → no: run brew --prefix kotlin-lsp
-        → found: write to ~/.zshrc_machine, set env var, show message
-        → not found: show popup with install instructions
+    → no: Homebrew cask installed? (/opt/homebrew/Caskroom/kotlin-lsp/<ver>/)
+      → yes: use latest version dir
+      → no: Homebrew formula installed? (brew --prefix → libexec/)
+        → yes: use formula libexec
+        → no: ~/.zshrc_machine already has the export?
+          → yes: use saved value, set env var, remind to reload shell
+          → no: show popup with install instructions
+Auto-write to ~/.zshrc_machine if detected and not already saved.
 ```
 
 ### Error detection
 
 10 seconds after the plugin loads, it checks whether a `kotlin_lsp` client is
-running. If not, it shows a diagnostic popup with:
-- The `KOTLIN_LSP_DIR` value and resolved directory
-- Whether the LSP binary exists
-- Last 5 lines from the LSP log
-- A pointer to `:LspLog` for full details
+running. If not, it runs a full diagnostic and shows a popup with:
+- The resolved directory and binary status
+- A path to a detailed diagnostic log file at `~/.local/state/nvim/kotlin-lsp-diag.log`
+- A pointer to `:LspLog` for LSP-specific errors
+
+The diagnostic log includes:
+- Environment variables (`KOTLIN_LSP_DIR`, `JAVA_HOME`, `PATH`)
+- Homebrew formula and cask installation status
+- Binary path resolution and version
+- JRE detection
+- `~/.zshrc_machine` contents
+- LSP log tail (last 10 lines)
+- Machine info (hostname, OS)
 
 ### Machine-specific config (`~/.zshrc_machine`)
 
@@ -122,6 +134,26 @@ handles external file changes through two mechanisms:
   automatically
 - If diagnostics become stale, press `<leader>lr` to restart the LSP
 
+## Migrating from formula to cask
+
+The JetBrains Homebrew tap formula (`jetbrains/utils/kotlin-lsp`) is outdated.
+The official Homebrew cask is newer and preferred.
+
+```bash
+brew uninstall jetbrains/utils/kotlin-lsp
+brew install --cask kotlin-lsp
+```
+
+Then remove the stale `KOTLIN_LSP_DIR` line from `~/.zshrc_machine` so the
+plugin re-detects the new cask path on next launch.
+
+**Layout differences:**
+- Formula installs to `/opt/homebrew/Cellar/kotlin-lsp/<ver>/libexec/`
+- Cask installs to `/opt/homebrew/Caskroom/kotlin-lsp/<ver>/`
+- Both create `/opt/homebrew/bin/kotlin-lsp` — they conflict, so uninstall one first
+
+The plugin handles both layouts automatically.
+
 ## Troubleshooting
 
 ### LSP not starting
@@ -133,7 +165,13 @@ handles external file changes through two mechanisms:
 ```
 
 The plugin will show a diagnostic popup after 10 seconds if the LSP fails to
-start. Check the popup for details.
+start. A detailed diagnostic log is written to:
+
+```
+~/.local/state/nvim/kotlin-lsp-diag.log
+```
+
+Check the popup for the log path and `:LspLog` for LSP-specific errors.
 
 ### Known harmless warnings in LspLog
 

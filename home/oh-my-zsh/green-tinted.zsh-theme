@@ -14,10 +14,20 @@ fi
 export GREP_COLOR='38;5;78'
 alias grep='grep --color=auto'
 
-export LESS_TERMCAP_mb=$(printf '\e[38;5;78m')
-export LESS_TERMCAP_md=$(printf '\e[1;38;5;77m')
-export LESS_TERMCAP_me=$(printf '\e[0m')
-export LESS_TERMCAP_se=$(printf '\e[0m')
-export LESS_TERMCAP_so=$(printf '\e[38;5;114m')
-export LESS_TERMCAP_ue=$(printf '\e[0m')
-export LESS_TERMCAP_us=$(printf '\e[38;5;78m')
+if [[ -f "$HOME/.config/ghostty/presentation" ]]; then
+  export LESS_TERMCAP_mb=$(printf '\e[38;2;30;100;30m')
+  export LESS_TERMCAP_md=$(printf '\e[38;2;30;100;30m')
+  export LESS_TERMCAP_me=$(printf '\e[0m')
+  export LESS_TERMCAP_se=$(printf '\e[0m')
+  export LESS_TERMCAP_so=$(printf '\e[38;2;30;100;30m')
+  export LESS_TERMCAP_ue=$(printf '\e[0m')
+  export LESS_TERMCAP_us=$(printf '\e[4;38;2;80;140;80m')
+else
+  export LESS_TERMCAP_mb=$(printf '\e[38;5;78m')
+  export LESS_TERMCAP_md=$(printf '\e[1;38;5;77m')
+  export LESS_TERMCAP_me=$(printf '\e[0m')
+  export LESS_TERMCAP_se=$(printf '\e[0m')
+  export LESS_TERMCAP_so=$(printf '\e[38;5;114m')
+  export LESS_TERMCAP_ue=$(printf '\e[0m')
+  export LESS_TERMCAP_us=$(printf '\e[38;5;78m')
+fi
