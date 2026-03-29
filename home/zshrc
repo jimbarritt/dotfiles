@@ -295,6 +295,7 @@ lnproj() {
   echo "Linked: $source_dir -> $target_link"
 }
 
+alias nvim-clean="nvim --clean"
 alias envim="nvim ~/.config/nvim"
 alias ezshrc="nvim ~/.zshrc"
 alias reload-tmux="tmux source-file ~/.tmux.conf"
