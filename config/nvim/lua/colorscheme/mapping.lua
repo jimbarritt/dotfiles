@@ -55,6 +55,11 @@ M.entity = {
   "@lsp.typemod.method.declaration.kotlin",
   "@lsp.typemod.class.declaration",
   "@lsp.typemod.class.declaration.kotlin",
+  "@lsp.type.enum.kotlin", "@lsp.type.enumMember",
+  "@lsp.type.enumMember.kotlin",
+  "@lsp.typemod.enum.declaration", "@lsp.typemod.enum.declaration.kotlin",
+  "@lsp.typemod.enumMember.declaration", "@lsp.typemod.enumMember.declaration.kotlin",
+  "@lsp.typemod.enumMember.readonly", "@lsp.typemod.enumMember.readonly.kotlin",
   "@function.kotlin",
   -- Markup headings (D3: stay in entity)
   { "@markup.heading",   { gui = "bold" } },
