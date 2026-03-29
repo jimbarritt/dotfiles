@@ -60,6 +60,8 @@ M.entity = {
   "@lsp.typemod.enum.declaration", "@lsp.typemod.enum.declaration.kotlin",
   "@lsp.typemod.enumMember.declaration", "@lsp.typemod.enumMember.declaration.kotlin",
   "@lsp.typemod.enumMember.readonly", "@lsp.typemod.enumMember.readonly.kotlin",
+  "@lsp.type.interface", "@lsp.type.interface.kotlin",
+  "@lsp.typemod.interface.declaration", "@lsp.typemod.interface.declaration.kotlin",
   "@function.kotlin",
   -- Markup headings (D3: stay in entity)
   { "@markup.heading",   { gui = "bold" } },
@@ -91,7 +93,6 @@ M.type = {
   "@type", "@type.builtin", "@type.definition",
   "@attribute", "@namespace",
   "@lsp.type.type", "@lsp.type.class", "@lsp.type.enum",
-  "@lsp.type.interface",
   "@type.kotlin",
   "Directory", "NvimTreeFolderName",
   "jsonBoolean",
