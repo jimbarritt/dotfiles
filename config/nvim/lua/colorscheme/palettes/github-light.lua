@@ -25,6 +25,7 @@ return {
   tag            = "#116329",     -- pl-ent/regexp: HTML tags, regexp, markup lists
   builtin        = "#0550ae",     -- stdlib types (String) and functions (println)
   operator       = "#cf222e",     -- =, +, - etc. — red on GitHub
+  constructor    = "#8250df",     -- User() constructor calls — purple like entity
   text           = "#1f2328",     -- default text: identifiers, operators, punctuation
 
   -- UI

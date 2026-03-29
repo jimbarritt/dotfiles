@@ -166,6 +166,11 @@ M.builtin = {
   "@lsp.mod.defaultLibrary",
 }
 
+-- constructor: uppercase call expressions (User()) — falls back to entity
+M.constructor = {
+  "@constructor",
+}
+
 -- operator: falls back to text if palette doesn't define it
 M.operator = {
   "Operator", "@operator",

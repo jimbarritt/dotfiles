@@ -29,6 +29,7 @@ return {
   property       = "#1f2328",
   bracket_top    = "#1f2328",
   operator       = "#1f2328",
+  constructor    = "#0550ae",     -- User() constructor calls — blue like type
   punctuation    = "#1f2328",
   number         = "#0550ae",
   text           = "#1f2328",
