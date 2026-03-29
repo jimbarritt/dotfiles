@@ -5,7 +5,9 @@ local bufnr = vim.api.nvim_get_current_buf()
 local row = vim.api.nvim_win_get_cursor(0)[1] - 1
 local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1]
 
-print(string.format("\n=== Line %d: %s ===\n", row + 1, line))
+local header = string.format("=== Line %d: %s ===\n", row + 1, line)
+print("\n" .. header)
+local output = { header }
 
 local col = 0
 while col < #line do
@@ -58,9 +60,12 @@ while col < #line do
     end
 
     if #parts > 0 then
-      print(string.format("'%s' (col %d):", token, start))
-      print(table.concat(parts, "\n"))
-      print("")
+      local block = string.format("'%s' (col %d):\n%s\n", token, start, table.concat(parts, "\n"))
+      print(block)
+      table.insert(output, block)
     end
   end
 end
+
+vim.fn.setreg("+", table.concat(output, "\n"))
+print("(copied to clipboard)")
