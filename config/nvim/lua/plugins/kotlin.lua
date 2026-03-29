@@ -215,6 +215,24 @@ return {
     if env_dir and vim.fn.isdirectory(env_dir .. "/lib") == 1 then
       -- Fast path: env var is set and valid
       lsp_dir = env_dir
+      -- Nudge if pointing to the outdated formula layout
+      if env_dir:find("/Cellar/") or env_dir:find("/libexec") then
+        vim.schedule(function()
+          show_popup({
+            "KOTLIN_LSP_DIR points to the Homebrew formula (outdated):",
+            "  " .. env_dir,
+            "",
+            "To upgrade to the official cask:",
+            "  brew uninstall jetbrains/utils/kotlin-lsp",
+            "  brew install --cask kotlin-lsp",
+            "",
+            "Then remove the KOTLIN_LSP_DIR line from ~/.zshrc_machine",
+            "and restart nvim.",
+            "",
+            "Press q to close",
+          }, "WarningMsg")
+        end)
+      end
     elseif has_mason then
       lsp_dir = mason_lib
     else
