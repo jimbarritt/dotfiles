@@ -222,16 +222,17 @@ return {
             "KOTLIN_LSP_DIR points to the Homebrew formula (outdated):",
             "  " .. env_dir,
             "",
-            "To upgrade to the official cask:",
-            "  brew uninstall jetbrains/utils/kotlin-lsp",
-            "  brew install --cask kotlin-lsp",
-            "  xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp",
+            "To migrate to the official cask:",
             "",
-            "The xattr step removes macOS quarantine flags that block",
-            "unsigned native libraries (libfilewatcher_jni.dylib).",
+            "  1. brew uninstall jetbrains/utils/kotlin-lsp",
+            "  2. brew install --cask kotlin-lsp",
+            "  3. xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp",
+            "  4. Remove KOTLIN_LSP_DIR from ~/.zshrc_machine",
+            "  5. unset KOTLIN_LSP_DIR && source ~/.zshrc",
+            "  6. Restart nvim",
             "",
-            "Then remove the KOTLIN_LSP_DIR line from ~/.zshrc_machine",
-            "and restart nvim.",
+            "Step 3 strips macOS quarantine (blocks unsigned native libs).",
+            "Steps 4-5 clear the stale env var so the cask is auto-detected.",
             "",
             "Press q to close",
           }, "WarningMsg")
@@ -264,16 +265,17 @@ return {
                 "Using Homebrew formula (jetbrains/utils/kotlin-lsp).",
                 "This is outdated — the official cask is newer.",
                 "",
-                "To upgrade:",
-                "  brew uninstall jetbrains/utils/kotlin-lsp",
-                "  brew install --cask kotlin-lsp",
-                "  xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp",
+                "To migrate to the official cask:",
                 "",
-                "The xattr step removes macOS quarantine flags that block",
-                "unsigned native libraries (libfilewatcher_jni.dylib).",
+                "  1. brew uninstall jetbrains/utils/kotlin-lsp",
+                "  2. brew install --cask kotlin-lsp",
+                "  3. xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp",
+                "  4. Remove KOTLIN_LSP_DIR from ~/.zshrc_machine",
+                "  5. unset KOTLIN_LSP_DIR && source ~/.zshrc",
+                "  6. Restart nvim",
                 "",
-                "Then remove the KOTLIN_LSP_DIR line from ~/.zshrc_machine",
-                "and restart nvim.",
+                "Step 3 strips macOS quarantine (blocks unsigned native libs).",
+                "Steps 4-5 clear the stale env var so the cask is auto-detected.",
                 "",
                 "Press q to close",
               }, "WarningMsg")
@@ -404,6 +406,7 @@ return {
     })
 
     -- Check that the LSP actually starts — run diagnostics if it fails
+    -- 30s timeout: the Kotlin LSP is a full IntelliJ platform and can be slow to initialise
     vim.defer_fn(function()
       local clients = vim.lsp.get_clients({ name = "kotlin_ls" })
       if #clients == 0 then
@@ -436,6 +439,6 @@ return {
         table.insert(popup_lines, "Press q to close")
         show_popup(popup_lines, "WarningMsg")
       end
-    end, 10000)
+    end, 30000)
   end,
 }

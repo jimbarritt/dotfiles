@@ -23,6 +23,7 @@ Mason downloads). The nvim plugin handles detection automatically.
    is outdated):
    ```bash
    brew install --cask kotlin-lsp
+   xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp
    ```
 2. Open a `.kt` file in nvim
 3. The plugin auto-detects the installation (checks cask, then formula, then Mason)
@@ -57,7 +58,7 @@ Auto-write to ~/.zshrc_machine if detected and not already saved.
 
 ### Error detection
 
-10 seconds after the plugin loads, it checks whether a `kotlin_lsp` client is
+30 seconds after the plugin loads, it checks whether a `kotlin_ls` client is
 running. If not, it runs a full diagnostic and shows a popup with:
 - The resolved directory and binary status
 - A path to a detailed diagnostic log file at `~/.local/state/nvim/kotlin-lsp-diag.log`
@@ -137,15 +138,39 @@ handles external file changes through two mechanisms:
 ## Migrating from formula to cask
 
 The JetBrains Homebrew tap formula (`jetbrains/utils/kotlin-lsp`) is outdated.
-The official Homebrew cask is newer and preferred.
+The official Homebrew cask is newer and preferred. The plugin will show a popup
+with these steps if it detects the formula.
 
 ```bash
+# 1. Remove the old formula
 brew uninstall jetbrains/utils/kotlin-lsp
+
+# 2. Install the cask
 brew install --cask kotlin-lsp
+
+# 3. Strip macOS quarantine flags (blocks unsigned native libs like libfilewatcher_jni.dylib)
+xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp
+
+# 4. Remove the stale KOTLIN_LSP_DIR line from ~/.zshrc_machine
+#    (the plugin will auto-detect and re-write it on next launch)
+
+# 5. Clear the env var from the current shell and reload
+unset KOTLIN_LSP_DIR && source ~/.zshrc
+
+# 6. Restart nvim
 ```
 
-Then remove the stale `KOTLIN_LSP_DIR` line from `~/.zshrc_machine` so the
-plugin re-detects the new cask path on next launch.
+**Why each step matters:**
+- Step 3: The cask bundles unsigned native libraries (Rust JNI code). macOS
+  quarantines everything Homebrew downloads, and Gatekeeper blocks unsigned
+  `.dylib` files. `xattr` removes the quarantine flag. Note: Homebrew 5.0
+  removed `--no-quarantine`, so this post-install step is required.
+- Steps 4-5: The old `KOTLIN_LSP_DIR` points to the formula path which no
+  longer exists. If nvim inherits the stale env var, kotlin.nvim will fail
+  to find the lib directory and silently not start the LSP. You must both
+  remove it from `~/.zshrc_machine` AND unset it in the current shell.
+- Step 6: nvim must be restarted from a shell that has the correct (or no)
+  `KOTLIN_LSP_DIR`. The plugin will auto-detect the cask and set the env var.
 
 **Layout differences:**
 - Formula installs to `/opt/homebrew/Cellar/kotlin-lsp/<ver>/libexec/`
@@ -164,14 +189,43 @@ The plugin handles both layouts automatically.
 :messages         " Check for startup errors
 ```
 
-The plugin will show a diagnostic popup after 10 seconds if the LSP fails to
-start. A detailed diagnostic log is written to:
+The plugin will show a diagnostic popup after 30 seconds if the LSP fails to
+start (the Kotlin LSP is a full IntelliJ platform and can be slow to initialise).
+A detailed diagnostic log is written to:
 
 ```
 ~/.local/state/nvim/kotlin-lsp-diag.log
 ```
 
 Check the popup for the log path and `:LspLog` for LSP-specific errors.
+
+### macOS blocks native libraries (quarantine)
+
+If the LSP crashes or fails to load `libfilewatcher_jni.dylib`, macOS
+Gatekeeper is blocking unsigned native code. Strip the quarantine flag:
+
+```bash
+xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp
+```
+
+This is needed after every `brew install --cask kotlin-lsp` or `brew upgrade`.
+Homebrew 5.0 removed `--no-quarantine`, so this is the only workaround.
+JetBrains needs to notarise the native binaries before September 2026 or the
+cask will be removed from Homebrew.
+
+### Stale KOTLIN_LSP_DIR after migration
+
+If the LSP silently fails to start after migrating from formula to cask,
+check that `KOTLIN_LSP_DIR` isn't pointing to the old formula path:
+
+```bash
+echo $KOTLIN_LSP_DIR
+# Should be empty or point to /opt/homebrew/Caskroom/kotlin-lsp/<ver>/
+# NOT /opt/homebrew/opt/kotlin-lsp/libexec
+```
+
+If stale, remove it from `~/.zshrc_machine`, run `unset KOTLIN_LSP_DIR &&
+source ~/.zshrc`, and restart nvim. See "Migrating from formula to cask" above.
 
 ### Known harmless warnings in LspLog
 
