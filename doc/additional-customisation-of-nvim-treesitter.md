@@ -17,104 +17,112 @@ match, with nested parentheses mirroring the tree structure.
 ## Mapping additions (mapping.lua)
 
 ```lua
--- Type annotation operators (colon in type positions)
-M.operator = {
-  -- ... existing entries ...
-  "@operator",
-}
-
--- String interpolation delimiters
 M.string_interpolation = {
   "@string.interpolation",
 }
 
--- Constructor calls (distinguished from regular function calls)
 M.constructor = {
   "@constructor",
 }
 ```
 
-Palette notes:
-- `string_interpolation`: falls back to `string` → `text` if undefined.
-  GitHub-light could map this to `keyword` (red). Green-dark could use
-  `keyword` or `bracket_top`.
-- `constructor`: falls back to `type` or `text`. GitHub-light maps to
-  `type` (blue). Green-dark maps to `type` (blue-green).
+The `@operator` group already exists in the operator slot — the colon
+queries just capture `:` as `@operator` which routes through the
+existing slot.
+
+Palette colours (github-light):
+- `string_interpolation = "#8250df"` — purple, like entity
+- `constructor = "#8250df"` — purple, like entity
+- `operator = "#cf222e"` — red (already existed)
 
 ---
 
 ## Case 1: Type annotation colon → @operator
 
-### after/queries/kotlin/highlights.scm
+**Goal:** `:` in `val user: String` should be red (operator) not black (text).
+
+No priority boost needed — LSP ignores punctuation so treesitter wins by default.
+
+### Kotlin
 
 ```scheme
-;; extends
-
-;; Type annotation colon as operator
 (variable_declaration ":" @operator)
 (parameter ":" @operator)
 (function_declaration ":" @operator)
-(property_declaration ":" @operator)
 ```
 
-### after/queries/typescript/highlights.scm
+**Important:** `property_declaration ":" @operator` does NOT work — the colon
+is not a direct anonymous child of that node in Kotlin's grammar (it's an
+"impossible pattern" that silently matches nothing).
+
+### TypeScript
 
 ```scheme
-;; extends
-
-;; Type annotation colon as operator
 (type_annotation ":" @operator)
 ```
 
-### after/queries/java/highlights.scm
+### Java
 
 Not needed — Java doesn't use `:` for type annotations.
 
 ---
 
-## Case 2: String interpolation delimiters → @string.interpolation
+## Case 2: String interpolation → @string.interpolation
 
-### after/queries/kotlin/highlights.scm (append to same file)
+**Goal:** `${user.firstName}` inside strings should be one solid colour block
+instead of being broken up by LSP semantic tokens.
+
+Needs `#set! priority 200` because LSP semantic tokens go up to priority 127
+(`@lsp.typemod.parameter.readonly` at 127, `@lsp.mod.readonly` at 126,
+`@lsp.type.parameter` at 125). Priority 200 beats all of them.
+
+### Kotlin
+
+The correct grammar node names are `interpolated_identifier` (for `$name`)
+and `interpolated_expression` (for `${expr}`). **NOT** `string_interpolation`
+— that node does not exist in Kotlin's treesitter grammar. Invalid node names
+cause silent query parse errors.
 
 ```scheme
-;; String interpolation delimiters
-(string_interpolation "${" @string.interpolation)
-(string_interpolation "}" @string.interpolation)
-(string_interpolation "$" @string.interpolation)
+(string_literal
+  "$" @string.interpolation
+  (interpolated_identifier) @string.interpolation
+  (#set! priority 200))
+(string_literal
+  "${" @string.interpolation
+  (interpolated_expression) @string.interpolation
+  "}" @string.interpolation
+  (#set! priority 200))
 ```
 
-### after/queries/typescript/highlights.scm (append to same file)
+Both patterns are anchored inside `string_literal` to match the structure of
+the base nvim-treesitter query (which uses the same parent node).
 
-```scheme
-;; Template literal interpolation delimiters
-(template_substitution "${" @string.interpolation)
-(template_substitution "}" @string.interpolation)
-```
+### TypeScript
 
-### Fallback
-
-`@string.interpolation` falls back to `@string` automatically via
-Neovim's capture group resolution. Colourschemes that don't define it
-get safe default behaviour.
+Not yet implemented — template literal interpolation (`${...}`) could use
+`template_substitution` nodes but hasn't been added yet.
 
 ---
 
 ## Case 3: Constructor vs function call → @constructor
 
-Uses `#match?` on uppercase first letter. Works for Kotlin, TypeScript,
-Java, Rust, Python.
+**Goal:** `User()` and `App()` should be purple (constructor/entity) instead
+of black (regular function call).
 
-### after/queries/kotlin/highlights.scm (append to same file)
+Uses `#match?` on uppercase first letter. Needs `#set! priority 200` because
+LSP classifies these as `@lsp.type.method` (priority 125).
+
+### Kotlin
 
 ```scheme
-;; Constructor calls — uppercase first letter = type constructor
 (call_expression
   (simple_identifier) @constructor
   (#match? @constructor "^[A-Z]")
   (#set! priority 200))
 ```
 
-### after/queries/typescript/highlights.scm (append to same file)
+### TypeScript
 
 ```scheme
 ;; Explicit new expressions
@@ -128,32 +136,34 @@ Java, Rust, Python.
   (#set! priority 200))
 ```
 
-### after/queries/java/highlights.scm
+### Java
 
-```scheme
-;; extends
-
-;; Constructor calls
-(object_creation_expression
-  type: (type_identifier) @constructor)
-```
-
-### Priority note
-
-`#set! priority 200` beats LSP semantic tokens (125). Only needed for
-case 3 because LSP classifies the identifier; cases 1 and 2 target
-punctuation which LSP ignores.
+Not yet implemented — could use `object_creation_expression` with
+`type_identifier`.
 
 ---
 
-## Verification steps
+## Key lessons learned
 
-For each case, open a real file and run `:InspectTree` to confirm:
+1. **Node names must match the actual grammar** — use `:InspectTree` or
+   `vim.treesitter.language.inspect()` to find real node names. Invalid names
+   fail silently.
 
-1. The `:` in `val user: User` — parent node should be `variable_declaration` or similar
-2. The `${` in `"hello ${name}"` — parent node should be `string_interpolation` or `template_substitution`
-3. `User` in `User()` — parent node should be `call_expression`
+2. **`#set! priority 200` beats LSP semantic tokens** — treesitter and LSP
+   share the same extmark priority namespace. LSP tops out at ~127; priority
+   200 wins cleanly.
 
-Then `:Inspect` on the token to confirm the correct capture group won.
-If the node names differ from what's written above, adjust the query
-patterns to match.
+3. **`property_declaration ":"` is impossible in Kotlin** — the colon isn't a
+   direct child. Only `variable_declaration`, `parameter`, and
+   `function_declaration` work for colon capture.
+
+4. **Restart Neovim fully** after changing `after/queries/` files — the
+   combined query is cached and `:colorscheme` reload alone won't pick up
+   new `.scm` files.
+
+## Verification
+
+For each case, use `:Inspect` on the token to confirm the correct capture
+group won and the colour is right. The diagnostic command
+`:luafile ~/.config/nvim/lua/colorscheme/diagnose.lua` shows all captures
+with priorities on a whole line.

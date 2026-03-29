@@ -5,6 +5,17 @@
 (parameter ":" @operator)
 (function_declaration ":" @operator)
 
+;; String interpolation — whole block as one colour (pri 200 beats LSP 127)
+(string_literal
+  "$" @string.interpolation
+  (interpolated_identifier) @string.interpolation
+  (#set! priority 200))
+(string_literal
+  "${" @string.interpolation
+  (interpolated_expression) @string.interpolation
+  "}" @string.interpolation
+  (#set! priority 200))
+
 ;; Constructor calls — uppercase first letter = type constructor
 (call_expression
   (simple_identifier) @constructor

@@ -29,6 +29,7 @@ return {
   property       = "#98c8b8",     -- object properties
   bracket_top    = "#7fd87f",     -- structural brackets
   operator       = "#5a7a6a",     -- operators (very subtle)
+  string_interpolation = "#7fd87f", -- ${...} blocks — bracket_top green
   constructor    = "#d8eb8b",     -- User() constructor calls — entity yellow-green
   punctuation    = "#4a6a5a",     -- punctuation (barely visible)
   number         = "#98b8a8",     -- numbers

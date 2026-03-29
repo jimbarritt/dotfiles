@@ -24,7 +24,7 @@ Status: `[ ]` = not yet verified, `[x]` = verified correct, `[!]` = known limita
 | `org.example` | package name | purple `#8250df` (via `@lsp.type.namespace`) | [x] |
 | `class` `fun` `val` `return` | keywords | red `#cf222e` | [x] |
 | `App` (line 9, declaration) | user type decl | purple `#8250df` | [x] |
-| `App` (line 1, constructor) | user type | purple `#8250df` | [!] `@lsp.type.method` ambiguity — shows black |
+| `App` (line 1, constructor) | user type | purple `#8250df` | [x] fixed via `@constructor` treesitter query at priority 200 |
 | `User` | user type ref | purple `#8250df` | [x] |
 | `String` | system type | blue `#0550ae` | [x] |
 | `greet` (line 8, declaration) | function decl | purple `#8250df` | [x] |
@@ -34,9 +34,9 @@ Status: `[ ]` = not yet verified, `[x]` = verified correct, `[!]` = known limita
 | `user` | variable | black `#1f2328` | [x] |
 | `.` `,` `(` `)` `{` `}` | punctuation/brackets | black `#1f2328` | [x] |
 | `=` `+` `-` etc. | operators | red `#cf222e` | [x] |
-| `:` (param type, e.g. `user: String`) | type annotation colon | red `#cf222e` | [!] TS gives `@punctuation.delimiter` for both param and return type colons — can't distinguish |
+| `:` (param type, e.g. `user: String`) | type annotation colon | red `#cf222e` | [x] fixed via `@operator` treesitter query on parent nodes |
 | `"Jim"` `"Barritt"` `"Hello..."` | strings | dark blue `#0a3069` | [x] |
-| `${user.firstName}` | string interpolation | purple `#8250df` | [!] LSP overrides treesitter inside strings — see note below |
+| `${user.firstName}` | string interpolation | purple `#8250df` | [x] fixed via `@string.interpolation` treesitter query at priority 200 |
 
 ## Known LSP Limitations
 
@@ -121,9 +121,9 @@ also affects `,` between parameters which should stay black.
 
 ## TODO
 
-- [ ] Resolve `@lsp.type.method` ambiguity (constructor vs method call)
-- [ ] Resolve type annotation colon vs return type colon
-- [ ] Resolve string interpolation LSP override (the TextMate context hierarchy problem)
+- [x] Resolve `@lsp.type.method` ambiguity — fixed with `@constructor` treesitter query using `#match?` uppercase + priority 200
+- [x] Resolve type annotation colon — fixed with `@operator` capture on `variable_declaration`, `parameter`, `function_declaration`
+- [x] Resolve string interpolation LSP override — fixed with `@string.interpolation` capture at priority 200 using correct node names (`interpolated_identifier`, `interpolated_expression`)
 - [ ] Fix `less` status bar highlighting in tmux popup light mode — currently shows light green, needs appropriate light-mode colours
 
 ## Diagnostic Tool

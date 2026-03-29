@@ -166,6 +166,11 @@ M.builtin = {
   "@lsp.mod.defaultLibrary",
 }
 
+-- string_interpolation: ${...} blocks inside strings — falls back to text
+M.string_interpolation = {
+  "@string.interpolation",
+}
+
 -- constructor: uppercase call expressions (User()) — falls back to entity
 M.constructor = {
   "@constructor",
