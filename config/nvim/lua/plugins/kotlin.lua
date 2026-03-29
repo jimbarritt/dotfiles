@@ -410,6 +410,62 @@ return {
     vim.defer_fn(function()
       local clients = vim.lsp.get_clients({ name = "kotlin_ls" })
       if #clients == 0 then
+        -- Check if this is a workspace lock conflict (another nvim has the same project open)
+        local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+        local workspace_dir = (os.getenv("HOME") or "") .. "/.cache/kotlin-lsp-workspaces/" .. project_name
+        local lock_file = workspace_dir .. "/.app.lock"
+        if vim.fn.filereadable(lock_file) == 1 then
+          show_popup({
+            "Kotlin LSP: workspace is locked by another session.",
+            "",
+            "Another nvim instance already has kotlin-lsp running",
+            "for this project (" .. project_name .. ").",
+            "",
+            "kotlin-lsp does not support multiple editing sessions",
+            "for the same workspace.",
+            "",
+            "Options:",
+            "  1. Close the other nvim instance first",
+            "  2. If no other instance is running, the lock is stale:",
+            "     rm " .. lock_file,
+            "     Then restart nvim.",
+            "",
+            "Press q to close",
+          }, "WarningMsg")
+          return
+        end
+
+        -- Check LSP log for the "multiple sessions" error in case lock was transient
+        local lsp_log_path = vim.fn.stdpath("log") .. "/lsp.log"
+        local has_multi_session = false
+        if vim.fn.filereadable(lsp_log_path) == 1 then
+          local log_lines = vim.fn.readfile(lsp_log_path)
+          -- Check last 20 lines for the error
+          local start = math.max(1, #log_lines - 19)
+          for i = start, #log_lines do
+            if log_lines[i]:find("Multiple editing sessions") then
+              has_multi_session = true
+              break
+            end
+          end
+        end
+
+        if has_multi_session then
+          show_popup({
+            "Kotlin LSP: multiple sessions not supported.",
+            "",
+            "Another nvim instance is already running kotlin-lsp",
+            "for this project (" .. project_name .. ").",
+            "",
+            "Close the other instance, or remove the stale lock:",
+            "  rm " .. lock_file,
+            "Then restart nvim.",
+            "",
+            "Press q to close",
+          }, "WarningMsg")
+          return
+        end
+
         local diag_log, log_path = run_diagnostic()
 
         local popup_lines = {
