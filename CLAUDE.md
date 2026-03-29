@@ -32,6 +32,10 @@ The top of `zshrc` has a shell guard that blocks interactive shells launched fro
 
 When adding support for a new terminal, add a clause to `_is_known_terminal` that checks the appropriate env var and the process name it runs under.
 
+## Key-help cheatsheets
+
+Curated keybinding cheatsheets live in `config/key-help/` (symlinked to `~/.config/key-help/`). The `bin/key-help` script displays the appropriate one based on the current pane command. To add keybindings for nvim, edit `config/key-help/nvim`.
+
 ## Machine-local overrides
 
 `~/.zshrc_machine` is sourced at the end of `zshrc` for machine-specific config (e.g. paths that differ per machine). It is auto-populated by nvim plugins (e.g. `kotlin.lua` writes `KOTLIN_LSP_DIR` here on first detection). `~/.zshrc_work` is sourced after it for work-specific config. Neither file is tracked in the repo.

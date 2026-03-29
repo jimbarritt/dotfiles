@@ -43,6 +43,14 @@
   Space e        Show line diagnostics
   ]d  [d         Next / previous diagnostic
 
+ FOLDING
+  za             Toggle fold under cursor
+  zo  zc         Open / close fold under cursor
+  zO  zC         Open / close fold recursively
+  zR  zM         Open / close all folds in file
+  zi             Toggle foldenable on/off
+  zj  zk         Jump to next / previous fold
+
  FILES & BUFFERS
   :w             Save
   :q  :q!        Quit / force quit
