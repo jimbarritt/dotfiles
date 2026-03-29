@@ -118,6 +118,11 @@ function M.apply(palette, opts)
 
   -- Apply UI highlights
   M.apply_ui(palette, suppress, transparent)
+
+  -- Register :InspectLine command
+  vim.api.nvim_create_user_command("InspectLine", function()
+    require("colorscheme.diagnose").inspect_line()
+  end, {})
 end
 
 --- Apply non-syntax UI highlights.

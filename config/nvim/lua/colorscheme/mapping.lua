@@ -159,6 +159,8 @@ M.text = {
   "Delimiter", "@punctuation.delimiter", "@punctuation.special",
   "Special", "Tag",
   "@lsp.type.variable",
+  "@lsp.typemod.variable.readonly",  -- val variables: override @lsp.mod.readonly (constant) at pri=127
+  "@lsp.typemod.variable.readonly.kotlin",
   "@variable.kotlin",
   "jsonKey", "jsonQuote", "jsonNull",
   "NonText", "EndOfBuffer",

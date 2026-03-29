@@ -16,6 +16,12 @@
   "}" @string.interpolation
   (#set! priority 200))
 
+;; Backtick-quoted test names → string colour (pri 200 beats LSP 127)
+(function_declaration
+  (simple_identifier) @string
+  (#match? @string "^`")
+  (#set! priority 200))
+
 ;; Constructor calls — uppercase first letter = type constructor
 (call_expression
   (simple_identifier) @constructor
