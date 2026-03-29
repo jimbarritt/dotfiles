@@ -225,6 +225,10 @@ return {
             "To upgrade to the official cask:",
             "  brew uninstall jetbrains/utils/kotlin-lsp",
             "  brew install --cask kotlin-lsp",
+            "  xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp",
+            "",
+            "The xattr step removes macOS quarantine flags that block",
+            "unsigned native libraries (libfilewatcher_jni.dylib).",
             "",
             "Then remove the KOTLIN_LSP_DIR line from ~/.zshrc_machine",
             "and restart nvim.",
@@ -263,6 +267,10 @@ return {
                 "To upgrade:",
                 "  brew uninstall jetbrains/utils/kotlin-lsp",
                 "  brew install --cask kotlin-lsp",
+                "  xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp",
+                "",
+                "The xattr step removes macOS quarantine flags that block",
+                "unsigned native libraries (libfilewatcher_jni.dylib).",
                 "",
                 "Then remove the KOTLIN_LSP_DIR line from ~/.zshrc_machine",
                 "and restart nvim.",
@@ -323,6 +331,10 @@ return {
           "",
           "Install via Homebrew (cask):",
           "  brew install --cask kotlin-lsp",
+          "  xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp",
+          "",
+          "The xattr step removes macOS quarantine flags that block",
+          "unsigned native libraries (libfilewatcher_jni.dylib).",
           "",
           "Then restart nvim — it will be detected automatically.",
           "After first restart, reload your shell.",
@@ -347,6 +359,7 @@ return {
           "",
           "Reinstall via:",
           "  brew install --cask kotlin-lsp",
+          "  xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp",
           "",
           "Diagnostic log written to:",
           "  " .. log_path,
@@ -411,6 +424,9 @@ return {
         else
           table.insert(popup_lines, "Binary:      NOT FOUND")
         end
+        table.insert(popup_lines, "")
+        table.insert(popup_lines, "If macOS is blocking native libraries, run:")
+        table.insert(popup_lines, "  xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp")
         table.insert(popup_lines, "")
         table.insert(popup_lines, "Full diagnostic log written to:")
         table.insert(popup_lines, "  " .. log_path)
