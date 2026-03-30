@@ -6,6 +6,7 @@ input=$(cat)
 
 cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // ""')
 model=$(echo "$input" | jq -r '.model.display_name // .model.id // ""')
+version=$(echo "$input" | jq -r '.version // empty')
 ctx_remaining=$(echo "$input" | jq -r '.context_window.remaining_percentage // empty')
 
 # Shorten home directory to ~
@@ -42,7 +43,12 @@ if [ -n "$branch" ]; then
   output="${output} $(printf "${cyan}[%s]${reset}" "$branch")"
 fi
 
-output="${output} - $(printf "${dim}%s${reset}" "$model")"
+if [ -n "$version" ]; then
+  model_str="${model} - ${version}"
+else
+  model_str="$model"
+fi
+output="${output} - $(printf "${dim}%s${reset}" "$model_str")"
 
 bold='\033[1m'
 if [ -n "$ctx_remaining" ]; then
