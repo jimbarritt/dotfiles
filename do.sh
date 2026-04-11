@@ -39,7 +39,7 @@ create_symlink() {
   if [ "$DRY_RUN" = "true" ]; then
     printf "[dry-run]: ln -sf '%s' '%s'\n" "$target" "$link"
   else
-    ln -sf "$target" "$link"
+    ln -shf "$target" "$link"
     printf "✓ Created: %s -> %s\n" "$link" "$target"
   fi
 }
@@ -110,6 +110,7 @@ link_all() {
   link_config nvim
   link_config kitty
   link_config ghostty
+  link_config flashspace
   link_config mise
 
   create_symlink "${DOTFILES_DIR}/home/oh-my-zsh/green-tinted.zsh-theme" "${HOME}/.oh-my-zsh/custom/themes/green-tinted.zsh-theme"

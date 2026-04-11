@@ -10,4 +10,5 @@ backups
 .bash_local
 .claude-sessions
 config/ghostty/presentation
+config/flashspace/profiles-backup-*.json
 home/zshrc_machine

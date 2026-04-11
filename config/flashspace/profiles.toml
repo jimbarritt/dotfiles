@@ -1,0 +1,53 @@
+[[profiles]]
+id = '119514A4-A1F6-47A9-B4AE-F7803EE36DBB'
+name = 'Default'
+
+[[profiles.workspaces]]
+display = 'Built-in Retina Display'
+id = 'CAA7F4D7-CFC3-4B9A-B585-7598417E0847'
+name = 'Coding'
+shortcut = 'cmd+opt+1'
+
+[[profiles.workspaces.apps]]
+bundleIdentifier = 'com.mitchellh.ghostty'
+iconPath = '/Applications/Ghostty.app/Contents/Resources/Ghostty.icns'
+name = 'Ghostty'
+
+[[profiles.workspaces.apps]]
+bundleIdentifier = 'com.jimbarritt.marq'
+iconPath = '/Applications/Marq.app/Contents/Resources/AppIcon.icns'
+name = 'Marq'
+
+[[profiles.workspaces]]
+display = 'Built-in Retina Display'
+id = '475C661D-CA73-4CD1-AD87-BB0E60C4C17C'
+name = 'Zen'
+openAppsOnActivation = false
+shortcut = 'cmd+opt+2'
+
+[[profiles.workspaces.apps]]
+bundleIdentifier = 'app.zen-browser.zen'
+iconPath = '/Applications/Zen.app/Contents/Resources/firefox.icns'
+name = 'Zen'
+
+[[profiles.workspaces]]
+display = 'Built-in Retina Display'
+id = 'DD6D05F0-72CA-41E0-832C-4DD0B5837FF3'
+name = 'Chrome'
+shortcut = 'cmd+opt+3'
+
+[[profiles.workspaces.apps]]
+bundleIdentifier = 'com.google.Chrome'
+iconPath = '/Applications/Google Chrome.app/Contents/Resources/app.icns'
+name = 'Google Chrome'
+
+[[profiles.workspaces]]
+display = 'Built-in Retina Display'
+id = '9D58E72E-184C-4654-9824-8675290BF008'
+name = 'Claude'
+shortcut = 'cmd+opt+4'
+
+[[profiles.workspaces.apps]]
+bundleIdentifier = 'com.anthropic.claudefordesktop'
+iconPath = '/Applications/Claude.app/Contents/Resources/electron.icns'
+name = 'Claude'

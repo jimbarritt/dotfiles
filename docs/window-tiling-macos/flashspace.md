@@ -13,7 +13,8 @@ Replacing AeroSpace with FlashSpace (+ Hammerspoon for the bits FlashSpace doesn
 
 ## Config file
 
-- Location: `~/.config/flashspace/profiles.toml` (also `settings.toml`, currently empty).
+- Tracked in dotfiles at `config/flashspace/`, symlinked into `~/.config/flashspace/` by `do.sh`'s `link_config flashspace`. FlashSpace reads from `~/.config/flashspace/profiles.toml` (also `settings.toml`, currently empty).
+- Auto-generated `profiles-backup-*.json` snapshots are gitignored at the repo root — they're machine-local state, not config.
 - Format auto-detected by probing `profiles.{json,yaml,toml}`. Hand-edits work but **GUI changes rewrite the file**, so any comments / key ordering will be lost. Pick one source of truth.
 - Requires a FlashSpace restart after editing — no hot reload.
 - No published schema. Ground truth is the Swift sources: [`AppSettings.swift`](https://github.com/wojciech-kulik/FlashSpace/blob/main/FlashSpace/Features/Settings/_Models/AppSettings.swift) and [`Workspace.swift`](https://github.com/wojciech-kulik/FlashSpace/blob/main/FlashSpace/Features/Workspaces/Models/Workspace.swift).
