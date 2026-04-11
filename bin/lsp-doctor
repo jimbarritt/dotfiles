@@ -1,0 +1,121 @@
+#!/bin/sh
+# Diagnose kotlin-lsp state: running processes and workspace lock files.
+# Useful for spotting orphaned LSP processes and stale locks.
+#
+# Usage:
+#   lsp-doctor            # list processes and lock files
+#   lsp-doctor --clean    # kill orphaned processes and remove stale locks
+#   lsp-doctor -h         # show help
+
+LOCK_DIR="${HOME}/.cache/kotlin-lsp-workspaces"
+CLEAN=0
+
+case "$1" in
+  -h|--help)
+    sed -n '2,9p' "$0" | sed 's/^# //; s/^#//'
+    exit 0
+    ;;
+  --clean)
+    CLEAN=1
+    ;;
+  '') ;;
+  *)
+    printf 'unknown arg: %s\n' "$1" >&2
+    exit 1
+    ;;
+esac
+
+# List orphaned kotlin-lsp processes (ppid=1 means parent has died).
+# Format: "PID ETIME"
+orphans() {
+  ps -eo pid,ppid,etime,comm \
+    | awk '$2 == 1 && tolower($0) ~ /kotlin/ {print $1, $3}'
+}
+
+# Look up the working directory of a process.
+proc_cwd() {
+  lsof -a -d cwd -p "$1" 2>/dev/null | awk 'NR>1 {for (i=9;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":""); print ""}'
+}
+
+printf '== kotlin-lsp processes ==\n'
+procs=$(ps -eo pid,ppid,etime,comm | awk 'tolower($0) ~ /kotlin/ && !/awk/')
+if [ -z "$procs" ]; then
+  printf '  (none)\n'
+else
+  printf '  %-7s %-7s %-12s %-7s %s\n' "PID" "PPID" "ELAPSED" "ORPHAN" "CWD"
+  echo "$procs" | while read -r pid ppid etime _; do
+    orphan=""
+    [ "$ppid" = "1" ] && orphan="yes"
+    cwd=$(proc_cwd "$pid")
+    [ -z "$cwd" ] && cwd="(unknown)"
+    printf '  %-7s %-7s %-12s %-7s %s\n' "$pid" "$ppid" "$etime" "$orphan" "$cwd"
+  done
+  count=$(echo "$procs" | wc -l | tr -d ' ')
+  printf '\n  total: %s\n' "$count"
+fi
+
+printf '\n== workspace locks (%s) ==\n' "$LOCK_DIR"
+locks=""
+if [ -d "$LOCK_DIR" ]; then
+  locks=$(find "$LOCK_DIR" -maxdepth 2 -name '.app.lock' 2>/dev/null)
+fi
+
+if [ -z "$locks" ]; then
+  printf '  (none)\n'
+else
+  echo "$locks" | while IFS= read -r lock; do
+    project=$(basename "$(dirname "$lock")")
+    mtime=$(stat -f '%Sm' -t '%Y-%m-%d %H:%M' "$lock" 2>/dev/null \
+         || stat -c '%y' "$lock" 2>/dev/null)
+    # Match running kotlin-lsp by cwd basename to recover the full path.
+    owner_cwd=""
+    for pid in $(ps -eo pid,comm | awk 'tolower($0) ~ /kotlin/ {print $1}'); do
+      pcwd=$(proc_cwd "$pid")
+      if [ "$(basename "$pcwd")" = "$project" ]; then
+        owner_cwd="$pcwd"
+        break
+      fi
+    done
+    stale=""
+    [ -z "$owner_cwd" ] && stale="stale"
+    path_col="${owner_cwd:-(no running process)}"
+    printf '  %-30s  %-18s  %-7s  %s\n' "$project" "$mtime" "$stale" "$path_col"
+  done
+fi
+
+if [ "$CLEAN" -eq 0 ]; then
+  printf '\n(run `lsp-doctor --clean` to kill orphaned processes and remove stale locks)\n'
+fi
+
+if [ "$CLEAN" -eq 1 ]; then
+  printf '\n== cleaning ==\n'
+
+  orph=$(orphans)
+  if [ -z "$orph" ]; then
+    printf '  no orphaned processes\n'
+  else
+    echo "$orph" | while read -r pid _; do
+      printf '  kill %s\n' "$pid"
+      kill "$pid" 2>/dev/null || printf '    (failed)\n'
+    done
+  fi
+
+  if [ -z "$locks" ]; then
+    printf '  no locks to check\n'
+  else
+    echo "$locks" | while IFS= read -r lock; do
+      project=$(basename "$(dirname "$lock")")
+      owned=0
+      for pid in $(ps -eo pid,comm | awk 'tolower($0) ~ /kotlin/ {print $1}'); do
+        if [ "$(basename "$(proc_cwd "$pid")")" = "$project" ]; then
+          owned=1
+          break
+        fi
+      done
+      if [ "$owned" -eq 0 ]; then
+        printf '  rm %s\n' "$lock"
+        rm -f "$lock"
+      fi
+    done
+  fi
+fi
