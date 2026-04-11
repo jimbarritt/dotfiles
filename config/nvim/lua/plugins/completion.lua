@@ -41,19 +41,24 @@ return {
         ['<C-g>'] = cmp.mapping.abort(),
         ['<CR>'] = cmp.mapping.confirm({ select = true }),
 
-        -- Smart dot: trigger completion if after identifier
+        -- Smart dot: trigger completion if after identifier, but only in
+        -- buffers with an attached LSP (so prose files like markdown/txt
+        -- don't pop completion mid-sentence).
         ['.'] = cmp.mapping(function(fallback)
+            fallback() -- Insert the dot first
+
+            local clients = vim.lsp.get_clients({ bufnr = 0 })
+            if #clients == 0 then return end
+
             -- Check if previous character (before dot) is alphanumeric or underscore
             local col = vim.fn.col('.') - 2
             local line = vim.fn.getline('.')
             local char = string.sub(line, col, col)
-            
-            fallback() -- Insert the dot first
 
             if char:match('[%w_]') or char == ')' or char == ']' then
-              vim.schedule(function() 
-                cmp.complete() 
-              end) 
+              vim.schedule(function()
+                cmp.complete()
+              end)
             end
           end, { 'i' }),
 

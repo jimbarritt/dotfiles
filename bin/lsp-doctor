@@ -57,7 +57,32 @@ is_orphan_kotlin() {
   return 1
 }
 
-printf '== process tree (nvim + kotlin-lsp) ==\n\n'
+printf '== kotlin-lsp version ==\n\n'
+if ! command -v brew >/dev/null 2>&1; then
+  printf 'brew not found — cannot check cask version\n'
+else
+  installed=$(brew list --versions --cask kotlin-lsp 2>/dev/null | awk '{print $2}')
+  if [ -z "$installed" ]; then
+    printf 'kotlin-lsp cask not installed\n'
+    printf 'install with: brew install --cask kotlin-lsp\n'
+  else
+    latest=$(brew info --cask kotlin-lsp 2>/dev/null \
+      | awk -F': ' '/^==> kotlin-lsp/ {print $2; exit}')
+    outdated=$(brew outdated --cask kotlin-lsp 2>/dev/null)
+    printf 'installed:  %s\n' "$installed"
+    [ -n "$latest" ] && printf 'latest:     %s\n' "$latest"
+    if [ -z "$outdated" ]; then
+      printf 'status:     up to date\n'
+    else
+      printf 'status:     UPDATE AVAILABLE\n'
+      printf '\nupgrade with:\n'
+      printf '  brew upgrade --cask kotlin-lsp\n'
+      printf '  (then restart nvim)\n'
+    fi
+  fi
+fi
+
+printf '\n== process tree (nvim + kotlin-lsp) ==\n\n'
 # Gather matching processes with their cwd into a tab-separated table.
 proc_table=$(
   ps -eo pid,ppid,etime,comm \

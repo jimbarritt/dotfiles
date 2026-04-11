@@ -86,26 +86,38 @@ vim.keymap.set('c', '<C-g>', '<C-c>', { noremap = true })
 vim.keymap.set("n", "<C-g>", function()
   vim.cmd("nohlsearch")
 
+  -- Close any floating windows (diagnostic float, hover, etc.)
+  local closed_float = false
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local cfg = vim.api.nvim_win_get_config(win)
+    if cfg.relative ~= "" then
+      pcall(vim.api.nvim_win_close, win, true)
+      closed_float = true
+    end
+  end
+  -- If we just dismissed a popup, don't spam the cmdline with file info.
+  if closed_float then return end
+
   -- Get values with explicit fallbacks
   local file = vim.fn.expand('%:~') or ""
   local line = vim.fn.line('.')
   local total = vim.fn.line('$')
   local col = vim.fn.col('.')
-  
+
   -- Convert to numbers, ensuring we never have nil
   line = type(line) == "number" and line or 0
-  total = type(total) == "number" and total or 0  
+  total = type(total) == "number" and total or 0
   col = type(col) == "number" and col or 0
-  
-  local percent = total > 0 and math.floor(line/total * 100) or 0
-  
-  local is_exec = vim.fn.executable(file) == 1
-  local status = is_exec and "[executable] " or "" 
 
-  print(string.format('"%s" %s(%d lines)', 
+  local percent = total > 0 and math.floor(line/total * 100) or 0
+
+  local is_exec = vim.fn.executable(file) == 1
+  local status = is_exec and "[executable] " or ""
+
+  print(string.format('"%s" %s(%d lines)',
     file, status, total ))
 
-end, { desc = "Clear highlights and show file info" })
+end, { desc = "Clear highlights / close floats / show file info" })
 
 -- Insert mode navigation with Ctrl+hjkl
 vim.keymap.set('i', '<C-h>', '<Left>', { noremap = true, silent = true })
