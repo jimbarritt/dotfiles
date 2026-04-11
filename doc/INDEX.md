@@ -32,6 +32,7 @@
 - [universal-keybinding-window-layers.md](universal-keybinding-window-layers.md) — Unified keyboard navigation strategy
 - [uk-keyboard-hash-pound-fix.md](uk-keyboard-hash-pound-fix.md) — UK keyboard: swapping # and £ keys
 - [vimium-c-setup.md](vimium-c-setup.md) — Vimium C setup for Zen Browser
+- [zen-config.md](zen-config.md) — Capturing Zen Browser config into dotfiles (user.js, userChrome.css)
 
 ## Claude Code
 
