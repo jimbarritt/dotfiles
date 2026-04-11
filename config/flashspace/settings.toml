@@ -1,0 +1,5 @@
+enableSpaceControl = true
+showSpaceControl = 'cmd+opt+space'
+showMenuBarIcon = false
+showMenuBarTitle = true
+menuBarTitleTemplate = '[$WORKSPACE]'

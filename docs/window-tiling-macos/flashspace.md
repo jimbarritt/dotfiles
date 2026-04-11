@@ -64,6 +64,32 @@ FlashSpace ships **two** built-in overlays:
 
 Both go in `settings.toml`.
 
+## Space Control
+
+Space Control is a Mission-Control-style grid overlay showing all workspaces. Enable it in `settings.toml`:
+
+```toml
+enableSpaceControl = true
+showSpaceControl = 'cmd+opt+space'
+```
+
+### Freeing up `cmd+opt+space`
+
+macOS binds `cmd+opt+space` to "Show Finder search window" by default. Disable it via:
+
+```sh
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 65 \
+  '<dict><key>enabled</key><false/><key>value</key><dict><key>parameters</key><array><integer>32</integer><integer>49</integer><integer>1572864</integer></array><key>type</key><string>standard</string></dict></dict>'
+```
+
+Activate without logging out:
+
+```sh
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+```
+
+The shortcut is immediately free — no restart needed.
+
 ## CLI
 
 Full CLI at `/usr/local/bin/flashspace`. Useful subcommands:
