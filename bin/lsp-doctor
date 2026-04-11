@@ -45,6 +45,18 @@ proc_cwd() {
   lsof -a -d cwd -p "$1" 2>/dev/null | awk 'NR>1 {for (i=9;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":""); print ""}'
 }
 
+# Is the given kotlin-lsp pid orphaned? (parent is not a live nvim)
+is_orphan_kotlin() {
+  pid="$1"
+  ppid=$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ')
+  [ -z "$ppid" ] && return 0
+  parent_comm=$(ps -o comm= -p "$ppid" 2>/dev/null)
+  parent_base="${parent_comm##*/}"
+  [ -z "$parent_comm" ] && return 0
+  [ "$parent_base" != "nvim" ] && return 0
+  return 1
+}
+
 printf '== process tree (nvim + kotlin-lsp) ==\n\n'
 # Gather matching processes with their cwd into a tab-separated table.
 proc_table=$(
@@ -154,18 +166,31 @@ else
     project=$(basename "$(dirname "$lock")")
     mtime=$(stat -f '%Sm' -t '%Y-%m-%d %H:%M' "$lock" 2>/dev/null \
          || stat -c '%y' "$lock" 2>/dev/null)
-    # Match running kotlin-lsp by cwd basename to recover the full path.
+    # Match running kotlin-lsp by cwd basename. A lock is only "ok" if a
+    # NON-orphaned kotlin-lsp is serving this project.
     owner_cwd=""
+    has_orphan=0
     for pid in $(ps -eo pid,comm | awk 'tolower($0) ~ /kotlin/ {print $1}'); do
       pcwd=$(proc_cwd "$pid")
       if [ "$(basename "$pcwd")" = "$project" ]; then
-        owner_cwd="$pcwd"
-        break
+        if is_orphan_kotlin "$pid"; then
+          has_orphan=1
+        else
+          owner_cwd="$pcwd"
+          break
+        fi
       fi
     done
-    status="ok"
-    [ -z "$owner_cwd" ] && status="stale"
-    path_col="${owner_cwd:-(no running process)}"
+    if [ -n "$owner_cwd" ]; then
+      status="ok"
+      path_col="$owner_cwd"
+    elif [ "$has_orphan" -eq 1 ]; then
+      status="stale"
+      path_col="(orphan lsp)"
+    else
+      status="stale"
+      path_col="(no running process)"
+    fi
     printf '%-30s  %-18s  %-7s  %s\n' "$project" "$mtime" "$status" "$path_col"
   done
 fi
@@ -190,11 +215,14 @@ if [ "$CLEAN" -eq 1 ]; then
   if [ -z "$locks" ]; then
     printf 'no locks to check\n'
   else
+    # Orphan processes have just been killed above; re-query so the ownership
+    # check below sees the current state.
     echo "$locks" | while IFS= read -r lock; do
       project=$(basename "$(dirname "$lock")")
       owned=0
       for pid in $(ps -eo pid,comm | awk 'tolower($0) ~ /kotlin/ {print $1}'); do
-        if [ "$(basename "$(proc_cwd "$pid")")" = "$project" ]; then
+        if [ "$(basename "$(proc_cwd "$pid")")" = "$project" ] \
+           && ! is_orphan_kotlin "$pid"; then
           owned=1
           break
         fi
