@@ -32,16 +32,27 @@
   n  N           Next / previous match
   *              Search word under cursor
 
+ SNIPPETS (insert mode)
+  <trigger>       Type trigger word (e.g. test, data, fun)
+  Ctrl-Space      Pop completion menu (snippets show [Snip])
+  CR              Accept / expand selected snippet
+  Tab             Jump to next placeholder
+  Shift-Tab       Jump to previous placeholder
+
  LSP
   gd             Go to definition
   gI             Go to implementation
   gr             Show references
-  K              Hover documentation
+  K              Hover documentation (type info)
   Space rn       Rename symbol
   Space ca       Code action
   Space f        Format file
   Space e        Show line diagnostics
   ]d  [d         Next / previous diagnostic
+  Space fs       List symbols in file (methods/classes)
+  Space fS       List symbols in workspace
+  a Ctrl-Space   (insert mode) Trigger completion popup
+                 e.g. after App(). to list methods
 
  FOLDING
   za             Toggle fold under cursor

@@ -76,6 +76,8 @@ vim.keymap.set('n', '<leader>fb', function()
 end, { desc = 'Find buffers' })
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Find help' })
 vim.keymap.set('n', '<leader>fo', builtin.oldfiles, { desc = 'Find old files' })
+vim.keymap.set('n', '<leader>fs', builtin.lsp_document_symbols, { desc = 'Find symbols in file (LSP)' })
+vim.keymap.set('n', '<leader>fS', builtin.lsp_dynamic_workspace_symbols, { desc = 'Find symbols in workspace (LSP)' })
 
 -- Ctrl+G to exit mode (like Emacs cancel)
 vim.keymap.set('i', '<C-g>', '<Esc>', { noremap = true, silent = true })
