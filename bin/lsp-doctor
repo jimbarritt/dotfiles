@@ -37,31 +37,82 @@ proc_cwd() {
   lsof -a -d cwd -p "$1" 2>/dev/null | awk 'NR>1 {for (i=9;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":""); print ""}'
 }
 
-printf '== kotlin-lsp processes ==\n'
-procs=$(ps -eo pid,ppid,etime,comm | awk 'tolower($0) ~ /kotlin/ && !/awk/')
-if [ -z "$procs" ]; then
-  printf '  (none)\n'
+printf '== process tree (nvim + kotlin-lsp) ==\n\n'
+# Gather matching processes with their cwd into a tab-separated table.
+proc_table=$(
+  ps -eo pid,ppid,etime,comm \
+    | awk 'tolower($0) ~ /kotlin/ || $4 == "nvim" || $4 ~ /\/nvim$/' \
+    | while read -r pid ppid etime comm; do
+        cwd=$(proc_cwd "$pid")
+        [ -z "$cwd" ] && cwd="(unknown)"
+        # Pretty label: collapse JVM path to "kotlin-lsp", distinguish nvim --embed.
+        base="${comm##*/}"
+        label="$base"
+        if [ "$base" = "nvim" ]; then
+          full=$(ps -o command= -p "$pid" 2>/dev/null)
+          if [ "${full#*--embed}" != "$full" ]; then
+            label="nvim --embed"
+          else
+            label="nvim"
+          fi
+        elif [ "$base" = "java" ]; then
+          label="kotlin-lsp"
+        fi
+        printf '%s\t%s\t%s\t%s\t%s\n' "$pid" "$ppid" "$etime" "$label" "$cwd"
+      done
+)
+
+if [ -z "$proc_table" ]; then
+  printf '(none)\n'
 else
-  printf '  %-7s %-7s %-12s %-7s %s\n' "PID" "PPID" "ELAPSED" "ORPHAN" "CWD"
-  echo "$procs" | while read -r pid ppid etime _; do
-    orphan=""
-    [ "$ppid" = "1" ] && orphan="yes"
-    cwd=$(proc_cwd "$pid")
-    [ -z "$cwd" ] && cwd="(unknown)"
-    printf '  %-7s %-7s %-12s %-7s %s\n' "$pid" "$ppid" "$etime" "$orphan" "$cwd"
-  done
-  count=$(echo "$procs" | wc -l | tr -d ' ')
-  printf '\n  total: %s\n' "$count"
+  echo "$proc_table" | awk -F'\t' '
+    {
+      pid=$1; ppid=$2; etime=$3; label=$4; cwd=$5
+      pids[pid] = 1
+      parent[pid] = ppid
+      etimes[pid] = etime
+      labels[pid] = label
+      cwds[pid] = cwd
+      order[++n] = pid
+      if (kids[ppid] == "") kids[ppid] = pid
+      else kids[ppid] = kids[ppid] " " pid
+    }
+    END {
+      for (i = 1; i <= n; i++) {
+        pid = order[i]
+        if (!(parent[pid] in pids)) print_node(pid, "", 1, 1)
+      }
+    }
+    function print_node(pid, prefix, is_last, is_root,    tag, j, ncount, children, branch, new_prefix) {
+      tag = ""
+      if (parent[pid] == 1) tag = "  [orphan]"
+      if (is_root) {
+        branch = ""
+        new_prefix = ""
+      } else if (is_last) {
+        branch = "└─ "
+        new_prefix = prefix "   "
+      } else {
+        branch = "├─ "
+        new_prefix = prefix "│  "
+      }
+      printf "%s%s%-14s %-7s %-12s %s%s\n", prefix, branch, labels[pid], pid, "(" etimes[pid] ")", cwds[pid], tag
+      ncount = split(kids[pid], children, " ")
+      for (j = 1; j <= ncount; j++) {
+        print_node(children[j], new_prefix, (j == ncount), 0)
+      }
+    }
+  '
 fi
 
-printf '\n== workspace locks (%s) ==\n' "$LOCK_DIR"
+printf '\n== workspace locks (%s) ==\n\n' "$LOCK_DIR"
 locks=""
 if [ -d "$LOCK_DIR" ]; then
   locks=$(find "$LOCK_DIR" -maxdepth 2 -name '.app.lock' 2>/dev/null)
 fi
 
 if [ -z "$locks" ]; then
-  printf '  (none)\n'
+  printf '(none)\n'
 else
   echo "$locks" | while IFS= read -r lock; do
     project=$(basename "$(dirname "$lock")")
@@ -79,7 +130,7 @@ else
     stale=""
     [ -z "$owner_cwd" ] && stale="stale"
     path_col="${owner_cwd:-(no running process)}"
-    printf '  %-30s  %-18s  %-7s  %s\n' "$project" "$mtime" "$stale" "$path_col"
+    printf '%-30s  %-18s  %-7s  %s\n' "$project" "$mtime" "$stale" "$path_col"
   done
 fi
 
@@ -88,20 +139,20 @@ if [ "$CLEAN" -eq 0 ]; then
 fi
 
 if [ "$CLEAN" -eq 1 ]; then
-  printf '\n== cleaning ==\n'
+  printf '\n== cleaning ==\n\n'
 
   orph=$(orphans)
   if [ -z "$orph" ]; then
-    printf '  no orphaned processes\n'
+    printf 'no orphaned processes\n'
   else
     echo "$orph" | while read -r pid _; do
-      printf '  kill %s\n' "$pid"
-      kill "$pid" 2>/dev/null || printf '    (failed)\n'
+      printf 'kill %s\n' "$pid"
+      kill "$pid" 2>/dev/null || printf '  (failed)\n'
     done
   fi
 
   if [ -z "$locks" ]; then
-    printf '  no locks to check\n'
+    printf 'no locks to check\n'
   else
     echo "$locks" | while IFS= read -r lock; do
       project=$(basename "$(dirname "$lock")")
@@ -113,7 +164,7 @@ if [ "$CLEAN" -eq 1 ]; then
         fi
       done
       if [ "$owned" -eq 0 ]; then
-        printf '  rm %s\n' "$lock"
+        printf 'rm %s\n' "$lock"
         rm -f "$lock"
       fi
     done

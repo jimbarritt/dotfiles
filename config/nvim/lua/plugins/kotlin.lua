@@ -497,5 +497,30 @@ return {
         show_popup(popup_lines, "WarningMsg")
       end
     end, 30000)
+
+    -- Ensure kotlin-lsp shuts down cleanly and its workspace lock is removed
+    -- when nvim exits. kotlin-lsp (IntelliJ platform) is unreliable about
+    -- removing its own .app.lock on LSP shutdown, which then blocks the next
+    -- nvim session from starting the LSP for the same project.
+    vim.api.nvim_create_autocmd("VimLeavePre", {
+      group = vim.api.nvim_create_augroup("KotlinLspShutdown", { clear = true }),
+      callback = function()
+        local clients = vim.lsp.get_clients({ name = "kotlin_ls" })
+        for _, client in ipairs(clients) do
+          -- Force stop so kotlin-lsp at least receives an exit signal.
+          pcall(function() client:stop(true) end)
+        end
+
+        -- Safety net: remove this project's lock file. Only touches the
+        -- current project's workspace, so it won't interfere with other
+        -- nvim instances that have different projects open.
+        local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+        local lock_file = (os.getenv("HOME") or "")
+          .. "/.cache/kotlin-lsp-workspaces/" .. project_name .. "/.app.lock"
+        if vim.fn.filereadable(lock_file) == 1 then
+          pcall(os.remove, lock_file)
+        end
+      end,
+    })
   end,
 }
