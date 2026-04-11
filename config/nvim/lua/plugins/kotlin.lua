@@ -459,7 +459,7 @@ return {
             "",
             "Close the other instance, or clean stale state:",
             "  lsp-doctor           # inspect",
-            "  lsp-doctor --clean   # kill orphans + remove stale locks",
+            "  lsp-doctor --clean   # kill dangling + remove stale locks",
             "Then restart nvim.",
             "",
             "Press q to close",

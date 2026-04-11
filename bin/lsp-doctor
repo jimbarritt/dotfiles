@@ -1,37 +1,56 @@
 #!/bin/sh
 # Diagnose kotlin-lsp state: running processes and workspace lock files.
-# Useful for spotting orphaned LSP processes and stale locks.
+# Useful for spotting dangling LSP processes and stale locks.
+#
+# A kotlin-lsp is "dangling" if its parent is no longer a live nvim —
+# typically the result of nvim crashing or being killed without a clean
+# shutdown, leaving the LSP process running with no editor attached.
 #
 # Usage:
-#   lsp-doctor            # list processes and lock files
-#   lsp-doctor --clean    # kill orphaned processes and remove stale locks
-#   lsp-doctor -h         # show help
+#   lsp-doctor                  # list processes and lock files
+#   lsp-doctor --clean          # kill dangling processes and remove stale locks
+#   lsp-doctor --check-version  # also check kotlin-lsp cask version (slower)
+#   lsp-doctor -h               # show help
 
 LOCK_DIR="${HOME}/.cache/kotlin-lsp-workspaces"
 CLEAN=0
+CHECK_VERSION=0
 
-case "$1" in
-  -h|--help)
-    sed -n '2,9p' "$0" | sed 's/^# //; s/^#//'
-    exit 0
-    ;;
-  --clean)
-    CLEAN=1
-    ;;
-  '') ;;
-  *)
-    printf 'unknown arg: %s\n' "$1" >&2
-    exit 1
-    ;;
-esac
+for arg in "$@"; do
+  case "$arg" in
+    -h|--help)
+      sed -n '2,14p' "$0" | sed 's/^# //; s/^#//'
+      exit 0
+      ;;
+    --clean)          CLEAN=1 ;;
+    --check-version)  CHECK_VERSION=1 ;;
+    '') ;;
+    *)
+      printf 'unknown arg: %s\n' "$arg" >&2
+      exit 1
+      ;;
+  esac
+done
 
-# List orphaned kotlin-lsp processes: ones whose parent process is either
-# gone (ppid=1, reparented to launchd) or isn't an nvim.
+# Is this pid actually a kotlin-lsp, rather than a Gradle daemon that happens
+# to run under the kotlin-lsp bundled JRE? Gradle daemons are spawned by
+# kotlin-lsp during classpath resolution, detach, and reparent to launchd by
+# design — they are not kotlin-lsps and must not be treated as dangling.
+is_real_kotlin_lsp() {
+  full=$(ps -o command= -p "$1" 2>/dev/null)
+  [ -z "$full" ] && return 1
+  case "$full" in *GradleDaemon*) return 1 ;; esac
+  return 0
+}
+
+# List dangling kotlin-lsp processes: real kotlin-lsps whose parent process
+# is either gone (ppid=1, reparented to launchd) or isn't an nvim.
 # Format: one PID per line.
-orphans() {
+dangling_kotlin_pids() {
   ps -eo pid,ppid,comm \
     | awk 'tolower($0) ~ /kotlin/ {print $1, $2}' \
     | while read -r pid ppid; do
+        is_real_kotlin_lsp "$pid" || continue
         parent_comm=$(ps -o comm= -p "$ppid" 2>/dev/null)
         parent_base="${parent_comm##*/}"
         if [ -z "$parent_comm" ] || [ "$parent_base" != "nvim" ]; then
@@ -45,9 +64,11 @@ proc_cwd() {
   lsof -a -d cwd -p "$1" 2>/dev/null | awk 'NR>1 {for (i=9;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":""); print ""}'
 }
 
-# Is the given kotlin-lsp pid orphaned? (parent is not a live nvim)
-is_orphan_kotlin() {
+# Is the given kotlin-lsp pid dangling? (parent is not a live nvim)
+# Gradle daemons are never "dangling" — they are expected to outlive nvim.
+is_dangling_kotlin() {
   pid="$1"
+  is_real_kotlin_lsp "$pid" || return 1
   ppid=$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ')
   [ -z "$ppid" ] && return 0
   parent_comm=$(ps -o comm= -p "$ppid" 2>/dev/null)
@@ -57,32 +78,36 @@ is_orphan_kotlin() {
   return 1
 }
 
-printf '== kotlin-lsp version ==\n\n'
-if ! command -v brew >/dev/null 2>&1; then
-  printf 'brew not found — cannot check cask version\n'
-else
-  installed=$(brew list --versions --cask kotlin-lsp 2>/dev/null | awk '{print $2}')
-  if [ -z "$installed" ]; then
-    printf 'kotlin-lsp cask not installed\n'
-    printf 'install with: brew install --cask kotlin-lsp\n'
+if [ "$CHECK_VERSION" -eq 1 ]; then
+  printf '== kotlin-lsp version ==\n\n'
+  printf 'checking version (querying brew)...\n'
+  if ! command -v brew >/dev/null 2>&1; then
+    printf 'brew not found — cannot check cask version\n'
   else
-    latest=$(brew info --cask kotlin-lsp 2>/dev/null \
-      | awk -F': ' '/^==> kotlin-lsp/ {print $2; exit}')
-    outdated=$(brew outdated --cask kotlin-lsp 2>/dev/null)
-    printf 'installed:  %s\n' "$installed"
-    [ -n "$latest" ] && printf 'latest:     %s\n' "$latest"
-    if [ -z "$outdated" ]; then
-      printf 'status:     up to date\n'
+    installed=$(brew list --versions --cask kotlin-lsp 2>/dev/null | awk '{print $2}')
+    if [ -z "$installed" ]; then
+      printf 'kotlin-lsp cask not installed\n'
+      printf 'install with: brew install --cask kotlin-lsp\n'
     else
-      printf 'status:     UPDATE AVAILABLE\n'
-      printf '\nupgrade with:\n'
-      printf '  brew upgrade --cask kotlin-lsp\n'
-      printf '  (then restart nvim)\n'
+      latest=$(brew info --cask kotlin-lsp 2>/dev/null \
+        | awk -F': ' '/^==> kotlin-lsp/ {print $2; exit}')
+      outdated=$(brew outdated --cask kotlin-lsp 2>/dev/null)
+      printf 'installed:  %s\n' "$installed"
+      [ -n "$latest" ] && printf 'latest:     %s\n' "$latest"
+      if [ -z "$outdated" ]; then
+        printf 'status:     up to date\n'
+      else
+        printf 'status:     UPDATE AVAILABLE\n'
+        printf '\nupgrade with:\n'
+        printf '  brew upgrade --cask kotlin-lsp\n'
+        printf '  (then restart nvim)\n'
+      fi
     fi
   fi
+  printf '\n'
 fi
 
-printf '\n== process tree (nvim + kotlin-lsp) ==\n\n'
+printf '== process tree (nvim + kotlin-lsp) ==\n\n'
 # Gather matching processes with their cwd into a tab-separated table.
 proc_table=$(
   ps -eo pid,ppid,etime,comm \
@@ -101,7 +126,12 @@ proc_table=$(
             label="nvim"
           fi
         elif [ "$base" = "java" ]; then
-          label="kotlin-lsp"
+          full=$(ps -o command= -p "$pid" 2>/dev/null)
+          if [ "${full#*GradleDaemon}" != "$full" ]; then
+            label="gradle-daemon"
+          else
+            label="kotlin-lsp"
+          fi
         fi
         printf '%s\t%s\t%s\t%s\t%s\n' "$pid" "$ppid" "$etime" "$label" "$cwd"
       done
@@ -135,19 +165,28 @@ else
       # Header
       pad_header = ""
       for (k = length("TREE"); k < max_tree; k++) pad_header = pad_header " "
-      printf "%s%s  %-7s %-12s %s\n", "TREE", pad_header, "PID", "ELAPSED", "CWD"
+      printf "%s%s  %-7s %-13s %-12s %s\n", "TREE", pad_header, "PID", "PARENT", "ELAPSED", "CWD"
       # Rows
       for (i = 1; i <= rows; i++) {
         pad = ""
         for (k = tree_vlen[i]; k < max_tree; k++) pad = pad " "
-        printf "%s%s  %-7s %-12s %s\n", tree_col[i], pad, row_pid[i], "(" row_etime[i] ")", row_cwd[i]
+        parent_str = row_ppid[i]
+        if (row_ppid[i] == "1") parent_str = "1 (launchd)"
+        printf "%s%s  %-7s %-13s %-12s %s\n", tree_col[i], pad, row_pid[i], parent_str, "(" row_etime[i] ")", row_cwd[i]
       }
     }
     function walk(pid, prefix, prefix_vlen, is_last, is_root,    tag, j, ncount, children, branch, branch_vlen, new_prefix, new_prefix_vlen, tree_str, tree_vl) {
       tag = ""
-      # A kotlin-lsp at the root of the tree has no nvim parent — orphan.
-      if (labels[pid] == "kotlin-lsp" && is_root) tag = " [orphan]"
-      else if (parent[pid] == 1) tag = " [orphan]"
+      # gradle-daemon is never dangling — Gradle forks it, detaches it, and
+      # reparents to launchd by design so it can outlive kotlin-lsp/nvim.
+      if (labels[pid] == "gradle-daemon") {
+        tag = ""
+      } else if (labels[pid] == "kotlin-lsp" && is_root) {
+        # A kotlin-lsp at the root of the tree has no nvim parent — dangling.
+        tag = " [dangling]"
+      } else if (labels[pid] == "kotlin-lsp" && parent[pid] == 1) {
+        tag = " [dangling]"
+      }
 
       if (is_root) {
         branch = ""; branch_vlen = 0
@@ -166,6 +205,7 @@ else
       tree_col[rows]  = tree_str
       tree_vlen[rows] = tree_vl
       row_pid[rows]   = pid
+      row_ppid[rows]  = parent[pid]
       row_etime[rows] = etimes[pid]
       row_cwd[rows]   = cwds[pid]
 
@@ -192,14 +232,15 @@ else
     mtime=$(stat -f '%Sm' -t '%Y-%m-%d %H:%M' "$lock" 2>/dev/null \
          || stat -c '%y' "$lock" 2>/dev/null)
     # Match running kotlin-lsp by cwd basename. A lock is only "ok" if a
-    # NON-orphaned kotlin-lsp is serving this project.
+    # non-dangling kotlin-lsp is serving this project.
     owner_cwd=""
-    has_orphan=0
+    has_dangling=0
     for pid in $(ps -eo pid,comm | awk 'tolower($0) ~ /kotlin/ {print $1}'); do
+      is_real_kotlin_lsp "$pid" || continue
       pcwd=$(proc_cwd "$pid")
       if [ "$(basename "$pcwd")" = "$project" ]; then
-        if is_orphan_kotlin "$pid"; then
-          has_orphan=1
+        if is_dangling_kotlin "$pid"; then
+          has_dangling=1
         else
           owner_cwd="$pcwd"
           break
@@ -209,9 +250,9 @@ else
     if [ -n "$owner_cwd" ]; then
       status="ok"
       path_col="$owner_cwd"
-    elif [ "$has_orphan" -eq 1 ]; then
+    elif [ "$has_dangling" -eq 1 ]; then
       status="stale"
-      path_col="(orphan lsp)"
+      path_col="(dangling lsp)"
     else
       status="stale"
       path_col="(no running process)"
@@ -221,17 +262,20 @@ else
 fi
 
 if [ "$CLEAN" -eq 0 ]; then
-  printf '\n(run `lsp-doctor --clean` to kill orphaned processes and remove stale locks)\n'
+  printf '\n(run `lsp-doctor --clean` to kill dangling processes and remove stale locks)\n'
+  if [ "$CHECK_VERSION" -eq 0 ]; then
+    printf '(run `lsp-doctor --check-version` to check for kotlin-lsp updates)\n'
+  fi
 fi
 
 if [ "$CLEAN" -eq 1 ]; then
   printf '\n== cleaning ==\n\n'
 
-  orph=$(orphans)
-  if [ -z "$orph" ]; then
-    printf 'no orphaned processes\n'
+  dangling=$(dangling_kotlin_pids)
+  if [ -z "$dangling" ]; then
+    printf 'no dangling processes\n'
   else
-    echo "$orph" | while read -r pid; do
+    echo "$dangling" | while read -r pid; do
       printf 'kill %s\n' "$pid"
       kill "$pid" 2>/dev/null || printf '  (failed)\n'
     done
@@ -240,14 +284,15 @@ if [ "$CLEAN" -eq 1 ]; then
   if [ -z "$locks" ]; then
     printf 'no locks to check\n'
   else
-    # Orphan processes have just been killed above; re-query so the ownership
-    # check below sees the current state.
+    # Dangling processes have just been killed above; re-query so the
+    # ownership check below sees the current state.
     echo "$locks" | while IFS= read -r lock; do
       project=$(basename "$(dirname "$lock")")
       owned=0
       for pid in $(ps -eo pid,comm | awk 'tolower($0) ~ /kotlin/ {print $1}'); do
+        is_real_kotlin_lsp "$pid" || continue
         if [ "$(basename "$(proc_cwd "$pid")")" = "$project" ] \
-           && ! is_orphan_kotlin "$pid"; then
+           && ! is_dangling_kotlin "$pid"; then
           owned=1
           break
         fi

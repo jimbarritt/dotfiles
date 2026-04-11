@@ -227,6 +227,55 @@ echo $KOTLIN_LSP_DIR
 If stale, remove it from `~/.zshrc_machine`, run `unset KOTLIN_LSP_DIR &&
 source ~/.zshrc`, and restart nvim. See "Migrating from formula to cask" above.
 
+### Dangling kotlin-lsp processes and `lsp-doctor`
+
+If nvim crashes or is killed without a clean shutdown, kotlin-lsp can be
+left behind as a "dangling" process — its parent is no longer a live nvim,
+it's still holding the workspace `.app.lock`, and the next nvim session
+for that project will silently fail to start the LSP (kotlin-lsp does not
+support concurrent sessions on the same workspace).
+
+The popup that fires on LSP startup failure points at `lsp-doctor` as the
+remediation step. Run:
+
+```bash
+lsp-doctor              # list nvim + kotlin-lsp + gradle-daemon processes and locks
+lsp-doctor --clean      # kill dangling kotlin-lsps and remove stale locks
+lsp-doctor --check-version  # also check for a new kotlin-lsp cask release
+```
+
+See `doc/bin-scripts.md` in the dotfiles repo for full details.
+
+#### Gradle daemons are not dangling kotlin-lsps
+
+When investigating leaks, be aware that kotlin-lsp spawns a **Gradle
+daemon** as part of classpath resolution. On `ps` these look almost
+identical to kotlin-lsp because they share the same JVM binary:
+
+```
+/opt/homebrew/Caskroom/kotlin-lsp/<ver>/jre/Contents/Home/bin/java ...
+```
+
+The difference is the main class: the Gradle daemon runs
+`org.gradle.launcher.daemon.bootstrap.GradleDaemon` and a typical cwd of
+`~/.gradle/daemon/<gradle-version>`. Gradle daemons are designed to
+outlive their parent — they double-fork, `setsid`, and reparent to
+launchd (ppid 1) so they can serve future builds from *any* client
+(kotlin-lsp, `./gradlew` in a terminal, IntelliJ, etc.) without paying
+JVM startup cost each time. The default idle timeout is ~3 hours.
+
+This means:
+
+- A Gradle daemon with `ppid 1 (launchd)` is **normal and expected**, not
+  a leak. `lsp-doctor` labels it `gradle-daemon` and never tags it
+  `[dangling]` or kills it on `--clean`.
+- A real kotlin-lsp (main class is an IntelliJ platform entry point, not
+  `GradleDaemon`) with `ppid 1 (launchd)` is a genuine leak — nvim died
+  without cleaning it up. These are what `lsp-doctor --clean` targets.
+
+The distinction matters because killing the Gradle daemon throws away
+the warm JVM and makes the next build noticeably slower for no reason.
+
 ### Known harmless warnings in LspLog
 
 ```
