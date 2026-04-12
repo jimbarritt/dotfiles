@@ -1,0 +1,27 @@
+#!/bin/sh
+# Create a FlashSpace workspace with standard hotkeys derived from its index.
+#
+# Usage: flash-create-workspace <name> <index>
+#
+# Sets activate key to cmd+opt+<index> and assign key to opt+shift+<index>.
+# Extra flags (e.g. --icon, --activate) are passed through to flashspace.
+#
+# Example:
+#   flash-create-workspace "Scratch" 5
+#   flash-create-workspace "Music" 6 --icon "music.note"
+
+set -e
+
+if [ $# -lt 2 ]; then
+    echo "Usage: flash-create-workspace <name> <index> [extra flashspace flags...]" >&2
+    exit 1
+fi
+
+name="$1"
+index="$2"
+shift 2
+
+flashspace create-workspace "$name" \
+    --activate-key "cmd+opt+${index}" \
+    --assign-key "opt+shift+${index}" \
+    "$@"

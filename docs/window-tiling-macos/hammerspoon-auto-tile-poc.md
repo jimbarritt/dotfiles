@@ -210,6 +210,33 @@ end)
 
 The handler is the primary tiling trigger. The `windowVisible` subscription is kept as a secondary fallback (e.g. for apps opening mid-session, not via workspace switch). FlashSpace calls the script once per display, so the handler may fire more than once per switch — it is idempotent.
 
+## FlashSpace space control — shortcut-indexed navigation
+
+### Context
+
+FlashSpace's space control overlay renders a 1-based position index next to each workspace. We have 10 workspaces; Miro is at position 10 with hotkey `cmd+opt+A` — the overlay shows "10", which has no single-key equivalent. Scratch is at position 5 but has hotkey `cmd+opt+0` — the position number and the shortcut key are misaligned, so the overlay is misleading rather than helpful.
+
+### Desired behaviour
+
+Space control should show the shortcut key character (0–9, A–Z) rather than the position index. Pressing that character in the overlay would then jump directly to the workspace — no mental translation required. Concretely:
+
+- Scratch: shortcut `cmd+opt+0` → displayed as `0`, first in the list
+- All ten current workspaces use 0–9
+- Further workspaces would continue with A–Z
+- The two-digit "10" problem disappears entirely
+
+### The fix
+
+Small UI change in the FlashSpace source: when rendering a row in the space control overlay, take the last character of the workspace's `shortcut` field and display that instead of the 1-based index. Fall back to `—` if no shortcut is configured.
+
+Plan: build FlashSpace from source locally to validate the change end-to-end, then submit as a PR upstream.
+
+### Broader context — potential future directions
+
+If the PR is rejected, the fallback is to fork FlashSpace for this change only and sync upstream for everything else — a narrow fork, not a divergence.
+
+Longer term: we've discussed the possibility of a unified tiling manager (a Swift app) that combines workspace management with the window pairing rules (Use Cases 1–3) into a single coherent tool — Ghostty + Marq + tiling as a suite, with frictionless, low-cognitive-load switching between contexts. This is not imminent. Current focus is the Hammerspoon PoC and the FlashSpace PR.
+
 ## File location
 
 `~/.hammerspoon/init.lua`
@@ -334,3 +361,53 @@ Keep the event-driven path for everything else — external resizes (e.g. from a
 5. Drag the edge of Marq to resize — verify Ghostty adjusts
 6. Close Marq — verify Ghostty is no longer constrained
 7. Check the Hammerspoon console for log output (menu bar icon → Console)
+
+## Companion app — "Twins" (working title)
+
+### Concept
+
+A separate Swift app — working title **Twins** (other candidates: Tandem, Duo, Pairs) — that handles window pairing and tiling rules as a companion to FlashSpace.
+
+- **FlashSpace owns**: which apps are visible per workspace
+- **Twins owns**: how visible windows are arranged (pairing rules, sizing, monitor assignment)
+- **Handoff point**: FlashSpace fires `runScriptAfterWorkspaceChange` → Twins responds and tiles
+
+### Why a companion rather than a fork
+
+- FlashSpace is good at what it does; the space control display PR is the only thing we want to change upstream
+- Tiling logic is orthogonal to workspace management — clean separation of concerns
+- Twins can evolve independently (new pairing rules, multi-monitor logic) without touching FlashSpace internals
+
+### Multi-monitor
+
+The key unlock: declaring "this pair goes on the left monitor, that pair on the right" per workspace. This is what makes the companion genuinely powerful for a dev workflow — not just side-by-side on one screen but intentional cross-monitor layout.
+
+### Architecture sketch
+
+Twins listens for FlashSpace workspace-change events via the `runScriptAfterWorkspaceChange` hook (calling a Twins URL scheme or CLI binary). Per workspace, Twins holds a set of pairing rules:
+
+```toml
+[[workspace.dev.rule]]
+name = "ghostty-marq"
+apps  = ["Ghostty", "Marq"]
+monitor = "left"
+ratio = 0.6          # Ghostty left 60%, Marq right 40%
+
+[[workspace.dev.rule]]
+name = "zen-solo"
+apps  = ["Zen Browser"]
+monitor = "right"
+layout = "full-width"
+```
+
+Rules are declarative config (TOML or similar), not imperative scripts. The engine reads the current workspace name from the hook payload, looks up the matching rule set, checks visibility, and applies frames.
+
+### Current status
+
+- The Hammerspoon PoC is the proving ground — Use Cases 1–3 validate the tiling model before committing to a Swift app
+- FlashSpace space control PR (shortcut-indexed display) comes first
+- Twins is the longer-horizon target once the model is validated in Lua
+
+### Name candidates
+
+Twins, Tandem, Duo, Pairs

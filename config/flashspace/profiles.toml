@@ -68,3 +68,57 @@ shortcut = 'cmd+opt+0'
 bundleIdentifier = 'org.hammerspoon.Hammerspoon'
 iconPath = '/Applications/Hammerspoon.app/Contents/Resources/AppIcon.icns'
 name = 'Hammerspoon'
+
+[[profiles.workspaces]]
+apps = []
+assignAppShortcut = 'opt+shift+6'
+display = 'Built-in Retina Display'
+id = '197B002D-90FE-43E5-B05C-261B583327FF'
+name = 'Meetings'
+openAppsOnActivation = false
+shortcut = 'cmd+opt+6'
+
+[[profiles.workspaces]]
+apps = []
+assignAppShortcut = 'opt+shift+7'
+display = 'Built-in Retina Display'
+id = 'A0FCFA1C-51C1-4EB4-BDBB-DF6FE3AF05F2'
+name = 'Calendar'
+openAppsOnActivation = false
+shortcut = 'cmd+opt+7'
+
+[[profiles.workspaces]]
+apps = []
+assignAppShortcut = 'opt+shift+8'
+display = 'Built-in Retina Display'
+id = '98C2F476-56E2-4ADD-B6A9-25DBF6E1D4E7'
+name = 'Mail'
+openAppsOnActivation = false
+shortcut = 'cmd+opt+8'
+
+[[profiles.workspaces]]
+apps = []
+assignAppShortcut = 'opt+shift+9'
+display = 'Built-in Retina Display'
+id = 'C1936C2D-F9A6-490E-A895-C082DDB56219'
+name = 'Notion'
+openAppsOnActivation = false
+shortcut = 'cmd+opt+9'
+
+[[profiles.workspaces]]
+apps = []
+assignAppShortcut = 'opt+shift+A'
+display = 'Built-in Retina Display'
+id = '275E1AB8-CE55-4B82-9C19-5E21C501A352'
+name = 'Miro'
+openAppsOnActivation = false
+shortcut = 'cmd+opt+A'
+
+[[profiles.workspaces]]
+apps = []
+assignAppShortcut = 'opt+shift+B'
+display = 'Built-in Retina Display'
+id = '6787B715-82F6-4426-9D7F-1BB4DCD396E5'
+name = 'Slack'
+openAppsOnActivation = false
+shortcut = 'cmd+opt+B'

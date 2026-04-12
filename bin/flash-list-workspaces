@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+# List FlashSpace workspaces with their activate and assign-app shortcuts.
+
+import sys
+import tomllib
+from pathlib import Path
+
+PROFILES = Path.home() / ".config/flashspace/profiles.toml"
+
+with open(PROFILES, "rb") as f:
+    config = tomllib.load(f)
+
+active_profile = next(
+    (p for p in config["profiles"] if p.get("isActive")),
+    config["profiles"][0],
+)
+
+workspaces = active_profile.get("workspaces", [])
+
+name_w = max((len(w["name"]) for w in workspaces), default=4)
+
+print(f"{'#':<3} {'Name':<{name_w}}  {'Activate':<14} {'Assign'}")
+print(f"{'—'*3} {'—'*name_w}  {'—'*14} {'—'*14}")
+
+for i, ws in enumerate(workspaces, 1):
+    name = ws["name"]
+    activate = ws.get("shortcut", "—")
+    assign = ws.get("assignAppShortcut", "—")
+    print(f"{i:<3} {name:<{name_w}}  {activate:<14} {assign}")
