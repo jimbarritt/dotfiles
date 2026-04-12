@@ -3,6 +3,7 @@ id = '119514A4-A1F6-47A9-B4AE-F7803EE36DBB'
 name = 'Default'
 
 [[profiles.workspaces]]
+assignAppShortcut = 'opt+shift+1'
 display = 'Built-in Retina Display'
 id = 'CAA7F4D7-CFC3-4B9A-B585-7598417E0847'
 name = 'Coding'
@@ -19,6 +20,7 @@ iconPath = '/Applications/Marq.app/Contents/Resources/AppIcon.icns'
 name = 'Marq'
 
 [[profiles.workspaces]]
+assignAppShortcut = 'opt+shift+2'
 display = 'Built-in Retina Display'
 id = '475C661D-CA73-4CD1-AD87-BB0E60C4C17C'
 name = 'Zen'
@@ -31,6 +33,7 @@ iconPath = '/Applications/Zen.app/Contents/Resources/firefox.icns'
 name = 'Zen'
 
 [[profiles.workspaces]]
+assignAppShortcut = 'opt+shift+3'
 display = 'Built-in Retina Display'
 id = 'DD6D05F0-72CA-41E0-832C-4DD0B5837FF3'
 name = 'Chrome'
@@ -42,6 +45,7 @@ iconPath = '/Applications/Google Chrome.app/Contents/Resources/app.icns'
 name = 'Google Chrome'
 
 [[profiles.workspaces]]
+assignAppShortcut = 'opt+shift+4'
 display = 'Built-in Retina Display'
 id = '9D58E72E-184C-4654-9824-8675290BF008'
 name = 'Claude'

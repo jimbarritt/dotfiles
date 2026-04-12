@@ -146,6 +146,46 @@ For now we have one profile (`Default`). If we end up with a docking station / d
 3. **Display name fragility.** External monitors change `localizedName` on macOS reinstalls, OS updates, and adapter swaps. Mitigation: a second profile per physical setup, or run `flashspace list-displays` and update `display = ...` when it breaks.
 4. **GUI overwrites comments in `profiles.toml`.** Decision needed: hand-edit only (and avoid the GUI), or treat the GUI as source of truth and don't try to keep comments.
 
+## Sending a workspace to a different monitor
+
+The use case: you're in a Notion workspace on CENTRE, a Meet starts, you want to send Notion to LEFT so you can share that whole screen.
+
+`opt+shift+A/B/C` sends the active workspace to a monitor (AeroSpace muscle memory preserved):
+- `opt+shift+a` → LEFT external monitor
+- `opt+shift+b` → Built-in Retina Display (laptop)
+- `opt+shift+c` → CENTRE external monitor
+
+Implemented as a Karabiner-Elements complex modification (Karabiner is already installed for low-level key remapping). Add this rule to `karabiner.json` under `complex_modifications.rules`:
+
+```json
+{
+  "description": "FlashSpace: send active workspace to monitor",
+  "manipulators": [
+    {
+      "type": "basic",
+      "from": { "key_code": "a", "modifiers": { "mandatory": ["option", "shift"] } },
+      "to": [{ "shell_command": "flashspace update-workspace --active-workspace --display 'TODO-LEFT'" }]
+    },
+    {
+      "type": "basic",
+      "from": { "key_code": "b", "modifiers": { "mandatory": ["option", "shift"] } },
+      "to": [{ "shell_command": "flashspace update-workspace --active-workspace --display 'Built-in Retina Display'" }]
+    },
+    {
+      "type": "basic",
+      "from": { "key_code": "c", "modifiers": { "mandatory": ["option", "shift"] } },
+      "to": [{ "shell_command": "flashspace update-workspace --active-workspace --display 'TODO-CENTRE'" }]
+    }
+  ]
+}
+```
+
+**TODO when docked**: run `flashspace list-displays` and replace `TODO-LEFT` and `TODO-CENTRE` with the exact strings it returns.
+
+Notes:
+- `update-workspace` writes to `profiles.toml` — the move is persistent. Move it back the same way.
+- The workspace switcher and Space Control only show workspaces for the current display — after moving, the workspace disappears from CENTRE's view and appears in LEFT's.
+
 ## Open questions for the next session
 
 - What's the `localizedName` of the external monitor? (`flashspace list-displays`)

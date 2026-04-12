@@ -15,7 +15,7 @@ All fields are optional. Defaults noted where found in source.
 | `checkForUpdatesAutomatically` | Bool | false | |
 | `showFlashSpace` | HotKey | — | Show FlashSpace window |
 | `toggleFlashSpace` | HotKey | — | Toggle visibility |
-| `showFloatingNotifications` | Bool | true | Toast notifications |
+| `showFloatingNotifications` | Bool | true | Toast notifications (see below) |
 | `pauseResumeFlashSpace` | HotKey | — | |
 
 ### Menu bar
@@ -152,6 +152,19 @@ Script env vars: `$WORKSPACE`, `$DISPLAY`, `$PROFILE`
 |---|---|---|---|
 | `switchToNextProfile` | HotKey | — | |
 | `switchToPreviousProfile` | HotKey | — | |
+
+---
+
+## Toast notifications
+
+When actions trigger a notification (app assigned, workspace switched, etc.) FlashSpace shows a custom **Toast** — a borderless `NSWindow` it creates itself, not a system notification.
+
+- Positioned **bottom-centre** of the main screen (~7% up from the bottom edge)
+- Blurred/vibrancy background (`.sidebar` material)
+- Stays visible for **2 seconds**, then fades out over 0.3s
+- SF Symbols icon + bold text; text colour varies by action
+- Controlled by `showFloatingNotifications` in settings.toml (default: `true`)
+- Source: `FlashSpace/UI/Toast.swift`
 
 ---
 
