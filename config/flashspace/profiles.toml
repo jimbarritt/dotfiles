@@ -28,6 +28,11 @@ openAppsOnActivation = false
 shortcut = 'cmd+opt+2'
 
 [[profiles.workspaces.apps]]
+bundleIdentifier = 'org.hammerspoon.Hammerspoon'
+iconPath = '/Applications/Hammerspoon.app/Contents/Resources/AppIcon.icns'
+name = 'Hammerspoon'
+
+[[profiles.workspaces.apps]]
 bundleIdentifier = 'app.zen-browser.zen'
 iconPath = '/Applications/Zen.app/Contents/Resources/firefox.icns'
 name = 'Zen'

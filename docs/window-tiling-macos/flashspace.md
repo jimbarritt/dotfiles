@@ -11,6 +11,33 @@ Replacing AeroSpace with FlashSpace (+ Hammerspoon for the bits FlashSpace doesn
 - There's a full CLI at `/usr/local/bin/flashspace` we can drive from Hammerspoon.
 - **Big gap vs AeroSpace**: no `move-window-to-workspace`. The closest thing is reassigning the *whole app* to a different workspace via `assignAppShortcut` or `flashspace assign-app`. We need a workaround if we want AeroSpace's `alt-shift-<num>` flow.
 
+## Why not native macOS Spaces?
+
+The natural question: macOS already has per-display Mission Control spaces, Hammerspoon has a working `hs.spaces.*` API, and `ctrl+1..9` will switch spaces if you enable it in System Settings. Why run a third-party app for this?
+
+Pinning this down so we don't keep re-asking.
+
+**What native spaces give you for free** that FlashSpace also provides:
+
+- Per-display workspace state (each display has its own set of Desktops)
+- Hotkey switching (`ctrl+1..9` if enabled in System Settings → Keyboard)
+- Real multi-desktop metaphor — windows preserve position per space, per-space wallpapers work
+- `hs.spaces.*` Hammerspoon bindings actually observe reality — a bonus if you also need to tile inside workspaces (see [`hammerspoon-auto-tile-poc.md`](./hammerspoon-auto-tile-poc.md))
+
+**What they don't give you, that FlashSpace does:**
+
+- **Named, semantically meaningful workspaces.** Native spaces are just "Desktop 1..N". FlashSpace has "Coding", "Browsing", "Meet" — and the name is how you reason about them, in docs and out loud. This is the biggest single reason.
+- **Declarative config.** FlashSpace reads `~/.config/flashspace/profiles.toml` with `bundleIdentifier → workspace` mappings, version-controlled in this dotfiles repo. Native spaces have no config file; you drag windows in Mission Control or click Dock → Options → Assign To per app, one at a time, and the state lives in an opaque plist.
+- **Stable identity.** Native space IDs shift when you reorder spaces in Mission Control. Empty spaces get auto-destroyed. Full-screen apps create their own ad-hoc spaces that eat space slots. None of this matters for FlashSpace because workspace identity is just a string in a TOML file.
+- **Per-display active-workspace tracking that actually works.** FlashSpace explicitly stores `activeWorkspace[display]` and switches each display independently. Native spaces nominally do this when "Displays have separate Spaces" is enabled, but the UX of switching one display without disturbing the other is clumsy.
+- **CLI and hooks.** `flashspace workspace --number 1`, `flashspace assign-app`, `runScriptOnWorkspaceChange`. Native spaces have no official CLI — third-party tools that drive them (Yabai etc.) use private SkyLight APIs and require disabling SIP.
+- **Instant switching.** FlashSpace is hide/unhide — essentially free, jump-cut fast. Native-spaces switching animates through Mission Control's slide transition and can't be disabled.
+- **Unambiguous hotkeys from anywhere.** `cmd+opt+1` always activates workspace 1 regardless of what app has focus. Native spaces' `ctrl+1..9` has inconsistencies with modal dialogs, full-screen apps, and some games.
+
+**Could Hammerspoon close the gap?** Partially. `hs.spaces.gotoSpace()` and `hs.spaces.moveWindowToSpace()` exist and work, so you could bind hotkeys and maintain an `app → space_id` table in Lua. But you'd be re-implementing FlashSpace's config model on top of a less stable foundation (unstable IDs, phantom full-screen spaces, Mission Control animation overhead) and giving up the FlashSpace CLI in exchange. Bad trade.
+
+**Verdict**: FlashSpace stays as the workspace layer. The Hammerspoon auto-tile PoC composes with it via app-visibility state, not via native spaces — see that doc's "Composition with FlashSpace" section.
+
 ## Config file
 
 - Tracked in dotfiles at `config/flashspace/`, symlinked into `~/.config/flashspace/` by `do.sh`'s `link_config flashspace`. FlashSpace reads from `~/.config/flashspace/profiles.toml` (also `settings.toml`, currently empty).
@@ -30,6 +57,18 @@ Replacing AeroSpace with FlashSpace (+ Hammerspoon for the bits FlashSpace doesn
 3. There is no auto-launch unless `openAppsOnActivation = true` is set on the workspace.
 
 Implication: a workspace is best thought of as "the set of apps I want visible together", not a virtual desktop with arbitrary windows in it.
+
+### FlashSpace does not use native macOS Spaces
+
+Concrete mechanism, from `FlashSpace/Features/Workspaces/WorkspaceManager.swift`: activation calls `NSRunningApplication.hide()` / `unhide()` on the relevant `NSRunningApplication` objects. Every FlashSpace workspace lives on the **same** underlying native (Mission Control) space — "switching workspace" is a hide/unhide pass over app processes, not a space swap.
+
+Consequences worth knowing if you're writing tooling that composes with FlashSpace:
+
+- **`hs.spaces.focusedSpace()` / `hs.spaces.windowSpaces()` don't observe FlashSpace.** Those APIs talk to the native CoreGraphics spaces layer, which FlashSpace doesn't touch. They'll report the same space ID regardless of which FlashSpace workspace is active, so any membership check built on them is effectively a no-op in this setup. Use `hs.window:isVisible()` (which reflects the owning app's hidden state) instead.
+- **Anything driven by AX window events needs to filter out hidden apps.** When FlashSpace hides an app, its windows still exist — they just aren't visible. `kAXWindowCreatedNotification` / `wf.windowVisible` etc. can still fire for apps on other workspaces when they're un-hidden, and naive event handlers will act on them as if the user is looking at them. Guard with `NSRunningApplication.isHidden` (Swift) or `win:isVisible()` (Hammerspoon).
+- **Tools that want to know "did the user just switch workspace?"** should listen to FlashSpace directly via `runScriptOnWorkspaceChange` in `settings.toml`, or watch for `NSRunningApplication` hidden-state transitions. Don't try to infer it from space membership.
+
+This is the single most important piece of context for anything integrating with FlashSpace, and it's easy to miss because the word "workspace" implies a virtual-desktop model that isn't what's happening under the hood.
 
 ## Hotkeys
 

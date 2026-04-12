@@ -3,3 +3,6 @@ showSpaceControl = 'cmd+opt+space'
 showMenuBarIcon = false
 showMenuBarTitle = true
 menuBarTitleTemplate = '[$WORKSPACE]'
+
+enableIntegrations = true
+runScriptAfterWorkspaceChange = 'open -g "hammerspoon://tile-now"'
