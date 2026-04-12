@@ -10,14 +10,14 @@ name = 'Coding'
 shortcut = 'cmd+opt+1'
 
 [[profiles.workspaces.apps]]
-bundleIdentifier = 'com.mitchellh.ghostty'
-iconPath = '/Applications/Ghostty.app/Contents/Resources/Ghostty.icns'
-name = 'Ghostty'
-
-[[profiles.workspaces.apps]]
 bundleIdentifier = 'com.jimbarritt.marq'
 iconPath = '/Applications/Marq.app/Contents/Resources/AppIcon.icns'
 name = 'Marq'
+
+[[profiles.workspaces.apps]]
+bundleIdentifier = 'com.mitchellh.ghostty'
+iconPath = '/Applications/Ghostty.app/Contents/Resources/Ghostty.icns'
+name = 'Ghostty'
 
 [[profiles.workspaces]]
 assignAppShortcut = 'opt+shift+2'
@@ -26,11 +26,6 @@ id = '475C661D-CA73-4CD1-AD87-BB0E60C4C17C'
 name = 'Zen'
 openAppsOnActivation = false
 shortcut = 'cmd+opt+2'
-
-[[profiles.workspaces.apps]]
-bundleIdentifier = 'org.hammerspoon.Hammerspoon'
-iconPath = '/Applications/Hammerspoon.app/Contents/Resources/AppIcon.icns'
-name = 'Hammerspoon'
 
 [[profiles.workspaces.apps]]
 bundleIdentifier = 'app.zen-browser.zen'
@@ -60,3 +55,16 @@ shortcut = 'cmd+opt+4'
 bundleIdentifier = 'com.anthropic.claudefordesktop'
 iconPath = '/Applications/Claude.app/Contents/Resources/electron.icns'
 name = 'Claude'
+
+[[profiles.workspaces]]
+assignAppShortcut = 'opt+shift+0'
+display = 'Built-in Retina Display'
+id = 'CFA56025-5AF2-48BA-A142-E4988B8724CA'
+name = 'Scratch'
+openAppsOnActivation = false
+shortcut = 'cmd+opt+0'
+
+[[profiles.workspaces.apps]]
+bundleIdentifier = 'org.hammerspoon.Hammerspoon'
+iconPath = '/Applications/Hammerspoon.app/Contents/Resources/AppIcon.icns'
+name = 'Hammerspoon'
