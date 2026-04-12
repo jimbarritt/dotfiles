@@ -69,6 +69,11 @@ bundleIdentifier = 'org.hammerspoon.Hammerspoon'
 iconPath = '/Applications/Hammerspoon.app/Contents/Resources/AppIcon.icns'
 name = 'Hammerspoon'
 
+[[profiles.workspaces.apps]]
+bundleIdentifier = 'com.1password.1password'
+iconPath = '/Applications/1Password.app/Contents/Resources/icon.icns'
+name = '1Password'
+
 [[profiles.workspaces]]
 apps = []
 assignAppShortcut = 'opt+shift+6'
@@ -107,18 +112,31 @@ shortcut = 'cmd+opt+9'
 
 [[profiles.workspaces]]
 apps = []
-assignAppShortcut = 'opt+shift+A'
+assignAppShortcut = 'opt+shift+a'
 display = 'Built-in Retina Display'
 id = '275E1AB8-CE55-4B82-9C19-5E21C501A352'
 name = 'Miro'
 openAppsOnActivation = false
-shortcut = 'cmd+opt+A'
+shortcut = 'cmd+opt+a'
 
 [[profiles.workspaces]]
 apps = []
-assignAppShortcut = 'opt+shift+B'
+assignAppShortcut = 'opt+shift+b'
 display = 'Built-in Retina Display'
 id = '6787B715-82F6-4426-9D7F-1BB4DCD396E5'
 name = 'Slack'
 openAppsOnActivation = false
-shortcut = 'cmd+opt+B'
+shortcut = 'cmd+opt+b'
+
+[[profiles.workspaces]]
+assignAppShortcut = 'opt+shift+d'
+display = 'Built-in Retina Display'
+id = '61753B3A-8B38-4D4F-81C2-666028DF88B3'
+name = 'Xcode'
+openAppsOnActivation = false
+shortcut = 'cmd+opt+d'
+
+[[profiles.workspaces.apps]]
+bundleIdentifier = 'com.apple.dt.Xcode'
+iconPath = '/Applications/Xcode.app/Contents/Resources/Xcode.icns'
+name = 'Xcode'
