@@ -4,7 +4,7 @@ name = 'Default'
 
 [[profiles.workspaces]]
 assignAppShortcut = 'opt+shift+1'
-display = 'Built-in Retina Display'
+display = 'DELL U2723QE'
 id = 'CAA7F4D7-CFC3-4B9A-B585-7598417E0847'
 name = 'Coding'
 shortcut = 'cmd+opt+1'
@@ -21,7 +21,7 @@ name = 'Ghostty'
 
 [[profiles.workspaces]]
 assignAppShortcut = 'opt+shift+2'
-display = 'Built-in Retina Display'
+display = 'DELL U2723QE'
 id = '475C661D-CA73-4CD1-AD87-BB0E60C4C17C'
 name = 'Zen'
 openAppsOnActivation = false
@@ -34,7 +34,7 @@ name = 'Zen'
 
 [[profiles.workspaces]]
 assignAppShortcut = 'opt+shift+3'
-display = 'Built-in Retina Display'
+display = 'DELL U2723QE'
 id = 'DD6D05F0-72CA-41E0-832C-4DD0B5837FF3'
 name = 'Chrome'
 shortcut = 'cmd+opt+3'
@@ -46,7 +46,7 @@ name = 'Google Chrome'
 
 [[profiles.workspaces]]
 assignAppShortcut = 'opt+shift+4'
-display = 'Built-in Retina Display'
+display = 'DELL U2723QE'
 id = '9D58E72E-184C-4654-9824-8675290BF008'
 name = 'Claude'
 shortcut = 'cmd+opt+4'
@@ -58,7 +58,7 @@ name = 'Claude'
 
 [[profiles.workspaces]]
 assignAppShortcut = 'opt+shift+0'
-display = 'Built-in Retina Display'
+display = 'DELL U2723QE'
 id = 'CFA56025-5AF2-48BA-A142-E4988B8724CA'
 name = 'Scratch'
 openAppsOnActivation = false
@@ -77,7 +77,7 @@ name = '1Password'
 [[profiles.workspaces]]
 apps = []
 assignAppShortcut = 'opt+shift+6'
-display = 'Built-in Retina Display'
+display = 'DELL U2723QE'
 id = '197B002D-90FE-43E5-B05C-261B583327FF'
 name = 'Meetings'
 openAppsOnActivation = false
@@ -86,7 +86,7 @@ shortcut = 'cmd+opt+6'
 [[profiles.workspaces]]
 apps = []
 assignAppShortcut = 'opt+shift+7'
-display = 'Built-in Retina Display'
+display = 'DELL U2723QE'
 id = 'A0FCFA1C-51C1-4EB4-BDBB-DF6FE3AF05F2'
 name = 'Calendar'
 openAppsOnActivation = false
@@ -95,7 +95,7 @@ shortcut = 'cmd+opt+7'
 [[profiles.workspaces]]
 apps = []
 assignAppShortcut = 'opt+shift+8'
-display = 'Built-in Retina Display'
+display = 'DELL U2723QE'
 id = '98C2F476-56E2-4ADD-B6A9-25DBF6E1D4E7'
 name = 'Mail'
 openAppsOnActivation = false
@@ -104,7 +104,7 @@ shortcut = 'cmd+opt+8'
 [[profiles.workspaces]]
 apps = []
 assignAppShortcut = 'opt+shift+9'
-display = 'Built-in Retina Display'
+display = 'DELL U2723QE'
 id = 'C1936C2D-F9A6-490E-A895-C082DDB56219'
 name = 'Notion'
 openAppsOnActivation = false
@@ -114,23 +114,23 @@ shortcut = 'cmd+opt+9'
 apps = []
 assignAppShortcut = 'opt+shift+a'
 display = 'Built-in Retina Display'
-id = '275E1AB8-CE55-4B82-9C19-5E21C501A352'
-name = 'Miro'
+id = '6787B715-82F6-4426-9D7F-1BB4DCD396E5'
+name = 'Slack'
 openAppsOnActivation = false
 shortcut = 'cmd+opt+a'
 
 [[profiles.workspaces]]
 apps = []
 assignAppShortcut = 'opt+shift+b'
-display = 'Built-in Retina Display'
-id = '6787B715-82F6-4426-9D7F-1BB4DCD396E5'
-name = 'Slack'
+display = 'DELL U2723QE'
+id = '275E1AB8-CE55-4B82-9C19-5E21C501A352'
+name = 'Miro'
 openAppsOnActivation = false
 shortcut = 'cmd+opt+b'
 
 [[profiles.workspaces]]
 assignAppShortcut = 'opt+shift+d'
-display = 'Built-in Retina Display'
+display = 'DELL U2723QE'
 id = '61753B3A-8B38-4D4F-81C2-666028DF88B3'
 name = 'Xcode'
 openAppsOnActivation = false

@@ -514,6 +514,10 @@ This can cause confusion if two apps have the same name but different bundle IDs
 
 FlashSpace does not implement `onOpenURL()` or URL scheme handling. All external communication goes through the Unix socket at `/tmp/flashspace.socket`. If you need to call FlashSpace from another app, you must use the CLI (which talks to the socket) or implement a socket client.
 
+### 9. Stale socket prevents launch
+
+If FlashSpace won't start (silently fails or crashes on launch), a stale `/tmp/flashspace.socket` file from a previous run (e.g. a dev build that didn't clean up) may be blocking the socket server from binding. Fix: `rm /tmp/flashspace.socket`, then relaunch.
+
 ---
 
 ## Working with Workspaces via CLI

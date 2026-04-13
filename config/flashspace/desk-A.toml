@@ -1,0 +1,9 @@
+# Desk A — display alias mapping
+#
+# Maps logical names to the macOS display names FlashSpace uses.
+# Use these values in profiles.toml `display` fields.
+
+[displays]
+LEFT   = "DELL U2419HC"
+CENTRE = "DELL U2723QE"
+LAPTOP = "Built-in Retina Display"

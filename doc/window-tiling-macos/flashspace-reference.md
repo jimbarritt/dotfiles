@@ -1,6 +1,6 @@
 # FlashSpace — complete technical reference
 
-Derived from reading the FlashSpace source at `/Users/jmdb/Code/github/wojciech-kulik/FlashSpace`.
+Derived from reading the FlashSpace source at `<flashspace-repo>`.
 
 ---
 
