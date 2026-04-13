@@ -1,0 +1,17 @@
+#!/bin/sh
+# Dump info about all connected displays.
+# Combines system_profiler (human-readable) + ioreg (stable EDID UUIDs).
+
+set -eu
+
+echo "=== system_profiler SPDisplaysDataType ==="
+system_profiler SPDisplaysDataType
+
+echo
+echo "=== EDID UUIDs (stable per physical monitor) ==="
+ioreg -l -w 0 | grep -E '"(EDID UUID|DisplayProductName|DisplaySerialNumber|DisplayProductID|DisplayVendorID)"' \
+  | sed 's/^[[:space:]]*|*[[:space:]]*//'
+
+echo
+echo "=== AppleDisplay IOReg nodes (full) ==="
+ioreg -l -w 0 -r -c AppleDisplay

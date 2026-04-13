@@ -85,6 +85,251 @@ mechanically different from FlashSpace's:
 owns app *visibility*. They are solving different problems with the same workspace-naming
 metaphor.
 
+### Why the off-screen model causes flicker
+
+The move-off-screen mechanism explains the visual instability often seen in AeroSpace
+(flickering, brief wrong-display appearances, app redraws on workspace switch):
+
+- **Move = repaint.** Every workspace switch repositions N windows by thousands of
+  pixels. Each move triggers AX notifications, window geometry changes, and app
+  re-layouts. Apps that respond to resize/move events (browsers, Electron, Slack)
+  redraw on every switch.
+- **Tiling re-applies on focus.** With tiling rules active, AeroSpace recomputes layout
+  when a workspace becomes active — more moves, more repaints.
+- **Off-screen ≠ hidden from the app.** The app still thinks it is visible and on-screen.
+  Background work (animations, polling, WebSocket updates) keeps firing and occasionally
+  paints.
+- **Multi-monitor crosstalk.** When a window transitions between the off-screen stash
+  and a real display, it sometimes briefly appears on the wrong display mid-move.
+- **Mission Control weirdness.** Off-screen windows pile in a corner of Mission Control,
+  and surfacing them via Mission Control can yank them back into unexpected places.
+
+The hide/unhide model sidesteps all of this. A hidden app is off the compositor's
+hot path entirely — no geometry changes, no AX events, no repaint. The tradeoff is
+app-granularity only, which is the constraint we are choosing to live with.
+
+### The multi-display asymmetry
+
+The app-granularity tradeoff bites hardest on multi-monitor. `NSRunningApplication.hide()`
+is **process-global** — it hides every window of an app across every display at once.
+There is no "hide this app on display A only".
+
+AeroSpace avoids this because it operates on windows, not apps. Chrome's CENTRE window
+can stay at real coordinates (visible) while Chrome's LAPTOP window is parked off-screen
+(stashed). Chrome the *process* is never touched. Each window has its own frame; each
+window can be stashed or restored independently.
+
+FlashSpace hits the wall here. Slack assigned to "Meet" on CENTRE means activating "Meet"
+calls `Slack.unhide()` — which unhides Slack *globally*, including any Slack window on
+LAPTOP you did not want to disturb. Switching LAPTOP's workspace away calls `Slack.hide()`
+— which hides the CENTRE Slack window you just made visible. This is not a bug in
+FlashSpace; it is a mechanical consequence of using process-level hide.
+
+FlashSpace's implicit rule is therefore **"one app belongs to at most one display's
+workspace set"**. Violate it and visibility fights itself.
+
+### Visualising the constraint
+
+Two displays can each have their own active workspace simultaneously. The per-display
+axis is fine. The constraint is that **an app** (not a display) is the unit of
+hide/unhide — so an app can only belong to one workspace across the whole system.
+
+**Physical desk layout (desk-A).** LEFT and CENTRE sit side by side; LAPTOP is below
+LEFT. A workspace can contain multiple apps; how those apps are laid out depends on
+the layout mode for that workspace (see "Within-workspace layout" below):
+
+```
+┌──────────────────────────────┐  ┌────────────────────────────────────────┐
+│  LEFT (DELL U2419HC)         │  │  CENTRE (DELL U2723QE)                 │
+│  Active: "Reference"         │  │  Active: "Coding"                      │
+│  (stacked)                   │  │  (tiled 75/25 pair)                    │
+│                              │  │                                        │
+│  ┌┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┐        │  │  ┌────────────────────┐  ┌───────────┐ │
+│  ┊   Notion         ┊        │  │  │                    │  │           │ │
+│  ┊   (behind)       ┊        │  │  │      Ghostty       │  │   Marq    │ │
+│  ┊  ┌──────────────────┐     │  │  │       75%          │  │    25%    │ │
+│  ┊  │                  │     │  │  │                    │  │           │ │
+│  └┈┈│   Zen Browser    │     │  │  │                    │  │           │ │
+│     │   (front)        │     │  │  │                    │  │           │ │
+│     │                  │     │  │  │                    │  │           │ │
+│     └──────────────────┘     │  │  └────────────────────┘  └───────────┘ │
+└──────────────────────────────┘  └────────────────────────────────────────┘
+┌──────────────────────────────┐
+│  LAPTOP (Retina XDR)         │
+│  Active: "Chat"              │
+│  (fill)                      │
+│                              │
+│  ┌──────────────────────────┐│
+│  │                          ││
+│  │          Slack           ││
+│  │      (fills screen)      ││
+│  │                          ││
+│  └──────────────────────────┘│
+└──────────────────────────────┘
+
+Assignments:
+  LEFT:    "Reference"   → Notion, Zen Browser     (stacked)
+           "Diagramming" → Miro, Excalidraw        (stacked)
+  CENTRE:  "Coding"      → Ghostty, Marq           (tiled 75/25)
+           "Meetings"    → Zoom, FaceTime          (stacked)
+  LAPTOP:  "Chat"        → Slack                   (fill)
+
+Each app appears in exactly one workspace. All three displays run independently
+— CENTRE switching from "Coding" to "Meetings" does not touch LEFT or LAPTOP.
+```
+
+### Within-workspace layout
+
+A workspace can hold more than one app. How those apps are arranged on the display
+is controlled by a small set of layout modes, applied after `activateSpace()`
+finishes unhiding:
+
+| Mode | Behaviour | Example |
+|---|---|---|
+| **Floating** (default) | Window keeps whatever size and position macOS last gave it. No tiling code runs. Just appears where the OS put it | Anything not explicitly configured |
+| **Fill** (override) | Window is resized to fill the display frame | Slack in "Chat" (explicit) |
+| **Stacked** (override) | Multiple apps all visible at their current sizes; macOS z-order handles which is frontmost. CMD-TAB cycles them. Free from the OS — no tiling code runs | Notion + Zen in "Reference" (explicit) |
+| **Tiled pair / twinning** (override) | Two specific apps get a declared split ratio (75/25, 60/40, etc.) on the same display. Only fires when both members of the pair are present and visible on that display | Ghostty + Marq (75/25) in "Coding" |
+
+**Defaults and overrides:**
+
+- **The default is floating.** An app whose bundle ID has no layout entry in config
+  appears at whatever size/position macOS remembers for it. This is the "do nothing"
+  case and it is the majority of apps.
+- **Fill, stacked, and twinning are all explicit overrides.** They have to be recorded
+  per-app (or per-pair, for twinning) in config. There is no automatic inference from
+  "how many apps are visible" — if you want Slack to fill its display when active, say
+  so in the config.
+- **Twinning is conditional.** A pair rule fires only when both members are present
+  and visible in the active workspace on the same display. If Marq is not in the
+  active workspace, Ghostty falls back to whatever its own layout mode is (fill,
+  stacked, or floating).
+
+This keeps the tiling engine small. Only apps that declare an override run through
+layout logic; everything else is left alone by macOS.
+
+**Pairing pseudocode:**
+
+```lua
+local appLayouts = {
+  -- only apps with explicit overrides appear here
+  ["com.slack.Slack"]       = "fill",
+  ["com.mitchellh.ghostty"] = "fill",    -- falls back to this if no pair matches
+  ["com.jimbarritt.marq"]   = "fill",
+}
+
+local pairings = {
+  -- pairKey is sorted bundleIds joined by "+"
+  ["com.mitchellh.ghostty+com.jimbarritt.marq"] = {
+    left = "com.mitchellh.ghostty", ratio = 0.75,
+  },
+  ["app.zen-browser.zen+com.mitchellh.ghostty"] = {
+    left = "com.mitchellh.ghostty", ratio = 0.60,
+  },
+}
+
+local function applyLayout(spaceName, display)
+  local visible = visibleAppsOn(display)
+
+  -- Pair rule wins over per-app mode if both members are visible together
+  if #visible == 2 then
+    local rule = pairings[pairKeyFor(visible[1], visible[2])]
+    if rule then
+      tilePair(visible, rule, display)
+      return
+    end
+  end
+
+  -- Otherwise apply each app's own declared layout mode, if any
+  for _, app in ipairs(visible) do
+    local mode = appLayouts[app:bundleID()]
+    if mode == "fill" then
+      fill(app, display)
+    -- "stacked" and missing entries: no-op (OS handles z-order / floating)
+    end
+  end
+end
+```
+
+**Broken configuration** — Slack double-assigned to LAPTOP's "Chat" *and* CENTRE's
+"Meetings":
+
+```
+Initial state:
+  LAPTOP active = "Chat"       → Slack visible
+  CENTRE active = "Meetings"   → Zoom, FaceTime, Slack visible
+  Slack process: unhidden (visible on both displays)
+
+User switches CENTRE: "Meetings" → "Coding"
+  activateSpace("Coding", CENTRE):
+    unhide(Ghostty), unhide(Marq)
+    hide(Zoom), hide(FaceTime), hide(Slack)   ← global hide
+                                               ✗ Slack vanishes from LAPTOP too
+                                                 even though "Chat" is still active
+
+The two displays' workspace activations fight each other via the shared
+process-level hide state. There is no way to resolve this with hide/unhide
+alone — it would require window-level control (Option B or C below).
+```
+
+### Stable APIs for controlling window geometry
+
+All window-geometry work in the PoC can be done through public, stable macOS APIs —
+no private frameworks, no SIP changes. The Accessibility API (AXUIElement) exposes
+every window's standard controls as addressable elements, and Hammerspoon wraps the
+common ones directly.
+
+The useful set:
+
+| Hammerspoon call | Underlying API | Effect |
+|---|---|---|
+| `win:setFrame(rect)` | `AXPosition` + `AXSize` | Arbitrary geometry. Precise control, used for tiled pairs. |
+| `win:toggleZoom()` | `AXPress` on `AXZoomButton` | Green-button click. Delegates to the app's own "maximise me" behaviour. |
+| `win:toggleFullScreen()` | `AXPress` on `AXFullScreenButton` | True full-screen — creates a dedicated native Space. Do not use inside the PoC. |
+| `win:minimize()` / `unminimize()` | AX minimize button | Classic minimise-to-Dock. |
+| `win:maximize()` | `setFrame()` to screen frame | Convenience wrapper for "fill this screen". |
+
+Two practical approaches for each layout mode:
+
+- **Fill** → `win:setFrame(display:frame())`. Fall back to `toggleZoom()` only if a
+  specific app resists resize (some Electron apps fight `setFrame`).
+- **Tiled pair** → `setFrame()` with computed rects. Most predictable for enforcing
+  a specific ratio.
+- **Stacked** / **Floating** → no calls needed. macOS handles z-order and stored
+  window position natively.
+
+**Sequoia's Window Tiling feature** (separate from full-screen) also exposes stable
+triggers: the keyboard shortcuts `Fn+Ctrl+F` (fill), `Fn+Ctrl+←` (left half), etc.
+can be synthesised with `hs.eventtap.keyStroke`, and the new "Move & Resize" menu
+items under the Window menu are pressable via AX. These are alternatives to
+`setFrame` if we want to delegate to macOS's built-in tiling rather than compute
+rects ourselves — useful for simple halves and quarters, less so for custom ratios
+like 75/25.
+
+**AppleScript** via System Events is another stable path (clicks the green button or
+invokes Window menu items), but it is slower and less ergonomic than AX. No reason
+to reach for it given Hammerspoon's direct AX bindings.
+
+Takeaway: everything we need for layout lives in public, permissioned APIs. No
+private SkyLight calls, no SIP disable, no scripting addition injection. The
+constraint on the PoC is the multi-display hide asymmetry discussed above — not
+the geometry layer.
+
+### Four options for our PoC
+
+| Option | Mechanism | Cost | Benefit |
+|---|---|---|---|
+| **A. Pure FlashSpace model** | hide/unhide only; each app assigned to one display | "Slack on both monitors" workflow impossible | Trivially simple; one mechanism |
+| **B. Hybrid (allowlist)** | hide/unhide by default; `setFrame` stash for a small allowlist of multi-display apps | Two code paths; allowlist to maintain; flicker on allowlist apps only | Keeps FlashSpace cleanliness for 95% of apps, fixes the specific pain |
+| **C. Pure AeroSpace model** | every window tracked and stashed via `setFrame` | Full flicker, Mission Control clutter, large state | Maximum flexibility; window-level membership |
+| **D. Off-all-screens variant of C** | move windows outside the bounding rect of all displays (no pixel strip) | Same as C but visually cleaner | Slightly better Mission Control behaviour |
+
+**Recommended path:** start with Option A. Document the "one app, one display"
+constraint. Live with it for a week and note which apps actually break the workflow.
+If the list is small (2–3 apps), graduate to Option B with an explicit allowlist.
+If the allowlist grows toward "all apps", the honest answer is to stop and reconsider
+— at that point AeroSpace's model is paying for itself and reinventing it is waste.
+
 ---
 
 ## 3. Core design dimensions

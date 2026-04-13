@@ -12,3 +12,4 @@ backups
 config/ghostty/presentation
 config/flashspace/profiles-backup-*.json
 home/zshrc_machine
+.local-config

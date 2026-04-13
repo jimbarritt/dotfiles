@@ -106,6 +106,7 @@ link_all() {
   link_home zshrc
   link_home gitconfig
   link_home tmux.conf
+  link_home hammerspoon
 
   link_config nvim
   link_config kitty
@@ -124,6 +125,7 @@ unlink_all() {
   echo "Putting everything back the way it was"
   unlink_home zshrc
   unlink_home gitconfig
+  unlink_home hammerspoon
 }
 
 install_zsh_plugins() {
