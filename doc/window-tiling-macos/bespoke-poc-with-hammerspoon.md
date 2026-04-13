@@ -351,6 +351,51 @@ Physical monitors. Each display independently shows one active space at a time.
 `NSScreen.localizedName` is the only identifier available without private APIs, which
 makes display identity fragile. Two displays can show different spaces simultaneously.
 
+### Display profiles and role resolution
+
+The config must not name specific displays directly — "LEFT" and "CENTRE" should be
+*roles* the workspace manager resolves against the current hardware, not hard-coded
+references. Three reasons:
+
+1. **Fallback when displays are missing.** Laptop-only mode (no external monitors
+   attached) should not silently drop half the workspaces. Roles that can't be
+   resolved fall back to the primary display so every space is still reachable.
+2. **Plug/unplug reactivity.** `hs.screen.watcher` fires on display changes. On each
+   event, we re-resolve the active profile and rebuild the role→screen map.
+3. **Stable identity.** Names drift (two "DELL U2723QE" monitors both called the same
+   thing). EDID UUIDs are stable for external displays; internal displays lack EDID
+   but have a reliable `isBuiltin()` test.
+
+**Profile matching.** A profile is a set of display roles keyed to EDID UUIDs (or
+`builtin` for the laptop panel). At load time and on every screen-watcher event:
+
+1. Read `hs.screen.allScreens()`.
+2. For each screen, compute a key (`getUUID()` for externals, `builtin` for the
+   internal panel).
+3. Match the set of keys against named profiles from config. First exact match wins.
+4. If no profile matches, fall back to a synthetic "unknown" profile with every
+   role pointing at the primary screen.
+
+**Role resolution.** `resolveDisplay(role)` returns an `hs.screen` object or the
+primary screen if the role isn't defined in the active profile. Hotkey handlers
+and `activateSpace` take a role name, not a screen — the resolver does the mapping.
+
+```
+profiles:
+  desk-a:
+    LEFT   = 10AC7A41-0000-0000-141E-010380351E78   (U2419HC)
+    CENTRE = 10AC7942-0000-0000-3021-0104B53C2278   (U2723QE)
+    LAPTOP = builtin
+  laptop-only:
+    LAPTOP = builtin
+    LEFT   = builtin    ← fallback so "Reference" still lands somewhere
+    CENTRE = builtin
+```
+
+With this, `activateSpace("Reference", "LEFT")` works in every profile; on
+laptop-only it just lands on the built-in display alongside whatever else is
+there.
+
 ### Key operations
 
 | Operation | What it means |
@@ -408,9 +453,14 @@ not giving anything up by not using FlashSpace.
 `isVisible()` — actual window geometry. FlashSpace has none of this. Tiling is a first-
 class capability, not bolted on via a separate app communicating over a socket.
 
-**No config fragility.** Lua tables are the config. No TOML decoder, no wipe-on-decode,
-no format detection heuristic. A syntax error in `init.lua` is caught at load time with
-a clear error; it does not silently destroy state.
+**Config in TOML, not Lua tables.** Workspace, profile, and app-layout config lives in
+`~/.hammerspoon/config.toml` — separate from the code. Rationale: the config is also
+the future home of custom app-launch and window rules, and TOML keeps non-Lua-literate
+editing (and future tooling) viable. We avoid FlashSpace's wipe-on-decode footgun by
+loading strictly: a parse error or missing required field fails loud and leaves the
+existing file alone; we never rewrite the config from code. Requires vendoring a pure-Lua
+TOML parser (`home/hammerspoon/lib/toml.lua`) — no C extension or Hammerspoon build
+change.
 
 **No signing issues.** FlashSpace has notarization notes in its README. Hammerspoon
 is open, well-maintained, and has no app-signing friction for custom builds.
@@ -453,41 +503,79 @@ Swift companion until steps 1–4 are proven reliable.
 
 ### Step 1 — Basic space management in Hammerspoon
 
-Implement the minimal workspace manager:
+Implement the minimal workspace manager. Scope:
+
+1. Load `~/.hammerspoon/config.toml` via a vendored TOML parser.
+2. Detect the active display profile and build a `role → hs.screen` map.
+3. Watch for screen changes (`hs.screen.watcher`) and rebuild the role map on events.
+4. Implement `activateSpace(spaceName, role)` — unhide assigned apps, hide others,
+   Finder exempt.
+5. Bind 2–3 hotkeys to prove the hide/unhide cycle is reliable.
+
+Config shape (TOML):
+
+```toml
+[profiles.desk-a]
+LEFT   = "10AC7A41-0000-0000-141E-010380351E78"
+CENTRE = "10AC7942-0000-0000-3021-0104B53C2278"
+LAPTOP = "builtin"
+
+[profiles.laptop-only]
+LAPTOP = "builtin"
+
+[spaces.Reference]
+role = "LEFT"
+apps = ["notion.id", "app.zen-browser.zen"]
+
+[spaces.Coding]
+role = "CENTRE"
+apps = ["com.mitchellh.ghostty", "com.jimbarritt.marq"]
+
+[spaces.Chat]
+role = "LAPTOP"
+apps = ["com.tinyspeck.slackmacgap"]
+```
+
+Pseudocode:
 
 ```lua
--- Config: which apps belong to which space
-local spaces = {
-  Coding   = { "com.mitchellh.ghostty", "com.jimbarritt.marq" },
-  Browsing = { "app.zen-browser.zen" },
-  Meet     = { "us.zoom.xos", "com.apple.facetime" },
-}
+local config      = toml.decode(readFile("~/.hammerspoon/config.toml"))
+local activeSpace = {}           -- role → spaceName
+local roleToScreen = {}          -- role → hs.screen (rebuilt on screen events)
 
--- State: which space is active per display
-local activeSpace = {}
+local function rebuildProfile()
+  roleToScreen = resolveProfile(config.profiles, hs.screen.allScreens())
+end
 
-local function activateSpace(spaceName, displayName)
-  local assigned = spaces[spaceName] or {}
+local function activateSpace(spaceName, role)
+  local space = config.spaces[spaceName]
+  if not space then return end
+
   -- Unhide assigned apps
-  for _, bundleId in ipairs(assigned) do
-    local app = hs.application.get(bundleId)
-    if app then app:unhide() end
+  for _, bundleId in ipairs(space.apps) do
+    local app = hs.application.get(bundleId); if app then app:unhide() end
   end
-  -- Hide everything else (that is assigned to *some* space on this display)
-  -- Finder is exempt
-  for name, apps in pairs(spaces) do
-    if name ~= spaceName then
-      for _, bundleId in ipairs(apps) do
-        local app = hs.application.get(bundleId)
-        if app and bundleId ~= "com.apple.finder" then app:hide() end
+
+  -- Hide every app that belongs to *another* space on this role's display
+  for name, s in pairs(config.spaces) do
+    if name ~= spaceName and s.role == role then
+      for _, bundleId in ipairs(s.apps) do
+        if bundleId ~= "com.apple.finder" then
+          local app = hs.application.get(bundleId); if app then app:hide() end
+        end
       end
     end
   end
-  activeSpace[displayName] = spaceName
+
+  activeSpace[role] = spaceName
 end
+
+rebuildProfile()
+hs.screen.watcher.new(rebuildProfile):start()
 ```
 
-No tiling yet. Just validate that the hide/show cycle is reliable.
+No tiling yet. Just validate that the hide/show cycle is reliable and the role
+fallback works when an external display is unplugged.
 
 ### Step 2 — Multi-monitor: independent activation per display
 
