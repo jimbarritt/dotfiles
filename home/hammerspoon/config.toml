@@ -34,9 +34,8 @@ role = "CENTRE"
 apps = ["com.mitchellh.ghostty", "com.jimbarritt.marq"]
 
 [spaces.Coding.layout]
-type  = "pair"
-left  = "com.mitchellh.ghostty"
-right = "com.jimbarritt.marq"
+type  = "sidebars"
+main  = "com.mitchellh.ghostty"
 ratio = 0.70
 
 [spaces.Reference]

@@ -221,45 +221,72 @@ end
 -- Tiling
 -- ---------------------------------------------------------------------------
 
-local tiledPair      = nil   -- { left = win, right = win } or nil
-local ignoringResize = false
+local tiledMain          = nil   -- main window currently in a layout, or nil
+local ignoringResize     = false
+local spaceRatioOverride = {}    -- spaceName → ratio, set when user drags the split
 
--- Bundle IDs of all apps that appear in any pair layout across all spaces.
+-- Bundle IDs of all apps in spaces that have a layout.
 local pairBundleSet = {}
 for _, space in pairs(config.spaces or {}) do
-  local layout = space.layout
-  if layout and layout.type == "pair" then
-    if layout.left  then pairBundleSet[layout.left]  = true end
-    if layout.right then pairBundleSet[layout.right] = true end
+  if space.layout then
+    for _, bundleId in ipairs(space.apps or {}) do
+      pairBundleSet[bundleId] = true
+    end
   end
 end
 
-local function syncPair(changedWin)
-  if not tiledPair or ignoringResize then return end
-  local left  = tiledPair.left
-  local right = tiledPair.right
-  if not left:isVisible() or not right:isVisible() then
-    tiledPair = nil; return
-  end
+-- When the main window moves/resizes, push the updated sidebar frame to all
+-- visible sidebar windows for the active space on that screen.
+local function syncLayout(changedWin)
+  if not tiledMain or ignoringResize then return end
+  if not tiledMain:isVisible() then tiledMain = nil; return end
 
-  local sf = left:screen():frame()
+  local screen    = tiledMain:screen()
+  local sf        = screen:frame()
+  local spaceName = activeSpace[screen:id()]
+  local space     = spaceName and config.spaces and config.spaces[spaceName]
+  local layout    = space and space.layout
+  if not layout or layout.type ~= "sidebars" then return end
+
   ignoringResize = true
 
-  if changedWin:id() == left:id() then
-    local lf = left:frame()
-    right:setFrame({ x = lf.x + lf.w, y = sf.y, w = sf.x + sf.w - (lf.x + lf.w), h = sf.h })
-  elseif changedWin:id() == right:id() then
-    local rf = right:frame()
-    left:setFrame({ x = sf.x, y = sf.y, w = rf.x - sf.x, h = sf.h })
+  if changedWin:id() == tiledMain:id() then
+    -- Main resized: push new sidebar frame to all visible sidebar windows
+    local mf        = tiledMain:frame()
+    local sidebarFr = { x = mf.x + mf.w, y = sf.y, w = sf.x + sf.w - (mf.x + mf.w), h = sf.h }
+    spaceRatioOverride[spaceName] = mf.w / sf.w
+    for bundleId in pairs(effectiveApps(spaceName)) do
+      if bundleId ~= layout.main then
+        local app = hs.application.get(bundleId)
+        local win = app and app:mainWindow()
+        if win and win:isVisible() then win:setFrame(sidebarFr) end
+      end
+    end
+  else
+    -- A sidebar was resized: use its left edge as the new boundary,
+    -- resize main to fill left of it, push same frame to other sidebars
+    local cf        = changedWin:frame()
+    local mainFr    = { x = sf.x, y = sf.y, w = cf.x - sf.x,         h = sf.h }
+    local sidebarFr = { x = cf.x, y = sf.y, w = sf.x + sf.w - cf.x,  h = sf.h }
+    spaceRatioOverride[spaceName] = mainFr.w / sf.w
+    tiledMain:setFrame(mainFr)
+    for bundleId in pairs(effectiveApps(spaceName)) do
+      if bundleId ~= layout.main then
+        local app = hs.application.get(bundleId)
+        local win = app and app:mainWindow()
+        if win and win:isVisible() and win:id() ~= changedWin:id() then
+          win:setFrame(sidebarFr)
+        end
+      end
+    end
   end
 
   hs.timer.doAfter(0.5, function() ignoringResize = false end)
 end
 
--- pairFilter watches running pair apps for move/close events.
--- hs.window.filter requires app display names (not bundle IDs), so it can only
--- track apps that are already running. ensurePairFilter() is called whenever a
--- pair app launches to add it. Stored in _G so the GC can't collect it.
+-- pairFilter watches layout apps for move/close events.
+-- hs.window.filter requires display names (not bundle IDs), so it is built
+-- lazily / updated via ensurePairFilter() as apps come online.
 _G.pairFilter = nil
 
 local function ensurePairFilter()
@@ -272,25 +299,18 @@ local function ensurePairFilter()
 
   if not _G.pairFilter then
     _G.pairFilter = hs.window.filter.new(false)
-    _G.pairFilter:subscribe(hs.window.filter.windowMoved, function(win) syncPair(win) end)
+    _G.pairFilter:subscribe(hs.window.filter.windowMoved, function(win) syncLayout(win) end)
     _G.pairFilter:subscribe(hs.window.filter.windowDestroyed, function(win)
-      if not tiledPair then return end
-      local other = nil
-      if     win:id() == tiledPair.right:id() then other = tiledPair.left
-      elseif win:id() == tiledPair.left:id()  then other = tiledPair.right
-      end
-      tiledPair = nil
-      if other and other:isVisible() then
-        local sf = other:screen():frame()
-        ignoringResize = true
-        other:setFrame(sf)
-        hs.timer.doAfter(0.5, function() ignoringResize = false end)
-        log.i("pair member closed — expanding other to fill")
-      end
+      if not tiledMain then return end
+      local screen = tiledMain:screen()
+      if not screen then return end
+      local spaceName = activeSpace[screen:id()]
+      if not spaceName then return end
+      tiledMain = nil
+      hs.timer.doAfter(0.1, function() applyLayout(spaceName, screen) end)
     end)
   end
 
-  -- setAppFilter is idempotent — safe to call again for already-tracked apps
   for name in pairs(names) do
     _G.pairFilter:setAppFilter(name, { allowRoles = '*' })
   end
@@ -298,57 +318,62 @@ end
 
 -- applyLayout is forward-declared above activateSpace; defined here.
 applyLayout = function(spaceName, screen)
-  tiledPair = nil
+  tiledMain = nil
 
   local space  = config.spaces and config.spaces[spaceName]
   local layout = space and space.layout
-  if not layout or layout.type ~= "pair" then return end
+  if not layout or layout.type ~= "sidebars" then return end
 
-  local ratio    = layout.ratio or 0.65
-  local sf       = screen:frame()
-  local leftApp  = layout.left  and hs.application.get(layout.left)
-  local rightApp = layout.right and hs.application.get(layout.right)
-  local leftWin  = leftApp  and leftApp:mainWindow()
-  local rightWin = rightApp and rightApp:mainWindow()
-  local leftVis  = leftWin  and leftWin:isVisible()
-  local rightVis = rightWin and rightWin:isVisible()
+  local ratio   = spaceRatioOverride[spaceName] or layout.ratio or 0.65
+  local sf      = screen:frame()
+  local mainApp = layout.main and hs.application.get(layout.main)
+  local mainWin = mainApp and mainApp:mainWindow()
+  local mainVis = mainWin and mainWin:isVisible()
 
-  if leftVis and rightVis then
+  -- Any visible non-main app in this space becomes a sidebar
+  local sidebarWins = {}
+  for bundleId in pairs(effectiveApps(spaceName)) do
+    if bundleId ~= layout.main then
+      local app = hs.application.get(bundleId)
+      local win = app and app:mainWindow()
+      if win and win:isVisible() then table.insert(sidebarWins, win) end
+    end
+  end
+
+  local mainFr    = { x = sf.x,                y = sf.y, w = sf.w * ratio,        h = sf.h }
+  local sidebarFr = { x = sf.x + sf.w * ratio, y = sf.y, w = sf.w * (1 - ratio),  h = sf.h }
+
+  if mainVis and #sidebarWins > 0 then
     ignoringResize = true
-    leftWin:setFrame({  x = sf.x,                y = sf.y, w = sf.w * ratio,        h = sf.h })
-    rightWin:setFrame({ x = sf.x + sf.w * ratio, y = sf.y, w = sf.w * (1 - ratio),  h = sf.h })
-    tiledPair = { left = leftWin, right = rightWin }
-    log.i(string.format("tiled: %s | %s @ %.0f%%", layout.left, layout.right, ratio * 100))
+    mainWin:setFrame(mainFr)
+    for _, win in ipairs(sidebarWins) do win:setFrame(sidebarFr) end
+    tiledMain = mainWin
+    log.i(string.format("sidebars: main + %d sidebar(s) @ %.0f%%", #sidebarWins, ratio * 100))
     hs.timer.doAfter(0.5, function() ignoringResize = false end)
-  elseif leftVis then
-    leftWin:setFrame(sf)
-    log.i("layout: left alone → fill")
-  elseif rightVis then
-    rightWin:setFrame(sf)
-    log.i("layout: right alone → fill")
+  elseif mainVis then
+    mainWin:setFrame(sf)
+    log.i("layout: main alone → fill")
+  elseif #sidebarWins > 0 then
+    for _, win in ipairs(sidebarWins) do win:setFrame(sf) end
+    log.i("layout: sidebars alone → fill")
   end
 end
 
--- Watch for pair apps launching. hs.application.watcher fires on launch
--- regardless of whether the app was running at init — fixing the gap that
--- hs.window.filter can't cover (it can't watch for apps not yet running).
+-- Watch for layout apps launching. hs.application.watcher fires on launch
+-- regardless of whether the app was running at init.
 _G.pairAppWatcher = hs.application.watcher.new(function(appName, eventType, app)
   if eventType ~= hs.application.watcher.launched then return end
   if not app then return end
   local bundleId = app:bundleID()
   if not pairBundleSet[bundleId] then return end
-  log.i("pair app launched: " .. appName)
-  -- Give the app time to create its main window, then tile if the space is active
+  log.i("layout app launched: " .. appName)
   hs.timer.doAfter(0.5, function()
     ensurePairFilter()
     for spaceName, space in pairs(config.spaces or {}) do
-      local layout = space.layout
-      if layout and layout.type == "pair" then
-        if layout.left == bundleId or layout.right == bundleId then
-          local scr = resolveDisplay(space.role)
-          if activeSpace[scr:id()] == spaceName then
-            applyLayout(spaceName, scr)
-          end
+      if space.layout then
+        local scr = resolveDisplay(space.role)
+        if activeSpace[scr:id()] == spaceName then
+          applyLayout(spaceName, scr)
         end
       end
     end
@@ -356,7 +381,6 @@ _G.pairAppWatcher = hs.application.watcher.new(function(appName, eventType, app)
 end)
 _G.pairAppWatcher:start()
 
--- Seed the filter for any pair apps already running at load time
 ensurePairFilter()
 
 -- ---------------------------------------------------------------------------
@@ -544,6 +568,12 @@ local function moveFocusedAppToSpace(targetSpaceName)
   if not bundleId then return end
   sessionAppOverride[bundleId] = targetSpaceName
   log.i(string.format("session move: %s → %s", bundleId, targetSpaceName))
+  -- If target space has a layout, register this app with the resize watcher
+  local targetSpace = config.spaces and config.spaces[targetSpaceName]
+  if targetSpace and targetSpace.layout then
+    pairBundleSet[bundleId] = true
+    ensurePairFilter()
+  end
   activateSpace(targetSpaceName)
 end
 
