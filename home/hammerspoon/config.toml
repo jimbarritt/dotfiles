@@ -39,7 +39,7 @@ main  = "com.mitchellh.ghostty"
 ratio = 0.70
 
 [spaces.Reference]
-role = "LEFT"
+role = "CENTRE"
 apps = ["notion.id", "app.zen-browser.zen", "com.google.Chrome"]
 
 [spaces.Meetings]
@@ -62,12 +62,16 @@ role = "LAPTOP"
 apps = ["com.tinyspeck.slackmacgap"]
 
 # ---------------------------------------------------------------------------
-# Defaults: which space is active on each role at startup / reload.
+# Defaults: which space is active on each role, per profile.
+# Applied at startup and whenever the profile changes (monitors plugged in/out).
+# LEFT omitted from home-desk — starts empty until you push a space there.
 # ---------------------------------------------------------------------------
 
-[defaults]
+[defaults.laptop-only]
+LAPTOP = "Coding"
+
+[defaults.home-desk]
 CENTRE = "Coding"
-LEFT   = "Reference"
 LAPTOP = "Slack"
 
 # ---------------------------------------------------------------------------

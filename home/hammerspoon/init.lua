@@ -153,7 +153,12 @@ local EXEMPT = {
 -- Session-level app overrides: bundleId → spaceName.
 -- Overrides which space an app is assigned to for this session only.
 -- Config is ground truth and is never modified; cleared on reload.
-local sessionAppOverride = {}
+local sessionAppOverride  = {}
+
+-- Session-level role overrides: spaceName → role.
+-- Overrides which display a space lives on (set via cmd+shift+1/2/3).
+-- Cleared whenever the display profile changes.
+local sessionRoleOverride = {}
 
 -- Returns the effective set of bundle IDs for a space, merging config
 -- with session overrides (apps moved in/out at runtime).
@@ -173,7 +178,7 @@ end
 local function activateSpace(spaceName, role)
   local space = config.spaces and config.spaces[spaceName]
   if not space then log.w("unknown space: " .. spaceName); return end
-  role = role or space.role
+  role = role or sessionRoleOverride[spaceName] or space.role
   if not role then log.w("no role for space " .. spaceName); return end
 
   local screen   = resolveDisplay(role)
@@ -602,14 +607,68 @@ for _, hk in ipairs(config.hotkeys or {}) do
   end)
 end
 
+-- Move active space to a display: cmd+shift+1=LEFT, cmd+shift+2=CENTRE, cmd+shift+3=LAPTOP.
+-- Takes whichever space is active on the focused window's display and reassigns it.
+local ROLE_FOR_KEY = { ["1"] = "LEFT", ["2"] = "CENTRE", ["3"] = "LAPTOP" }
+
+local function moveActiveSpaceToRole(targetRole)
+  local win       = hs.window.focusedWindow()
+  local screen    = (win and win:screen()) or hs.screen.mainScreen()
+  local spaceName = activeSpace[screen:id()]
+  if not spaceName then alert("no active space here"); return end
+  if resolveDisplay(targetRole):id() == screen:id() then
+    alert(spaceName .. " already on " .. targetRole); return
+  end
+  sessionRoleOverride[spaceName] = targetRole
+  log.i(string.format("space move: %s → %s", spaceName, targetRole))
+  activateSpace(spaceName, targetRole)
+  alert(spaceName .. " → " .. targetRole)
+end
+
+for key, role in pairs(ROLE_FOR_KEY) do
+  hs.hotkey.bind({ "cmd", "shift" }, key, function() moveActiveSpaceToRole(role) end)
+end
+
 hs.hotkey.bind({ "cmd", "alt" }, "space", showStatus)
 
 -- ---------------------------------------------------------------------------
 -- Reactivity
 -- ---------------------------------------------------------------------------
 
+-- Apply per-profile defaults: activate each space on its role, deduped by
+-- screen ID so laptop-only (all roles → same screen) only activates once.
+-- Clears sessionRoleOverride so display assignments start fresh on each profile.
+local function applyProfileDefaults(profileName, silent)
+  local profileDefaults = config.defaults and config.defaults[profileName]
+  if not profileDefaults then
+    log.w("no defaults for profile: " .. profileName); return
+  end
+  sessionRoleOverride = {}
+  local seenScreenId  = {}
+  for _, role in ipairs(ROLE_PRIORITY) do
+    local spaceName = profileDefaults[role]
+    if spaceName and config.spaces and config.spaces[spaceName] then
+      local screenId = resolveDisplay(role):id()
+      if not seenScreenId[screenId] then
+        seenScreenId[screenId] = true
+        if silent then
+          activeSpace[screenId] = spaceName
+          log.i("default (silent): " .. role .. " → " .. spaceName)
+        else
+          activateSpace(spaceName, role)
+        end
+      end
+    end
+  end
+end
+
 local screenWatcher = hs.screen.watcher.new(function()
+  local prevProfile   = activeProfile
   activeProfile, roleToScreen = resolveProfile()
+  if activeProfile ~= prevProfile then
+    log.i("profile changed: " .. prevProfile .. " → " .. activeProfile)
+    applyProfileDefaults(activeProfile, false)
+  end
   alert("profile: " .. activeProfile)
 end)
 screenWatcher:start()
@@ -617,19 +676,8 @@ screenWatcher:start()
 -- Config reload
 hs.hotkey.bind({ "cmd", "alt" }, "r", function() hs.reload() end)
 
--- Populate defaults silently. Keyed by screen ID so laptop-only (all roles
--- → same screen) only sets one entry. ROLE_PRIORITY order means LAPTOP wins
--- when multiple roles share a screen.
-for _, role in ipairs(ROLE_PRIORITY) do
-  local spaceName = config.defaults and config.defaults[role]
-  if spaceName and config.spaces and config.spaces[spaceName] then
-    local screenId = resolveDisplay(role):id()
-    if not activeSpace[screenId] then
-      activeSpace[screenId] = spaceName
-      log.i("default: " .. role .. " → " .. spaceName)
-    end
-  end
-end
+-- Apply startup defaults silently (no show/hide — apps already in their state)
+applyProfileDefaults(activeProfile, true)
 
-alert("Hammerspoon loaded — " .. activeProfile)
+alert("Tilr — " .. activeProfile)
 log.i("init.lua loaded; profile=" .. activeProfile)
