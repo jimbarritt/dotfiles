@@ -167,6 +167,11 @@ space = "Coding"
 - **Multiple windows per app** — currently uses `app:mainWindow()`; could support tiling secondary windows
 - **Per-space ratio persistence** — optionally write adjusted ratios back to config.toml so they survive reloads
 - **More layout types** — e.g. `stacked` (vertical split), `thirds`, or fully custom grid
-- **Homebrew distribution** — package Tilr as a standalone Hammerspoon Spoon, installable via `brew install --cask jimbarritt/tap/tilr`
+- **Homebrew distribution** — package Tilr as a Hammerspoon Spoon, installable via `brew install --cask jimbarritt/tap/tilr`. The cask can declare `depends_on cask: "hammerspoon"` so Homebrew installs Hammerspoon automatically if not present. A `caveats` block in the formula prints the two-line setup instructions after install:
+  ```
+  Add to ~/.hammerspoon/init.lua:
+    hs.loadSpoon("Tilr")
+    spoon.Tilr:start()
+  ```
 - **Status bar indicator** — show active space name in the macOS menu bar
 - **Space history** — `cmd+alt+tab` to cycle back through recently visited spaces
