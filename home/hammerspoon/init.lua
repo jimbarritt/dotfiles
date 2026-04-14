@@ -145,7 +145,7 @@ local activeSpace   = {}   -- screenId → spaceName  (one entry per physical sc
 local statusAlertId = nil  -- forward-declared so activateSpace can reference it
 local refreshStatus        -- forward-declared; defined after buildStatusText
 local EXEMPT = {
-  ["com.apple.finder"]           = true,
+  ["com.apple.finder"]            = true,
   ["org.hammerspoon.Hammerspoon"] = true,
 }
 
@@ -182,17 +182,12 @@ local function activateSpace(spaceName, role)
   end
 
   -- Hide every running app not in the visible set
-  local hidden = {}
   for _, app in ipairs(hs.application.runningApplications()) do
     local bundleId = app:bundleID()
     if bundleId and not shouldShow[bundleId] and not EXEMPT[bundleId] then
-      if not app:isHidden() then
-        app:hide()
-        table.insert(hidden, app:name() or bundleId)
-      end
+      if not app:isHidden() then app:hide() end
     end
   end
-  if #hidden > 0 then log.i("hidden: " .. table.concat(hidden, ", ")) end
 
   if statusAlertId then
     refreshStatus()

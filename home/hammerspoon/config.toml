@@ -35,15 +35,22 @@ apps = ["com.mitchellh.ghostty", "com.jimbarritt.marq"]
 
 [spaces.Reference]
 role = "LEFT"
-apps = ["notion.id", "app.zen-browser.zen"]
+apps = ["notion.id", "app.zen-browser.zen", "com.google.Chrome"]
 
 [spaces.Meetings]
 role = "CENTRE"
-apps = ["us.zoom.xos", "com.apple.facetime"]
+apps = [
+  "us.zoom.xos",
+  "com.apple.facetime",
+  "com.microsoft.teams2",
+  "com.google.Chrome.app.kjgfgldnnfoeklkmfkjfagphfepbbdan",  # Google Meet (Chrome PWA)
+]
 
 [spaces.Schedule]
 role = "CENTRE"
-apps = ["com.google.GoogleCalendar"]
+apps = [
+  "com.google.Chrome.app.kjbdgfilnfhdoflbpgamdcdgpehopbep",  # Google Calendar (Chrome PWA)
+]
 
 [spaces.Slack]
 role = "LAPTOP"
