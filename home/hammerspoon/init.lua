@@ -566,15 +566,34 @@ local function moveFocusedAppToSpace(targetSpaceName)
   if not app then return end
   local bundleId = app:bundleID()
   if not bundleId then return end
+  local appName     = app:name() or bundleId
+  local targetSpace = config.spaces and config.spaces[targetSpaceName]
+
   sessionAppOverride[bundleId] = targetSpaceName
   log.i(string.format("session move: %s → %s", bundleId, targetSpaceName))
+
   -- If target space has a layout, register this app with the resize watcher
-  local targetSpace = config.spaces and config.spaces[targetSpaceName]
   if targetSpace and targetSpace.layout then
     pairBundleSet[bundleId] = true
     ensurePairFilter()
   end
+
   activateSpace(targetSpaceName)
+
+  -- For spaces with no sidebars layout, expand the moved app to fill its screen.
+  -- Runs after the unhide delay so the window is visible before setFrame.
+  if not (targetSpace and targetSpace.layout and targetSpace.layout.type == "sidebars") then
+    hs.timer.doAfter(0.35, function()
+      local movedApp = hs.application.get(bundleId)
+      local movedWin = movedApp and movedApp:mainWindow()
+      if movedWin and movedWin:isVisible() then
+        movedWin:setFrame(resolveDisplay(targetSpace and targetSpace.role or "CENTRE"):frame())
+      end
+    end)
+  end
+
+  -- Replaces the space-switch alert with a more informative one
+  alert("Moved " .. appName .. " → " .. targetSpaceName)
 end
 
 for _, hk in ipairs(config.hotkeys or {}) do
