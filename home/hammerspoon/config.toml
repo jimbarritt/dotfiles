@@ -1,0 +1,93 @@
+# ~/.hammerspoon/config.toml
+#
+# Workspace manager config. Loaded by init.lua at startup and on reload
+# (cmd+ctrl+r). A parse error fails loud; this file is never rewritten by
+# the manager.
+
+# ---------------------------------------------------------------------------
+# Profiles: named display layouts keyed by EDID UUID (or "builtin").
+# Multiple roles may point to the same key (laptop-only collapses all to
+# builtin). Profile matching uses the SET of unique UUID values — so
+# laptop-only matches when exactly one screen (builtin) is present.
+# ---------------------------------------------------------------------------
+
+[profiles.home-desk]
+LEFT   = "10AC7A41-0000-0000-141E-010380351E78"   # DELL U2419HC
+CENTRE = "10AC7942-0000-0000-3021-0104B53C2278"   # DELL U2723QE
+LAPTOP = "builtin"                                # Retina XDR
+
+[profiles.laptop-only]
+LEFT   = "builtin"
+CENTRE = "builtin"
+LAPTOP = "builtin"
+
+# ---------------------------------------------------------------------------
+# Spaces: named workspaces. role = which display role this space lives on.
+# ---------------------------------------------------------------------------
+
+[spaces.Scratch]
+role = "CENTRE"
+apps = []
+
+[spaces.Coding]
+role = "CENTRE"
+apps = ["com.mitchellh.ghostty", "com.jimbarritt.marq"]
+
+[spaces.Reference]
+role = "LEFT"
+apps = ["notion.id", "app.zen-browser.zen"]
+
+[spaces.Meetings]
+role = "CENTRE"
+apps = ["us.zoom.xos", "com.apple.facetime"]
+
+[spaces.Schedule]
+role = "CENTRE"
+apps = ["com.google.GoogleCalendar"]
+
+[spaces.Slack]
+role = "LAPTOP"
+apps = ["com.tinyspeck.slackmacgap"]
+
+# ---------------------------------------------------------------------------
+# Defaults: which space is active on each role at startup / reload.
+# ---------------------------------------------------------------------------
+
+[defaults]
+CENTRE = "Coding"
+LEFT   = "Reference"
+LAPTOP = "Slack"
+
+# ---------------------------------------------------------------------------
+# Hotkeys: cmd+opt+key activates a space.
+# ---------------------------------------------------------------------------
+
+[[hotkeys]]
+mods  = "cmd alt"
+key   = "0"
+space = "Scratch"
+
+[[hotkeys]]
+mods  = "cmd alt"
+key   = "1"
+space = "Coding"
+
+[[hotkeys]]
+mods  = "cmd alt"
+key   = "2"
+space = "Reference"
+
+[[hotkeys]]
+mods  = "cmd alt"
+key   = "3"
+space = "Meetings"
+
+[[hotkeys]]
+mods  = "cmd alt"
+key   = "4"
+space = "Schedule"
+
+[[hotkeys]]
+mods  = "cmd alt"
+key   = "a"
+space = "Slack"
