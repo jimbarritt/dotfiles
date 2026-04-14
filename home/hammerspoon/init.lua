@@ -150,6 +150,26 @@ local EXEMPT = {
   ["org.hammerspoon.Hammerspoon"] = true,
 }
 
+-- Session-level app overrides: bundleId → spaceName.
+-- Overrides which space an app is assigned to for this session only.
+-- Config is ground truth and is never modified; cleared on reload.
+local sessionAppOverride = {}
+
+-- Returns the effective set of bundle IDs for a space, merging config
+-- with session overrides (apps moved in/out at runtime).
+local function effectiveApps(spaceName)
+  local space = config.spaces and config.spaces[spaceName]
+  local apps  = {}
+  for _, bundleId in ipairs((space and space.apps) or {}) do
+    local ov = sessionAppOverride[bundleId]
+    if not ov or ov == spaceName then apps[bundleId] = true end
+  end
+  for bundleId, targetSpace in pairs(sessionAppOverride) do
+    if targetSpace == spaceName then apps[bundleId] = true end
+  end
+  return apps
+end
+
 local function activateSpace(spaceName, role)
   local space = config.spaces and config.spaces[spaceName]
   if not space then log.w("unknown space: " .. spaceName); return end
@@ -166,18 +186,15 @@ local function activateSpace(spaceName, role)
   -- Build the full set of apps that should be visible across ALL active spaces
   local shouldShow = {}
   for _, sName in pairs(activeSpace) do
-    local s = config.spaces[sName]
-    if s then
-      for _, bundleId in ipairs(s.apps or {}) do
-        shouldShow[bundleId] = true
-      end
+    for bundleId in pairs(effectiveApps(sName)) do
+      shouldShow[bundleId] = true
     end
   end
 
   log.i(string.format("activate %s [%s] (screen: %s)", spaceName, label, screen:name()))
 
   -- Unhide apps for the newly active space
-  for _, bundleId in ipairs(space.apps or {}) do
+  for bundleId in pairs(effectiveApps(spaceName)) do
     local app = hs.application.get(bundleId)
     if app then app:unhide() end
   end
@@ -514,6 +531,27 @@ local function bindHotkeys()
 end
 
 bindHotkeys()
+
+-- Move focused app to a space (opt+shift+key mirrors the space-switch keys).
+-- Sets a session-level override so the app follows to the target space and
+-- is removed from its current space. Config is never modified.
+local function moveFocusedAppToSpace(targetSpaceName)
+  local win = hs.window.focusedWindow()
+  if not win then alert("no focused window"); return end
+  local app = win:application()
+  if not app then return end
+  local bundleId = app:bundleID()
+  if not bundleId then return end
+  sessionAppOverride[bundleId] = targetSpaceName
+  log.i(string.format("session move: %s → %s", bundleId, targetSpaceName))
+  activateSpace(targetSpaceName)
+end
+
+for _, hk in ipairs(config.hotkeys or {}) do
+  hs.hotkey.bind(parseMods("alt shift"), hk.key, function()
+    moveFocusedAppToSpace(hk.space)
+  end)
+end
 
 hs.hotkey.bind({ "cmd", "alt" }, "space", showStatus)
 
