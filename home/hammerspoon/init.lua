@@ -120,6 +120,7 @@ local ALERT_STYLE = {
 }
 
 local function alert(msg, duration)
+  hs.alert.closeAll(0)
   hs.alert.show(msg, ALERT_STYLE, duration or 1.2)
 end
 
@@ -140,8 +141,13 @@ end
 -- Space activation
 -- ---------------------------------------------------------------------------
 
-local activeSpace = {}  -- screenId → spaceName  (one entry per physical screen)
-local EXEMPT = { ["com.apple.finder"] = true }
+local activeSpace   = {}   -- screenId → spaceName  (one entry per physical screen)
+local statusAlertId = nil  -- forward-declared so activateSpace can reference it
+local refreshStatus        -- forward-declared; defined after buildStatusText
+local EXEMPT = {
+  ["com.apple.finder"]           = true,
+  ["org.hammerspoon.Hammerspoon"] = true,
+}
 
 local function activateSpace(spaceName, role)
   local space = config.spaces and config.spaces[spaceName]
@@ -175,22 +181,24 @@ local function activateSpace(spaceName, role)
     if app then app:unhide() end
   end
 
-  -- Hide every config-managed app not in the visible set
-  for _, other in pairs(config.spaces or {}) do
-    for _, bundleId in ipairs(other.apps or {}) do
-      if not shouldShow[bundleId] and not EXEMPT[bundleId] then
-        local app = hs.application.get(bundleId)
-        if app then
-          log.i("hiding: " .. bundleId .. " (" .. app:name() .. ")")
-          app:hide()
-        else
-          log.w("not found: " .. bundleId)
-        end
+  -- Hide every running app not in the visible set
+  local hidden = {}
+  for _, app in ipairs(hs.application.runningApplications()) do
+    local bundleId = app:bundleID()
+    if bundleId and not shouldShow[bundleId] and not EXEMPT[bundleId] then
+      if not app:isHidden() then
+        app:hide()
+        table.insert(hidden, app:name() or bundleId)
       end
     end
   end
+  if #hidden > 0 then log.i("hidden: " .. table.concat(hidden, ", ")) end
 
-  alert(spaceName .. " [" .. label .. "]")
+  if statusAlertId then
+    refreshStatus()
+  else
+    alert(spaceName .. " [" .. label .. "]")
+  end
 end
 
 -- ---------------------------------------------------------------------------
@@ -198,17 +206,9 @@ end
 -- Placeholder for the eventual full space-picker overlay.
 -- ---------------------------------------------------------------------------
 
-local statusAlertId = nil
-local STATUS_STYLE  = ALERT_STYLE
+local STATUS_STYLE = ALERT_STYLE
 
-local function showStatus()
-  if statusAlertId then
-    hs.alert.closeSpecific(statusAlertId)
-    statusAlertId = nil
-    return
-  end
-
-  -- Measure longest space name for column alignment
+local function buildStatusText()
   local maxNameLen = 0
   for _, hk in ipairs(config.hotkeys or {}) do
     if #hk.space > maxNameLen then maxNameLen = #hk.space end
@@ -220,9 +220,6 @@ local function showStatus()
     return "  " .. key .. "   " .. name .. pad .. "   " .. label .. marker
   end
 
-  -- Active-spaces summary: one line per unique physical screen.
-  -- On laptop-only multiple roles collapse to the same screen, so search
-  -- all roles that point to it to find whichever one has an active space.
   local seenScreenId = {}
   local activeLines  = {}
   for _, role in ipairs(ROLE_PRIORITY) do
@@ -231,12 +228,12 @@ local function showStatus()
       seenScreenId[screen:id()] = true
       local label = displayLabel(screen)
       local sName = activeSpace[screen:id()] or "(none)"
-      local pad = string.rep(" ", 6 - #label)
+      local pad   = string.rep(" ", 6 - #label)
       table.insert(activeLines, "  " .. label .. pad .. "  " .. sName)
     end
   end
 
-  local sep = "  " .. string.rep("─", maxNameLen + 16)
+  local sep   = "  " .. string.rep("─", maxNameLen + 16)
   local lines = { "  " .. activeProfile, sep }
   for _, l in ipairs(activeLines) do table.insert(lines, l) end
   table.insert(lines, sep)
@@ -249,13 +246,26 @@ local function showStatus()
     table.insert(lines, row(hk.key, hk.space, "[" .. label .. "]", active))
   end
   table.insert(lines, sep)
+  return table.concat(lines, "\n")
+end
 
-  statusAlertId = hs.alert.show(
-    table.concat(lines, "\n"),
-    STATUS_STYLE,
-    hs.mouse.getCurrentScreen(),
-    math.huge
-  )
+local function openStatus()
+  hs.alert.closeAll(0)
+  statusAlertId = hs.alert.show(buildStatusText(), STATUS_STYLE, math.huge)
+end
+
+refreshStatus = function()
+  if not statusAlertId then return end
+  openStatus()
+end
+
+local function showStatus()
+  if statusAlertId then
+    hs.alert.closeAll(0)
+    statusAlertId = nil
+    return
+  end
+  openStatus()
 end
 
 -- ---------------------------------------------------------------------------
