@@ -33,6 +33,12 @@ apps = []
 role = "CENTRE"
 apps = ["com.mitchellh.ghostty", "com.jimbarritt.marq"]
 
+[spaces.Coding.layout]
+type  = "pair"
+left  = "com.mitchellh.ghostty"
+right = "com.jimbarritt.marq"
+ratio = 0.70
+
 [spaces.Reference]
 role = "LEFT"
 apps = ["notion.id", "app.zen-browser.zen", "com.google.Chrome"]

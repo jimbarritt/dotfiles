@@ -144,6 +144,7 @@ end
 local activeSpace   = {}   -- screenId → spaceName  (one entry per physical screen)
 local statusAlertId = nil  -- forward-declared so activateSpace can reference it
 local refreshStatus        -- forward-declared; defined after buildStatusText
+local applyLayout          -- forward-declared; defined after activateSpace (tiling section)
 local EXEMPT = {
   ["com.apple.finder"]            = true,
   ["org.hammerspoon.Hammerspoon"] = true,
@@ -189,12 +190,157 @@ local function activateSpace(spaceName, role)
     end
   end
 
+  -- Apply layout after a short delay so unhide is complete before tiling
+  hs.timer.doAfter(0.3, function() applyLayout(spaceName, screen) end)
+
   if statusAlertId then
     refreshStatus()
   else
     alert(spaceName .. " [" .. label .. "]")
   end
 end
+
+-- ---------------------------------------------------------------------------
+-- Tiling
+-- ---------------------------------------------------------------------------
+
+local tiledPair      = nil   -- { left = win, right = win } or nil
+local ignoringResize = false
+
+-- Bundle IDs of all apps that appear in any pair layout across all spaces.
+local pairBundleSet = {}
+for _, space in pairs(config.spaces or {}) do
+  local layout = space.layout
+  if layout and layout.type == "pair" then
+    if layout.left  then pairBundleSet[layout.left]  = true end
+    if layout.right then pairBundleSet[layout.right] = true end
+  end
+end
+
+local function syncPair(changedWin)
+  if not tiledPair or ignoringResize then return end
+  local left  = tiledPair.left
+  local right = tiledPair.right
+  if not left:isVisible() or not right:isVisible() then
+    tiledPair = nil; return
+  end
+
+  local sf = left:screen():frame()
+  ignoringResize = true
+
+  if changedWin:id() == left:id() then
+    local lf = left:frame()
+    right:setFrame({ x = lf.x + lf.w, y = sf.y, w = sf.x + sf.w - (lf.x + lf.w), h = sf.h })
+  elseif changedWin:id() == right:id() then
+    local rf = right:frame()
+    left:setFrame({ x = sf.x, y = sf.y, w = rf.x - sf.x, h = sf.h })
+  end
+
+  hs.timer.doAfter(0.5, function() ignoringResize = false end)
+end
+
+-- pairFilter watches running pair apps for move/close events.
+-- hs.window.filter requires app display names (not bundle IDs), so it can only
+-- track apps that are already running. ensurePairFilter() is called whenever a
+-- pair app launches to add it. Stored in _G so the GC can't collect it.
+_G.pairFilter = nil
+
+local function ensurePairFilter()
+  local names = {}
+  for bundleId in pairs(pairBundleSet) do
+    local app = hs.application.get(bundleId)
+    if app then names[app:name()] = true end
+  end
+  if not next(names) then return end
+
+  if not _G.pairFilter then
+    _G.pairFilter = hs.window.filter.new(false)
+    _G.pairFilter:subscribe(hs.window.filter.windowMoved, function(win) syncPair(win) end)
+    _G.pairFilter:subscribe(hs.window.filter.windowDestroyed, function(win)
+      if not tiledPair then return end
+      local other = nil
+      if     win:id() == tiledPair.right:id() then other = tiledPair.left
+      elseif win:id() == tiledPair.left:id()  then other = tiledPair.right
+      end
+      tiledPair = nil
+      if other and other:isVisible() then
+        local sf = other:screen():frame()
+        ignoringResize = true
+        other:setFrame(sf)
+        hs.timer.doAfter(0.5, function() ignoringResize = false end)
+        log.i("pair member closed — expanding other to fill")
+      end
+    end)
+  end
+
+  -- setAppFilter is idempotent — safe to call again for already-tracked apps
+  for name in pairs(names) do
+    _G.pairFilter:setAppFilter(name, { allowRoles = '*' })
+  end
+end
+
+-- applyLayout is forward-declared above activateSpace; defined here.
+applyLayout = function(spaceName, screen)
+  tiledPair = nil
+
+  local space  = config.spaces and config.spaces[spaceName]
+  local layout = space and space.layout
+  if not layout or layout.type ~= "pair" then return end
+
+  local ratio    = layout.ratio or 0.65
+  local sf       = screen:frame()
+  local leftApp  = layout.left  and hs.application.get(layout.left)
+  local rightApp = layout.right and hs.application.get(layout.right)
+  local leftWin  = leftApp  and leftApp:mainWindow()
+  local rightWin = rightApp and rightApp:mainWindow()
+  local leftVis  = leftWin  and leftWin:isVisible()
+  local rightVis = rightWin and rightWin:isVisible()
+
+  if leftVis and rightVis then
+    ignoringResize = true
+    leftWin:setFrame({  x = sf.x,                y = sf.y, w = sf.w * ratio,        h = sf.h })
+    rightWin:setFrame({ x = sf.x + sf.w * ratio, y = sf.y, w = sf.w * (1 - ratio),  h = sf.h })
+    tiledPair = { left = leftWin, right = rightWin }
+    log.i(string.format("tiled: %s | %s @ %.0f%%", layout.left, layout.right, ratio * 100))
+    hs.timer.doAfter(0.5, function() ignoringResize = false end)
+  elseif leftVis then
+    leftWin:setFrame(sf)
+    log.i("layout: left alone → fill")
+  elseif rightVis then
+    rightWin:setFrame(sf)
+    log.i("layout: right alone → fill")
+  end
+end
+
+-- Watch for pair apps launching. hs.application.watcher fires on launch
+-- regardless of whether the app was running at init — fixing the gap that
+-- hs.window.filter can't cover (it can't watch for apps not yet running).
+_G.pairAppWatcher = hs.application.watcher.new(function(appName, eventType, app)
+  if eventType ~= hs.application.watcher.launched then return end
+  if not app then return end
+  local bundleId = app:bundleID()
+  if not pairBundleSet[bundleId] then return end
+  log.i("pair app launched: " .. appName)
+  -- Give the app time to create its main window, then tile if the space is active
+  hs.timer.doAfter(0.5, function()
+    ensurePairFilter()
+    for spaceName, space in pairs(config.spaces or {}) do
+      local layout = space.layout
+      if layout and layout.type == "pair" then
+        if layout.left == bundleId or layout.right == bundleId then
+          local scr = resolveDisplay(space.role)
+          if activeSpace[scr:id()] == spaceName then
+            applyLayout(spaceName, scr)
+          end
+        end
+      end
+    end
+  end)
+end)
+_G.pairAppWatcher:start()
+
+-- Seed the filter for any pair apps already running at load time
+ensurePairFilter()
 
 -- ---------------------------------------------------------------------------
 -- Status overlay (cmd+opt+space) — shows active space per display.
