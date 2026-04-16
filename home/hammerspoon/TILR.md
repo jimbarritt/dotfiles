@@ -43,7 +43,7 @@ Tilr manages named spaces (groups of apps) across multiple displays using the hi
 
 ### Profiles
 
-A profile maps display roles (LEFT, CENTRE, LAPTOP) to physical screens by EDID UUID. Tilr detects which profile matches the currently connected screens on every reload and monitor change.
+A profile maps display roles (LEFT, CENTRE, LAPTOP) to physical screens by UUID. Tilr detects which profile matches the currently connected screens on every reload and monitor change.
 
 Built-in profiles:
 - **home-desk** — two external monitors + builtin
@@ -51,7 +51,7 @@ Built-in profiles:
 
 ### Spaces
 
-A space is a named group of apps. Only one space is active per display at a time. Switching to a space unhides its apps and hides everything else (except exempt apps: Finder, Hammerspoon).
+A space is a named group of apps. Only one space is active per display at a time. Switching to a space unhides its apps and hides everything else (except exempt apps: Finder).
 
 Each space has a `role` (LEFT / CENTRE / LAPTOP) — its default display. This can be overridden at runtime for the session.
 
@@ -85,6 +85,7 @@ Two kinds of runtime override, both cleared on Hammerspoon reload:
 | `cmd+alt+a` | Switch to Slack |
 | `cmd+alt+space` | Toggle status overlay |
 | `cmd+alt+r` | Reload config |
+| `cmd+alt+z` | Dump diagnostics to Hammerspoon console |
 | `opt+shift+0..4,a` | Move focused app → that space |
 | `cmd+shift+1` | Move active space → LEFT display |
 | `cmd+shift+2` | Move active space → CENTRE display |
@@ -96,21 +97,36 @@ Two kinds of runtime override, both cleared on Hammerspoon reload:
 
 ### Profiles
 
+Profiles map display roles to physical screens. The value is either `"builtin"` for the internal panel or the macOS-assigned UUID for an external monitor.
+
+**Laptop-only (single screen):**
 ```toml
-[profiles.home-desk]
-LEFT   = "10AC7A41-..."   # EDID UUID of the left monitor
-CENTRE = "10AC7942-..."   # EDID UUID of the centre monitor
-LAPTOP = "builtin"        # always "builtin" for the internal panel
+[profiles.laptop-only]
+LEFT   = "builtin"
+CENTRE = "builtin"
+LAPTOP = "builtin"
+# All roles collapse to the same physical screen
 ```
 
-Find EDID UUIDs in the Hammerspoon console:
-```lua
-hs.screen.allScreens()[1]:getUUID()
+**Two-monitor home desk:**
+```toml
+[profiles.home-desk]
+LEFT   = "6203E2B2-F23E-4A39-A42E-0DA93E56D196"   # DELL U2419HC (left)
+CENTRE = "C8F12309-1B94-4BC8-86DB-9F61C1F15087"   # DELL U2723QE (centre)
+LAPTOP = "builtin"                                 # Retina XDR
 ```
+
+Find UUIDs in the Hammerspoon console:
+```lua
+for _, s in ipairs(hs.screen.allScreens()) do print(s:name(), s:getUUID()) end
+```
+
+Profile matching uses the set of unique UUID values, so `laptop-only` matches when exactly one screen (builtin) is present.
 
 ### Spaces
 
 ```toml
+# Space with a sidebars layout
 [spaces.Coding]
 role = "CENTRE"
 apps = ["com.mitchellh.ghostty", "com.jimbarritt.marq"]
@@ -119,9 +135,40 @@ apps = ["com.mitchellh.ghostty", "com.jimbarritt.marq"]
 type  = "sidebars"
 main  = "com.mitchellh.ghostty"
 ratio = 0.70
+
+# Space with no layout (apps just appear wherever they were last)
+[spaces.Meetings]
+role = "CENTRE"
+apps = [
+  "us.zoom.xos",
+  "com.apple.facetime",
+  "com.microsoft.teams2",
+]
 ```
 
 `apps` is the list of bundle IDs managed by this space. Apps not in any space's list are never hidden by Tilr.
+
+#### Finding bundle IDs
+
+```lua
+-- Single app
+hs.application.get("Safari"):bundleID()
+
+-- All running apps
+for _, app in ipairs(hs.application.runningApplications()) do
+  print(app:name(), app:bundleID())
+end
+```
+
+#### The Scratch pattern
+
+Scratch is the escape-hatch space — apps that don't belong anywhere else. The Hammerspoon console lives here. No layout block, role is CENTRE (or LAPTOP if you want it on the small screen):
+
+```toml
+[spaces.Scratch]
+role = "CENTRE"
+apps = ["org.hammerspoon.Hammerspoon"]
+```
 
 ### Defaults
 

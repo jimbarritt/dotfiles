@@ -12,9 +12,9 @@
 # ---------------------------------------------------------------------------
 
 [profiles.home-desk]
-LEFT   = "10AC7A41-0000-0000-141E-010380351E78"   # DELL U2419HC
-CENTRE = "10AC7942-0000-0000-3021-0104B53C2278"   # DELL U2723QE
-LAPTOP = "builtin"                                # Retina XDR
+LEFT   = "6203E2B2-F23E-4A39-A42E-0DA93E56D196"   # DELL U2419HC
+CENTRE = "C8F12309-1B94-4BC8-86DB-9F61C1F15087"   # DELL U2723QE
+LAPTOP = "builtin"                                 # Retina XDR
 
 [profiles.laptop-only]
 LEFT   = "builtin"
@@ -27,7 +27,7 @@ LAPTOP = "builtin"
 
 [spaces.Scratch]
 role = "CENTRE"
-apps = []
+apps = ["org.hammerspoon.Hammerspoon"]
 
 [spaces.Coding]
 role = "CENTRE"

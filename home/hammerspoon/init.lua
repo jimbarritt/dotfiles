@@ -146,8 +146,7 @@ local statusAlertId = nil  -- forward-declared so activateSpace can reference it
 local refreshStatus        -- forward-declared; defined after buildStatusText
 local applyLayout          -- forward-declared; defined after activateSpace (tiling section)
 local EXEMPT = {
-  ["com.apple.finder"]            = true,
-  ["org.hammerspoon.Hammerspoon"] = true,
+  ["com.apple.finder"] = true,
 }
 
 -- Session-level app overrides: bundleId → spaceName.
@@ -229,6 +228,25 @@ end
 local tiledMain          = nil   -- main window currently in a layout, or nil
 local ignoringResize     = false
 local spaceRatioOverride = {}    -- spaceName → ratio, set when user drags the split
+
+-- Move a window to a target screen then size it. setFrame alone is unreliable
+-- across displays — macOS tends to keep the window on its current screen.
+-- moveToScreen handles the cross-display hop first, then setFrame sets exact
+-- geometry. Logs intended vs actual frame so we can spot silent failures.
+local function placeWindow(win, screen, frame, tag)
+  if not win then return end
+  win:moveToScreen(screen, false, false, 0)
+  win:setFrame(frame, 0)
+  local got = win:frame()
+  local delta = (math.abs(got.x - frame.x) + math.abs(got.y - frame.y)
+              +  math.abs(got.w - frame.w) + math.abs(got.h - frame.h))
+  if delta > 2 then
+    log.w(string.format("place %s [%s]: want %d,%d %dx%d got %d,%d %dx%d",
+      tag or "?", win:application():name() or "?",
+      frame.x, frame.y, frame.w, frame.h,
+      got.x, got.y, got.w, got.h))
+  end
+end
 
 -- Bundle IDs of all apps in spaces that have a layout.
 local pairBundleSet = {}
@@ -350,16 +368,16 @@ applyLayout = function(spaceName, screen)
 
   if mainVis and #sidebarWins > 0 then
     ignoringResize = true
-    mainWin:setFrame(mainFr)
-    for _, win in ipairs(sidebarWins) do win:setFrame(sidebarFr) end
+    placeWindow(mainWin, screen, mainFr, "main")
+    for _, win in ipairs(sidebarWins) do placeWindow(win, screen, sidebarFr, "sidebar") end
     tiledMain = mainWin
     log.i(string.format("sidebars: main + %d sidebar(s) @ %.0f%%", #sidebarWins, ratio * 100))
     hs.timer.doAfter(0.5, function() ignoringResize = false end)
   elseif mainVis then
-    mainWin:setFrame(sf)
+    placeWindow(mainWin, screen, sf, "main-fill")
     log.i("layout: main alone → fill")
   elseif #sidebarWins > 0 then
-    for _, win in ipairs(sidebarWins) do win:setFrame(sf) end
+    for _, win in ipairs(sidebarWins) do placeWindow(win, screen, sf, "sidebar-fill") end
     log.i("layout: sidebars alone → fill")
   end
 end
@@ -456,86 +474,63 @@ local function showStatus()
 end
 
 -- ---------------------------------------------------------------------------
--- Console table: spaces × profiles
+
+-- ---------------------------------------------------------------------------
+-- Diagnostics (cmd+alt+z) — dumps state to the Hammerspoon console.
+-- Uses 'z' because z-key space hotkeys are unlikely.
 -- ---------------------------------------------------------------------------
 
-local function printSpacesTable()
-  -- Build hotkey lookup: spaceName → display string e.g. "cmd+alt+3"
-  local hotkeyFor = {}
-  for _, hk in ipairs(config.hotkeys or {}) do
-    local modsStr = hk.mods:gsub("%s+", "+")
-    hotkeyFor[hk.space] = modsStr .. "+" .. hk.key
+local function dumpDiagnostics()
+  print("")
+  print("=== TILR DIAGNOSTICS ===")
+  print("profile: " .. activeProfile)
+  print("")
+  print("--- screens ---")
+  for _, s in ipairs(hs.screen.allScreens()) do
+    local f = s:frame()
+    print(string.format("  %-28s id=%-12d uuid=%s  x=%d y=%d w=%d h=%d",
+      s:name() or "?", s:id(), s:getUUID() or "-", f.x, f.y, f.w, f.h))
   end
-
-  -- Collect and sort profile names: home-desk first, then rest alphabetically
-  local profileNames = {}
-  for name in pairs(config.profiles or {}) do
-    table.insert(profileNames, name)
+  print("")
+  print("--- roleToScreen ---")
+  for role, s in pairs(roleToScreen) do
+    print(string.format("  %-6s → %s (id=%d)", role, s:name() or "?", s:id()))
   end
-  table.sort(profileNames, function(a, b)
-    if a == "home-desk" then return true end
-    if b == "home-desk" then return false end
-    return a < b
-  end)
-
-  -- For a given profile and role, return the canonical display label
-  local function labelInProfile(role, profileConf)
-    if not profileConf then return "—" end
-    local key = profileConf[role]
-    if not key then return "—" end
-    for _, pRole in ipairs(ROLE_PRIORITY) do
-      if profileConf[pRole] == key then return pRole end
+  print("")
+  print("--- activeSpace ---")
+  for screenId, sName in pairs(activeSpace) do
+    print(string.format("  screen id=%-12d → %s", screenId, sName))
+  end
+  print("")
+  print("--- sessionRoleOverride ---")
+  if next(sessionRoleOverride) then
+    for space, role in pairs(sessionRoleOverride) do
+      print(string.format("  %s → %s", space, role))
     end
-    return role
-  end
-
-  -- Collect and sort space names
-  local spaceNames = {}
-  for name in pairs(config.spaces or {}) do table.insert(spaceNames, name) end
-  table.sort(spaceNames)
-
-  -- Column widths
-  local COL_SPACE   = 14
-  local COL_HOTKEY  = 14
-  local COL_PROFILE = 12
-
-  local function pad(s, w) return s .. string.rep(" ", math.max(0, w - #s)) end
-
-  -- Header
-  local header = pad("Space", COL_SPACE) .. pad("Hotkey", COL_HOTKEY)
-  for _, pName in ipairs(profileNames) do
-    header = header .. pad(pName, COL_PROFILE)
-  end
-  local sep = string.rep("-", #header)
-
-  print(sep)
-  print(header)
-  print(sep)
-
-  for _, sName in ipairs(spaceNames) do
-    local space = config.spaces[sName]
-    local role  = space.role or "?"
-    local hk    = hotkeyFor[sName] or "—"
-    local row   = pad(sName, COL_SPACE) .. pad(hk, COL_HOTKEY)
-    for _, pName in ipairs(profileNames) do
-      row = row .. pad(labelInProfile(role, config.profiles[pName]), COL_PROFILE)
+  else print("  (empty)") end
+  print("")
+  print("--- sessionAppOverride ---")
+  if next(sessionAppOverride) then
+    for bundleId, space in pairs(sessionAppOverride) do
+      print(string.format("  %s → %s", bundleId, space))
     end
-    print(row)
+  else print("  (empty)") end
+  print("")
+  local win = hs.window.focusedWindow()
+  if win then
+    local f = win:frame()
+    local s = win:screen()
+    print(string.format("focused: %s [%s]", win:title() or "?", win:application():name() or "?"))
+    print(string.format("  frame:  x=%d y=%d w=%d h=%d", f.x, f.y, f.w, f.h))
+    print(string.format("  screen: %s (id=%d)", s and s:name() or "?", s and s:id() or -1))
+  else
+    print("focused: (none)")
   end
-
-  print(sep)
+  print("========================")
+  alert("Diagnostics → console")
 end
 
-printSpacesTable()
-
-print("--- roleToScreen ---")
-for role, screen in pairs(roleToScreen) do
-  print("  " .. role .. " → " .. screen:name() .. " (id=" .. tostring(screen:id()) .. ")")
-end
-print("--- activeSpace (empty until a space is switched to) ---")
-for role, sName in pairs(activeSpace) do
-  print("  " .. role .. " → " .. sName)
-end
+hs.hotkey.bind({ "cmd", "alt" }, "z", dumpDiagnostics)
 
 -- ---------------------------------------------------------------------------
 -- Hotkeys
@@ -592,7 +587,8 @@ local function moveFocusedAppToSpace(targetSpaceName)
       local movedApp = hs.application.get(bundleId)
       local movedWin = movedApp and movedApp:mainWindow()
       if movedWin and movedWin:isVisible() then
-        movedWin:setFrame(resolveDisplay(targetSpace and targetSpace.role or "CENTRE"):frame())
+        local targetScreen = resolveDisplay(targetSpace and targetSpace.role or "CENTRE")
+        placeWindow(movedWin, targetScreen, targetScreen:frame(), "moved-fill")
       end
     end)
   end
@@ -662,7 +658,7 @@ local function applyProfileDefaults(profileName, silent)
   end
 end
 
-local screenWatcher = hs.screen.watcher.new(function()
+_G.screenWatcher = hs.screen.watcher.new(function()
   local prevProfile   = activeProfile
   activeProfile, roleToScreen = resolveProfile()
   if activeProfile ~= prevProfile then
@@ -671,13 +667,13 @@ local screenWatcher = hs.screen.watcher.new(function()
   end
   alert("profile: " .. activeProfile)
 end)
-screenWatcher:start()
+_G.screenWatcher:start()
 
 -- Config reload
 hs.hotkey.bind({ "cmd", "alt" }, "r", function() hs.reload() end)
 
--- Apply startup defaults silently (no show/hide — apps already in their state)
-applyProfileDefaults(activeProfile, true)
+-- Apply startup defaults — activates each space so apps are shown/hidden correctly.
+applyProfileDefaults(activeProfile, false)
 
 alert("Tilr — " .. activeProfile)
 log.i("init.lua loaded; profile=" .. activeProfile)
