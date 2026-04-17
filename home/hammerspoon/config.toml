@@ -1,37 +1,34 @@
 # ~/.hammerspoon/config.toml
 #
 # Workspace manager config. Loaded by init.lua at startup and on reload
-# (cmd+ctrl+r). A parse error fails loud; this file is never rewritten by
+# (cmd+alt+r). A parse error fails loud; this file is never rewritten by
 # the manager.
 
 # ---------------------------------------------------------------------------
-# Profiles: named display layouts keyed by EDID UUID (or "builtin").
-# Multiple roles may point to the same key (laptop-only collapses all to
-# builtin). Profile matching uses the SET of unique UUID values — so
-# laptop-only matches when exactly one screen (builtin) is present.
+# Screens: maps display UUIDs to logical names.
+# builtin is auto-detected and always named "laptop".
+# precedence: determines migration direction when a monitor is unplugged.
+#   Going DOWN the chain (losing a more-important screen) → active space travels.
+#   Going UP (losing a less-important screen) → active space hides, destination keeps its own.
 # ---------------------------------------------------------------------------
 
-[profiles.home-desk]
-LEFT   = "6203E2B2-F23E-4A39-A42E-0DA93E56D196"   # DELL U2419HC
-CENTRE = "C8F12309-1B94-4BC8-86DB-9F61C1F15087"   # DELL U2723QE
-LAPTOP = "builtin"                                 # Retina XDR
-
-[profiles.laptop-only]
-LEFT   = "builtin"
-CENTRE = "builtin"
-LAPTOP = "builtin"
+[screens]
+precedence = ["external-main", "external-secondary", "laptop"]
+"C8F12309-1B94-4BC8-86DB-9F61C1F15087" = "external-main"       # DELL U2723QE
+"6203E2B2-F23E-4A39-A42E-0DA93E56D196" = "external-secondary"  # DELL U2419HC
 
 # ---------------------------------------------------------------------------
-# Spaces: named workspaces. role = which display role this space lives on.
+# Spaces: named workspaces.
+# prefer: ordered list of screen names — space lives on first one that is present.
 # ---------------------------------------------------------------------------
 
 [spaces.Scratch]
-role = "CENTRE"
-apps = ["org.hammerspoon.Hammerspoon"]
+prefer = ["external-main", "laptop"]
+apps   = ["org.hammerspoon.Hammerspoon"]
 
 [spaces.Coding]
-role = "CENTRE"
-apps = ["com.mitchellh.ghostty", "com.jimbarritt.marq"]
+prefer = ["external-main", "laptop"]
+apps   = ["com.mitchellh.ghostty", "com.jimbarritt.marq"]
 
 [spaces.Coding.layout]
 type  = "sidebars"
@@ -39,40 +36,40 @@ main  = "com.mitchellh.ghostty"
 ratio = 0.70
 
 [spaces.Reference]
-role = "CENTRE"
-apps = ["notion.id", "app.zen-browser.zen", "com.google.Chrome"]
+prefer = ["external-main", "external-secondary", "laptop"]
+apps   = ["notion.id", "app.zen-browser.zen", "com.google.Chrome"]
 
 [spaces.Meetings]
-role = "CENTRE"
-apps = [
+prefer = ["external-main", "laptop"]
+apps   = [
   "us.zoom.xos",
   "com.apple.facetime",
   "com.microsoft.teams2",
-  "com.google.Chrome.app.kjgfgldnnfoeklkmfkjfagphfepbbdan",  # Google Meet (Chrome PWA)
+  "com.google.Chrome.app.kjgfgldnnfoeklkmfkjfagphfepbbdan",
 ]
 
 [spaces.Schedule]
-role = "CENTRE"
-apps = [
-  "com.google.Chrome.app.kjbdgfilnfhdoflbpgamdcdgpehopbep",  # Google Calendar (Chrome PWA)
+prefer = ["external-main", "laptop"]
+apps   = [
+  "com.google.Chrome.app.kjbdgfilnfhdoflbpgamdcdgpehopbep",
 ]
 
 [spaces.Slack]
-role = "LAPTOP"
-apps = ["com.tinyspeck.slackmacgap"]
+prefer = ["laptop"]
+apps   = ["com.tinyspeck.slackmacgap"]
 
 # ---------------------------------------------------------------------------
-# Defaults: which space is active on each role, per profile.
-# Applied at startup and whenever the profile changes (monitors plugged in/out).
-# LEFT omitted from home-desk — starts empty until you push a space there.
+# Defaults: which space activates on each screen at startup / on screen connect.
+# laptop-only overrides apply when no external screens are present.
 # ---------------------------------------------------------------------------
+
+[defaults]
+external-main      = "Coding"
+external-secondary = ""
+laptop             = "Slack"
 
 [defaults.laptop-only]
-LAPTOP = "Coding"
-
-[defaults.home-desk]
-CENTRE = "Coding"
-LAPTOP = "Slack"
+laptop = "Coding"
 
 # ---------------------------------------------------------------------------
 # Hotkeys: cmd+opt+key activates a space.

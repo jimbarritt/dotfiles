@@ -31,74 +31,60 @@ end
 local config = loadConfig()
 
 -- ---------------------------------------------------------------------------
--- Display profile detection
+-- Screen registry
+--
+-- screensByName: logical name → hs.screen object, rebuilt on every screen change.
+--   "laptop"            always the builtin (detected by name containing "Built-in")
+--   "external-main"     UUID-matched from config.screens
+--   "external-secondary" UUID-matched from config.screens
+--
+-- SCREEN_PRECEDENCE: name → integer rank (1 = highest priority).
+--   Used only to determine migration direction on unplug:
+--     going DOWN (source rank < dest rank) → active space travels and takes over
+--     going UP   (source rank > dest rank) → active space hides, dest keeps its own
 -- ---------------------------------------------------------------------------
 
--- Priority order used when multiple roles resolve to the same physical screen
--- (e.g. laptop-only profile collapses LEFT/CENTRE/LAPTOP → builtin).
--- First match in this list is the canonical display label for that screen.
-local ROLE_PRIORITY = { "LAPTOP", "CENTRE", "LEFT" }
-
--- Returns a stable key for a screen: EDID UUID for externals, "builtin" for
--- the internal panel (Apple's built-in name always contains "Built-in").
-local function screenKey(screen)
-  local name = screen:name() or ""
-  if name:lower():find("built%-in") then return "builtin" end
-  return screen:getUUID() or ("name:" .. name)
+local SCREEN_PRECEDENCE = {}
+do
+  local chain = config.screens and config.screens.precedence or
+                {"external-main", "external-secondary", "laptop"}
+  for i, name in ipairs(chain) do SCREEN_PRECEDENCE[name] = i end
 end
 
--- Match current screens against named profiles. Matching uses the SET of
--- unique UUID values in a profile vs the set of present screens — so a
--- laptop-only profile with LEFT=CENTRE=LAPTOP=builtin matches when exactly
--- one screen (builtin) is present.
-local function resolveProfile()
-  local screens = hs.screen.allScreens()
-  local present = {}      -- key → screen
-  local presentCount = 0
-  for _, s in ipairs(screens) do
-    local k = screenKey(s)
-    if not present[k] then presentCount = presentCount + 1 end
-    present[k] = s
-  end
+local function precedenceOf(name) return SCREEN_PRECEDENCE[name] or 99 end
 
-  for name, profile in pairs(config.profiles or {}) do
-    -- Collect unique UUID values for this profile
-    local uniqueKeys = {}
-    local uniqueCount = 0
-    for _, key in pairs(profile) do
-      if not uniqueKeys[key] then uniqueCount = uniqueCount + 1 end
-      uniqueKeys[key] = true
-    end
-
-    if uniqueCount == presentCount then
-      local match = true
-      for key in pairs(uniqueKeys) do
-        if not present[key] then match = false; break end
-      end
-      if match then
-        local roleMap = {}
-        for role, key in pairs(profile) do
-          roleMap[role] = present[key]
-        end
-        log.i("profile matched: " .. name)
-        return name, roleMap
+local function buildScreensByName()
+  local byName = {}
+  for _, s in ipairs(hs.screen.allScreens()) do
+    local sname = s:name() or ""
+    if sname:lower():find("built%-in") then
+      byName["laptop"] = s
+    else
+      local uuid      = s:getUUID()
+      local logical   = uuid and config.screens and config.screens[uuid]
+      if logical then
+        byName[logical] = s
+      else
+        log.w("unrecognised screen: " .. sname .. " uuid=" .. tostring(uuid))
       end
     end
   end
-
-  log.w("no profile matched; falling back to primary for every role")
-  local primary = hs.screen.primaryScreen()
-  local fallback = {}
-  for _, space in pairs(config.spaces or {}) do
-    if space.role then fallback[space.role] = primary end
-  end
-  return "unknown", fallback
+  return byName
 end
 
-local activeProfile, roleToScreen = resolveProfile()
+local screensByName = buildScreensByName()
 
-local function resolveDisplay(role)
-  return roleToScreen[role] or hs.screen.primaryScreen()
+-- Returns a human-readable summary of connected screens (used in alerts).
+local function screenSetLabel()
+  if screensByName["external-main"] and screensByName["external-secondary"] then
+    return "full-desk"
+  elseif screensByName["external-main"] then
+    return "main-only"
+  elseif screensByName["external-secondary"] then
+    return "secondary-only"
+  else
+    return "laptop-only"
+  end
 end
 
 -- ---------------------------------------------------------------------------
@@ -125,42 +111,21 @@ local function alert(msg, duration)
 end
 
 -- ---------------------------------------------------------------------------
--- Given a resolved screen, return the canonical role label for it under the
--- current profile. Uses ROLE_PRIORITY so that when multiple roles collapse to
--- the same screen (laptop-only), LAPTOP wins.
-local function displayLabel(screen)
-  for _, role in ipairs(ROLE_PRIORITY) do
-    if roleToScreen[role] and roleToScreen[role]:id() == screen:id() then
-      return role
-    end
-  end
-  return screen:name() or "?"
-end
-
--- ---------------------------------------------------------------------------
 -- Space activation
 -- ---------------------------------------------------------------------------
 
-local activeSpace   = {}   -- screenId → spaceName  (one entry per physical screen)
-local statusAlertId = nil  -- forward-declared so activateSpace can reference it
-local refreshStatus        -- forward-declared; defined after buildStatusText
-local applyLayout          -- forward-declared; defined after activateSpace (tiling section)
-local EXEMPT = {
-  ["com.apple.finder"] = true,
-}
+local activeSpace      = {}   -- screenId (int) → spaceName
+local statusAlertId    = nil
+local refreshStatus           -- forward-declared
+local applyLayout             -- forward-declared
 
--- Session-level app overrides: bundleId → spaceName.
--- Overrides which space an app is assigned to for this session only.
--- Config is ground truth and is never modified; cleared on reload.
-local sessionAppOverride  = {}
+local EXEMPT = { ["com.apple.finder"] = true }
 
--- Session-level role overrides: spaceName → role.
--- Overrides which display a space lives on (set via cmd+shift+1/2/3).
--- Cleared whenever the display profile changes.
-local sessionRoleOverride = {}
+-- Session-level overrides (cleared on reload).
+local sessionAppOverride    = {}   -- bundleId  → spaceName
+local sessionScreenOverride = {}   -- spaceName → screenName
 
--- Returns the effective set of bundle IDs for a space, merging config
--- with session overrides (apps moved in/out at runtime).
+-- Returns the effective bundle IDs for a space, merging config with session moves.
 local function effectiveApps(spaceName)
   local space = config.spaces and config.spaces[spaceName]
   local apps  = {}
@@ -174,36 +139,42 @@ local function effectiveApps(spaceName)
   return apps
 end
 
-local function activateSpace(spaceName, role)
+-- Resolve which physical screen a space should live on right now.
+-- Walks the space's prefer list; returns (screen, screenName).
+local function resolveSpaceScreen(spaceName)
+  local ov = sessionScreenOverride[spaceName]
+  if ov and screensByName[ov] then return screensByName[ov], ov end
+  local space  = config.spaces and config.spaces[spaceName]
+  local prefer = space and space.prefer or {}
+  for _, name in ipairs(prefer) do
+    if screensByName[name] then return screensByName[name], name end
+  end
+  local fallback = screensByName["laptop"] or hs.screen.primaryScreen()
+  return fallback, "laptop"
+end
+
+local function activateSpace(spaceName)
   local space = config.spaces and config.spaces[spaceName]
   if not space then log.w("unknown space: " .. spaceName); return end
-  role = role or sessionRoleOverride[spaceName] or space.role
-  if not role then log.w("no role for space " .. spaceName); return end
 
-  local screen   = resolveDisplay(role)
+  local screen, screenName = resolveSpaceScreen(spaceName)
   local screenId = screen:id()
-  local label    = displayLabel(screen)
 
-  -- Update state: one entry per physical screen
   activeSpace[screenId] = spaceName
 
-  -- Build the full set of apps that should be visible across ALL active spaces
+  -- Build full set of apps that should be visible across ALL active spaces
   local shouldShow = {}
   for _, sName in pairs(activeSpace) do
-    for bundleId in pairs(effectiveApps(sName)) do
-      shouldShow[bundleId] = true
-    end
+    for bundleId in pairs(effectiveApps(sName)) do shouldShow[bundleId] = true end
   end
 
-  log.i(string.format("activate %s [%s] (screen: %s)", spaceName, label, screen:name()))
+  log.i(string.format("activate %s [%s] (screen: %s)", spaceName, screenName, screen:name()))
 
-  -- Unhide apps for the newly active space
   for bundleId in pairs(effectiveApps(spaceName)) do
     local app = hs.application.get(bundleId)
     if app then app:unhide() end
   end
 
-  -- Hide every running app not in the visible set
   for _, app in ipairs(hs.application.runningApplications()) do
     local bundleId = app:bundleID()
     if bundleId and not shouldShow[bundleId] and not EXEMPT[bundleId] then
@@ -211,44 +182,36 @@ local function activateSpace(spaceName, role)
     end
   end
 
-  -- Apply layout after a short delay so unhide is complete before tiling
   hs.timer.doAfter(0.3, function() applyLayout(spaceName, screen) end)
 
-  if statusAlertId then
-    refreshStatus()
-  else
-    alert(spaceName .. " [" .. label .. "]")
-  end
+  if statusAlertId then refreshStatus()
+  else alert(spaceName .. " [" .. screenName .. "]") end
 end
 
 -- ---------------------------------------------------------------------------
 -- Tiling
 -- ---------------------------------------------------------------------------
 
-local tiledMain          = nil   -- main window currently in a layout, or nil
+local tiledMain          = nil
 local ignoringResize     = false
-local spaceRatioOverride = {}    -- spaceName → ratio, set when user drags the split
+local spaceRatioOverride = {}
 
--- Move a window to a target screen then size it. setFrame alone is unreliable
--- across displays — macOS tends to keep the window on its current screen.
--- moveToScreen handles the cross-display hop first, then setFrame sets exact
--- geometry. Logs intended vs actual frame so we can spot silent failures.
+-- Move a window to a target screen then apply exact frame.
+-- moveToScreen handles the cross-display hop; setFrame sets exact geometry.
 local function placeWindow(win, screen, frame, tag)
   if not win then return end
   win:moveToScreen(screen, false, false, 0)
   win:setFrame(frame, 0)
-  local got = win:frame()
-  local delta = (math.abs(got.x - frame.x) + math.abs(got.y - frame.y)
-              +  math.abs(got.w - frame.w) + math.abs(got.h - frame.h))
+  local got   = win:frame()
+  local delta = math.abs(got.x - frame.x) + math.abs(got.y - frame.y)
+              + math.abs(got.w - frame.w) + math.abs(got.h - frame.h)
   if delta > 2 then
     log.w(string.format("place %s [%s]: want %d,%d %dx%d got %d,%d %dx%d",
-      tag or "?", win:application():name() or "?",
-      frame.x, frame.y, frame.w, frame.h,
-      got.x, got.y, got.w, got.h))
+      tag or "?", (win:application() and win:application():name()) or "?",
+      frame.x, frame.y, frame.w, frame.h, got.x, got.y, got.w, got.h))
   end
 end
 
--- Bundle IDs of all apps in spaces that have a layout.
 local pairBundleSet = {}
 for _, space in pairs(config.spaces or {}) do
   if space.layout then
@@ -258,8 +221,6 @@ for _, space in pairs(config.spaces or {}) do
   end
 end
 
--- When the main window moves/resizes, push the updated sidebar frame to all
--- visible sidebar windows for the active space on that screen.
 local function syncLayout(changedWin)
   if not tiledMain or ignoringResize then return end
   if not tiledMain:isVisible() then tiledMain = nil; return end
@@ -274,7 +235,6 @@ local function syncLayout(changedWin)
   ignoringResize = true
 
   if changedWin:id() == tiledMain:id() then
-    -- Main resized: push new sidebar frame to all visible sidebar windows
     local mf        = tiledMain:frame()
     local sidebarFr = { x = mf.x + mf.w, y = sf.y, w = sf.x + sf.w - (mf.x + mf.w), h = sf.h }
     spaceRatioOverride[spaceName] = mf.w / sf.w
@@ -286,11 +246,9 @@ local function syncLayout(changedWin)
       end
     end
   else
-    -- A sidebar was resized: use its left edge as the new boundary,
-    -- resize main to fill left of it, push same frame to other sidebars
     local cf        = changedWin:frame()
-    local mainFr    = { x = sf.x, y = sf.y, w = cf.x - sf.x,         h = sf.h }
-    local sidebarFr = { x = cf.x, y = sf.y, w = sf.x + sf.w - cf.x,  h = sf.h }
+    local mainFr    = { x = sf.x, y = sf.y, w = cf.x - sf.x,        h = sf.h }
+    local sidebarFr = { x = cf.x, y = sf.y, w = sf.x + sf.w - cf.x, h = sf.h }
     spaceRatioOverride[spaceName] = mainFr.w / sf.w
     tiledMain:setFrame(mainFr)
     for bundleId in pairs(effectiveApps(spaceName)) do
@@ -307,9 +265,6 @@ local function syncLayout(changedWin)
   hs.timer.doAfter(0.5, function() ignoringResize = false end)
 end
 
--- pairFilter watches layout apps for move/close events.
--- hs.window.filter requires display names (not bundle IDs), so it is built
--- lazily / updated via ensurePairFilter() as apps come online.
 _G.pairFilter = nil
 
 local function ensurePairFilter()
@@ -322,11 +277,11 @@ local function ensurePairFilter()
 
   if not _G.pairFilter then
     _G.pairFilter = hs.window.filter.new(false)
-    _G.pairFilter:subscribe(hs.window.filter.windowMoved, function(win) syncLayout(win) end)
-    _G.pairFilter:subscribe(hs.window.filter.windowDestroyed, function(win)
+    _G.pairFilter:subscribe(hs.window.filter.windowMoved, syncLayout)
+    _G.pairFilter:subscribe(hs.window.filter.windowDestroyed, function()
       if not tiledMain then return end
-      local screen = tiledMain:screen()
-      if not screen then return end
+      local screen    = tiledMain:screen()
+      if not screen   then return end
       local spaceName = activeSpace[screen:id()]
       if not spaceName then return end
       tiledMain = nil
@@ -339,10 +294,8 @@ local function ensurePairFilter()
   end
 end
 
--- applyLayout is forward-declared above activateSpace; defined here.
 applyLayout = function(spaceName, screen)
   tiledMain = nil
-
   local space  = config.spaces and config.spaces[spaceName]
   local layout = space and space.layout
   if not layout or layout.type ~= "sidebars" then return end
@@ -353,7 +306,6 @@ applyLayout = function(spaceName, screen)
   local mainWin = mainApp and mainApp:mainWindow()
   local mainVis = mainWin and mainWin:isVisible()
 
-  -- Any visible non-main app in this space becomes a sidebar
   local sidebarWins = {}
   for bundleId in pairs(effectiveApps(spaceName)) do
     if bundleId ~= layout.main then
@@ -363,8 +315,8 @@ applyLayout = function(spaceName, screen)
     end
   end
 
-  local mainFr    = { x = sf.x,                y = sf.y, w = sf.w * ratio,        h = sf.h }
-  local sidebarFr = { x = sf.x + sf.w * ratio, y = sf.y, w = sf.w * (1 - ratio),  h = sf.h }
+  local mainFr    = { x = sf.x,                y = sf.y, w = sf.w * ratio,       h = sf.h }
+  local sidebarFr = { x = sf.x + sf.w * ratio, y = sf.y, w = sf.w * (1 - ratio), h = sf.h }
 
   if mainVis and #sidebarWins > 0 then
     ignoringResize = true
@@ -382,8 +334,6 @@ applyLayout = function(spaceName, screen)
   end
 end
 
--- Watch for layout apps launching. hs.application.watcher fires on launch
--- regardless of whether the app was running at init.
 _G.pairAppWatcher = hs.application.watcher.new(function(appName, eventType, app)
   if eventType ~= hs.application.watcher.launched then return end
   if not app then return end
@@ -394,10 +344,8 @@ _G.pairAppWatcher = hs.application.watcher.new(function(appName, eventType, app)
     ensurePairFilter()
     for spaceName, space in pairs(config.spaces or {}) do
       if space.layout then
-        local scr = resolveDisplay(space.role)
-        if activeSpace[scr:id()] == spaceName then
-          applyLayout(spaceName, scr)
-        end
+        local scr, _ = resolveSpaceScreen(spaceName)
+        if activeSpace[scr:id()] == spaceName then applyLayout(spaceName, scr) end
       end
     end
   end)
@@ -407,8 +355,7 @@ _G.pairAppWatcher:start()
 ensurePairFilter()
 
 -- ---------------------------------------------------------------------------
--- Status overlay (cmd+opt+space) — shows active space per display.
--- Placeholder for the eventual full space-picker overlay.
+-- Status overlay (cmd+alt+space)
 -- ---------------------------------------------------------------------------
 
 local STATUS_STYLE = ALERT_STYLE
@@ -419,36 +366,36 @@ local function buildStatusText()
     if #hk.space > maxNameLen then maxNameLen = #hk.space end
   end
 
-  local function row(key, name, label, active)
+  local function row(key, name, screenName, active)
     local pad    = string.rep(" ", maxNameLen - #name)
     local marker = active and "  ◀" or ""
-    return "  " .. key .. "   " .. name .. pad .. "   " .. label .. marker
+    return "  " .. key .. "   " .. name .. pad .. "   [" .. screenName .. "]" .. marker
   end
 
-  local seenScreenId = {}
-  local activeLines  = {}
-  for _, role in ipairs(ROLE_PRIORITY) do
-    local screen = roleToScreen[role]
-    if screen and not seenScreenId[screen:id()] then
-      seenScreenId[screen:id()] = true
-      local label = displayLabel(screen)
-      local sName = activeSpace[screen:id()] or "(none)"
-      local pad   = string.rep(" ", 6 - #label)
-      table.insert(activeLines, "  " .. label .. pad .. "  " .. sName)
+  -- One line per unique physical screen currently present
+  local chain   = config.screens and config.screens.precedence or {}
+  local seenId  = {}
+  local activeLines = {}
+  for _, screenName in ipairs(chain) do
+    local s = screensByName[screenName]
+    if s and not seenId[s:id()] then
+      seenId[s:id()] = true
+      local sName = activeSpace[s:id()] or "(none)"
+      local pad   = string.rep(" ", 18 - #screenName)
+      table.insert(activeLines, "  " .. screenName .. pad .. sName)
     end
   end
 
-  local sep   = "  " .. string.rep("─", maxNameLen + 16)
-  local lines = { "  " .. activeProfile, sep }
+  local sep   = "  " .. string.rep("─", maxNameLen + 20)
+  local lines = { "  " .. screenSetLabel(), sep }
   for _, l in ipairs(activeLines) do table.insert(lines, l) end
   table.insert(lines, sep)
 
   for _, hk in ipairs(config.hotkeys or {}) do
-    local space  = config.spaces and config.spaces[hk.space]
-    local role   = space and space.role or "?"
-    local label  = displayLabel(resolveDisplay(role))
-    local active = activeSpace[resolveDisplay(role):id()] == hk.space
-    table.insert(lines, row(hk.key, hk.space, "[" .. label .. "]", active))
+    local _, screenName = resolveSpaceScreen(hk.space)
+    local screen        = screensByName[screenName]
+    local active        = screen and activeSpace[screen:id()] == hk.space
+    table.insert(lines, row(hk.key, hk.space, screenName, active))
   end
   table.insert(lines, sep)
   return table.concat(lines, "\n")
@@ -465,36 +412,29 @@ refreshStatus = function()
 end
 
 local function showStatus()
-  if statusAlertId then
-    hs.alert.closeAll(0)
-    statusAlertId = nil
-    return
-  end
+  if statusAlertId then hs.alert.closeAll(0); statusAlertId = nil; return end
   openStatus()
 end
 
 -- ---------------------------------------------------------------------------
-
--- ---------------------------------------------------------------------------
--- Diagnostics (cmd+alt+z) — dumps state to the Hammerspoon console.
--- Uses 'z' because z-key space hotkeys are unlikely.
+-- Diagnostics (cmd+alt+z)
 -- ---------------------------------------------------------------------------
 
 local function dumpDiagnostics()
   print("")
   print("=== TILR DIAGNOSTICS ===")
-  print("profile: " .. activeProfile)
+  print("setup: " .. screenSetLabel())
   print("")
-  print("--- screens ---")
+  print("--- screens (all) ---")
   for _, s in ipairs(hs.screen.allScreens()) do
     local f = s:frame()
     print(string.format("  %-28s id=%-12d uuid=%s  x=%d y=%d w=%d h=%d",
       s:name() or "?", s:id(), s:getUUID() or "-", f.x, f.y, f.w, f.h))
   end
   print("")
-  print("--- roleToScreen ---")
-  for role, s in pairs(roleToScreen) do
-    print(string.format("  %-6s → %s (id=%d)", role, s:name() or "?", s:id()))
+  print("--- screensByName ---")
+  for name, s in pairs(screensByName) do
+    print(string.format("  %-20s → %s (id=%d)", name, s:name() or "?", s:id()))
   end
   print("")
   print("--- activeSpace ---")
@@ -502,10 +442,10 @@ local function dumpDiagnostics()
     print(string.format("  screen id=%-12d → %s", screenId, sName))
   end
   print("")
-  print("--- sessionRoleOverride ---")
-  if next(sessionRoleOverride) then
-    for space, role in pairs(sessionRoleOverride) do
-      print(string.format("  %s → %s", space, role))
+  print("--- sessionScreenOverride ---")
+  if next(sessionScreenOverride) then
+    for space, name in pairs(sessionScreenOverride) do
+      print(string.format("  %s → %s", space, name))
     end
   else print("  (empty)") end
   print("")
@@ -520,7 +460,8 @@ local function dumpDiagnostics()
   if win then
     local f = win:frame()
     local s = win:screen()
-    print(string.format("focused: %s [%s]", win:title() or "?", win:application():name() or "?"))
+    print(string.format("focused: %s [%s]", win:title() or "?",
+      (win:application() and win:application():name()) or "?"))
     print(string.format("  frame:  x=%d y=%d w=%d h=%d", f.x, f.y, f.w, f.h))
     print(string.format("  screen: %s (id=%d)", s and s:name() or "?", s and s:id() or -1))
   else
@@ -556,13 +497,11 @@ end
 
 bindHotkeys()
 
--- Move focused app to a space (opt+shift+key mirrors the space-switch keys).
--- Sets a session-level override so the app follows to the target space and
--- is removed from its current space. Config is never modified.
+-- Move focused app to a different space (opt+shift+key).
 local function moveFocusedAppToSpace(targetSpaceName)
   local win = hs.window.focusedWindow()
   if not win then alert("no focused window"); return end
-  local app = win:application()
+  local app      = win:application()
   if not app then return end
   local bundleId = app:bundleID()
   if not bundleId then return end
@@ -572,7 +511,6 @@ local function moveFocusedAppToSpace(targetSpaceName)
   sessionAppOverride[bundleId] = targetSpaceName
   log.i(string.format("session move: %s → %s", bundleId, targetSpaceName))
 
-  -- If target space has a layout, register this app with the resize watcher
   if targetSpace and targetSpace.layout then
     pairBundleSet[bundleId] = true
     ensurePairFilter()
@@ -580,20 +518,17 @@ local function moveFocusedAppToSpace(targetSpaceName)
 
   activateSpace(targetSpaceName)
 
-  -- For spaces with no sidebars layout, expand the moved app to fill its screen.
-  -- Runs after the unhide delay so the window is visible before setFrame.
   if not (targetSpace and targetSpace.layout and targetSpace.layout.type == "sidebars") then
     hs.timer.doAfter(0.35, function()
       local movedApp = hs.application.get(bundleId)
       local movedWin = movedApp and movedApp:mainWindow()
       if movedWin and movedWin:isVisible() then
-        local targetScreen = resolveDisplay(targetSpace and targetSpace.role or "CENTRE")
+        local targetScreen = resolveSpaceScreen(targetSpaceName)
         placeWindow(movedWin, targetScreen, targetScreen:frame(), "moved-fill")
       end
     end)
   end
 
-  -- Replaces the space-switch alert with a more informative one
   alert("Moved " .. appName .. " → " .. targetSpaceName)
 end
 
@@ -603,77 +538,138 @@ for _, hk in ipairs(config.hotkeys or {}) do
   end)
 end
 
--- Move active space to a display: cmd+shift+1=LEFT, cmd+shift+2=CENTRE, cmd+shift+3=LAPTOP.
--- Takes whichever space is active on the focused window's display and reassigns it.
-local ROLE_FOR_KEY = { ["1"] = "LEFT", ["2"] = "CENTRE", ["3"] = "LAPTOP" }
+-- Move active space to a named screen (cmd+shift+1/2/3).
+local SCREEN_FOR_KEY = {
+  ["1"] = "external-main",
+  ["2"] = "external-secondary",
+  ["3"] = "laptop",
+}
 
-local function moveActiveSpaceToRole(targetRole)
+local function moveActiveSpaceToScreen(targetScreenName)
   local win       = hs.window.focusedWindow()
   local screen    = (win and win:screen()) or hs.screen.mainScreen()
   local spaceName = activeSpace[screen:id()]
   if not spaceName then alert("no active space here"); return end
-  if resolveDisplay(targetRole):id() == screen:id() then
-    alert(spaceName .. " already on " .. targetRole); return
+  local targetScreen = screensByName[targetScreenName]
+  if not targetScreen then alert(targetScreenName .. " not connected"); return end
+  if targetScreen:id() == screen:id() then
+    alert(spaceName .. " already on " .. targetScreenName); return
   end
-  sessionRoleOverride[spaceName] = targetRole
-  log.i(string.format("space move: %s → %s", spaceName, targetRole))
-  activateSpace(spaceName, targetRole)
-  alert(spaceName .. " → " .. targetRole)
+  sessionScreenOverride[spaceName] = targetScreenName
+  log.i(string.format("space move: %s → %s", spaceName, targetScreenName))
+  activateSpace(spaceName)
+  alert(spaceName .. " → " .. targetScreenName)
 end
 
-for key, role in pairs(ROLE_FOR_KEY) do
-  hs.hotkey.bind({ "cmd", "shift" }, key, function() moveActiveSpaceToRole(role) end)
+for key, screenName in pairs(SCREEN_FOR_KEY) do
+  hs.hotkey.bind({ "cmd", "shift" }, key, function()
+    moveActiveSpaceToScreen(screenName)
+  end)
 end
 
 hs.hotkey.bind({ "cmd", "alt" }, "space", showStatus)
 
 -- ---------------------------------------------------------------------------
--- Reactivity
+-- Reactivity — screen connect / disconnect
 -- ---------------------------------------------------------------------------
 
--- Apply per-profile defaults: activate each space on its role, deduped by
--- screen ID so laptop-only (all roles → same screen) only activates once.
--- Clears sessionRoleOverride so display assignments start fresh on each profile.
-local function applyProfileDefaults(profileName, silent)
-  local profileDefaults = config.defaults and config.defaults[profileName]
-  if not profileDefaults then
-    log.w("no defaults for profile: " .. profileName); return
+-- Activate defaults for a single screen name (called on connect).
+local function applyDefaultForScreen(screenName)
+  local isLaptopOnly = not screensByName["external-main"]
+                    and not screensByName["external-secondary"]
+  local defaults = (isLaptopOnly and config.defaults and config.defaults["laptop-only"])
+                or (config.defaults)
+  if not defaults then return end
+  local spaceName = defaults[screenName]
+  if spaceName and spaceName ~= "" and config.spaces and config.spaces[spaceName] then
+    activateSpace(spaceName)
   end
-  sessionRoleOverride = {}
-  local seenScreenId  = {}
-  for _, role in ipairs(ROLE_PRIORITY) do
-    local spaceName = profileDefaults[role]
-    if spaceName and config.spaces and config.spaces[spaceName] then
-      local screenId = resolveDisplay(role):id()
-      if not seenScreenId[screenId] then
-        seenScreenId[screenId] = true
-        if silent then
-          activeSpace[screenId] = spaceName
-          log.i("default (silent): " .. role .. " → " .. spaceName)
-        else
-          activateSpace(spaceName, role)
-        end
-      end
+end
+
+-- On unplug of removedName: migrate spaces, apply direction-aware takeover rule.
+local function handleScreenRemoved(removedName, prevByName)
+  local removedScreen = prevByName[removedName]
+  if not removedScreen then return end
+
+  local removedId      = removedScreen:id()
+  local activeOnRemoved = activeSpace[removedId]
+  activeSpace[removedId] = nil
+
+  -- Clear session overrides that pointed to the removed screen
+  for spaceName, name in pairs(sessionScreenOverride) do
+    if name == removedName then sessionScreenOverride[spaceName] = nil end
+  end
+
+  if not activeOnRemoved then return end
+
+  -- Where does the formerly-active space land now?
+  local _, destName = resolveSpaceScreen(activeOnRemoved)
+  local goingDown   = precedenceOf(removedName) < precedenceOf(destName)
+
+  if goingDown then
+    -- Active space travels: take over the destination
+    log.i(string.format("screen removed: %s (DOWN) → %s takes over %s",
+      removedName, activeOnRemoved, destName))
+    activateSpace(activeOnRemoved)
+  else
+    -- Active space migrates up: hide its apps, leave destination alone
+    log.i(string.format("screen removed: %s (UP) → %s hides on %s",
+      removedName, activeOnRemoved, destName))
+    for bundleId in pairs(effectiveApps(activeOnRemoved)) do
+      local app = hs.application.get(bundleId)
+      if app and not app:isHidden() then app:hide() end
     end
   end
 end
 
 _G.screenWatcher = hs.screen.watcher.new(function()
-  local prevProfile   = activeProfile
-  activeProfile, roleToScreen = resolveProfile()
-  if activeProfile ~= prevProfile then
-    log.i("profile changed: " .. prevProfile .. " → " .. activeProfile)
-    applyProfileDefaults(activeProfile, false)
+  local prevByName = screensByName
+  screensByName    = buildScreensByName()
+
+  -- Handle removed screens
+  for name in pairs(prevByName) do
+    if not screensByName[name] then
+      handleScreenRemoved(name, prevByName)
+    end
   end
-  alert("profile: " .. activeProfile)
+
+  -- Handle added screens
+  for name in pairs(screensByName) do
+    if not prevByName[name] then
+      log.i("screen added: " .. name)
+      applyDefaultForScreen(name)
+    end
+  end
+
+  alert(screenSetLabel())
 end)
 _G.screenWatcher:start()
 
 -- Config reload
 hs.hotkey.bind({ "cmd", "alt" }, "r", function() hs.reload() end)
 
--- Apply startup defaults — activates each space so apps are shown/hidden correctly.
-applyProfileDefaults(activeProfile, false)
+-- Apply startup defaults
+local function applyStartupDefaults()
+  local isLaptopOnly = not screensByName["external-main"]
+                    and not screensByName["external-secondary"]
+  local defaults = (isLaptopOnly and config.defaults and config.defaults["laptop-only"])
+                or config.defaults
+  if not defaults then return end
+  local seenScreenId = {}
+  local chain = config.screens and config.screens.precedence or {}
+  for _, screenName in ipairs(chain) do
+    local spaceName = defaults[screenName]
+    if spaceName and spaceName ~= "" and config.spaces and config.spaces[spaceName] then
+      local s = screensByName[screenName]
+      if s and not seenScreenId[s:id()] then
+        seenScreenId[s:id()] = true
+        activateSpace(spaceName)
+      end
+    end
+  end
+end
 
-alert("Tilr — " .. activeProfile)
-log.i("init.lua loaded; profile=" .. activeProfile)
+applyStartupDefaults()
+
+alert("Tilr — " .. screenSetLabel())
+log.i("init.lua loaded; setup=" .. screenSetLabel())
