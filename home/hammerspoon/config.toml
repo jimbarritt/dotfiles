@@ -36,7 +36,7 @@ main  = "com.mitchellh.ghostty"
 ratio = 0.70
 
 [spaces.Reference]
-prefer = ["external-main", "external-secondary", "laptop"]
+prefer = ["external-secondary", "external-main", "laptop"]
 apps   = ["notion.id", "app.zen-browser.zen", "com.google.Chrome"]
 
 [spaces.Meetings]
@@ -65,7 +65,7 @@ apps   = ["com.tinyspeck.slackmacgap"]
 
 [defaults]
 external-main      = "Coding"
-external-secondary = ""
+external-secondary = "Reference"
 laptop             = "Slack"
 
 [defaults.laptop-only]

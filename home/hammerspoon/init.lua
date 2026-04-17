@@ -153,11 +153,16 @@ local function resolveSpaceScreen(spaceName)
   return fallback, "laptop"
 end
 
-local function activateSpace(spaceName)
+local function activateSpace(spaceName, forceScreenName)
   local space = config.spaces and config.spaces[spaceName]
   if not space then log.w("unknown space: " .. spaceName); return end
 
-  local screen, screenName = resolveSpaceScreen(spaceName)
+  local screen, screenName
+  if forceScreenName and screensByName[forceScreenName] then
+    screen, screenName = screensByName[forceScreenName], forceScreenName
+  else
+    screen, screenName = resolveSpaceScreen(spaceName)
+  end
   local screenId = screen:id()
 
   activeSpace[screenId] = spaceName
@@ -182,10 +187,11 @@ local function activateSpace(spaceName)
     end
   end
 
-  hs.timer.doAfter(0.3, function() applyLayout(spaceName, screen) end)
-
-  if statusAlertId then refreshStatus()
-  else alert(spaceName .. " [" .. screenName .. "]") end
+  hs.timer.doAfter(0.2, function()
+    applyLayout(spaceName, screen)
+    if statusAlertId then refreshStatus()
+    else alert(spaceName .. " [" .. screenName .. "]") end
+  end)
 end
 
 -- ---------------------------------------------------------------------------
@@ -298,7 +304,14 @@ applyLayout = function(spaceName, screen)
   tiledMain = nil
   local space  = config.spaces and config.spaces[spaceName]
   local layout = space and space.layout
-  if not layout or layout.type ~= "sidebars" then return end
+  if not layout or layout.type ~= "sidebars" then
+    for bundleId in pairs(effectiveApps(spaceName)) do
+      local app = hs.application.get(bundleId)
+      local win = app and app:mainWindow()
+      if win and win:isVisible() then win:moveToScreen(screen, false, false, 0) end
+    end
+    return
+  end
 
   local ratio   = spaceRatioOverride[spaceName] or layout.ratio or 0.65
   local sf      = screen:frame()
@@ -471,8 +484,6 @@ local function dumpDiagnostics()
   alert("Diagnostics → console")
 end
 
-hs.hotkey.bind({ "cmd", "alt" }, "z", dumpDiagnostics)
-
 -- ---------------------------------------------------------------------------
 -- Hotkeys
 -- ---------------------------------------------------------------------------
@@ -483,19 +494,20 @@ local function parseMods(str)
   return mods
 end
 
-local boundHotkeys = {}
-local function bindHotkeys()
-  for _, hk in ipairs(boundHotkeys) do hk:delete() end
-  boundHotkeys = {}
-  for _, hk in ipairs(config.hotkeys or {}) do
-    local binding = hs.hotkey.bind(parseMods(hk.mods), hk.key, function()
-      activateSpace(hk.space)
-    end)
-    table.insert(boundHotkeys, binding)
-  end
+if _G.boundHotkeys then
+  for _, hk in ipairs(_G.boundHotkeys) do hk:delete() end
+end
+_G.boundHotkeys = {}
+
+local function bindKey(mods, key, fn)
+  table.insert(_G.boundHotkeys, hs.hotkey.bind(mods, key, fn))
 end
 
-bindHotkeys()
+bindKey({ "cmd", "alt" }, "z", dumpDiagnostics)
+
+for _, hk in ipairs(config.hotkeys or {}) do
+  bindKey(parseMods(hk.mods), hk.key, function() activateSpace(hk.space) end)
+end
 
 -- Move focused app to a different space (opt+shift+key).
 local function moveFocusedAppToSpace(targetSpaceName)
@@ -533,9 +545,7 @@ local function moveFocusedAppToSpace(targetSpaceName)
 end
 
 for _, hk in ipairs(config.hotkeys or {}) do
-  hs.hotkey.bind(parseMods("alt shift"), hk.key, function()
-    moveFocusedAppToSpace(hk.space)
-  end)
+  bindKey(parseMods("alt shift"), hk.key, function() moveFocusedAppToSpace(hk.space) end)
 end
 
 -- Move active space to a named screen (cmd+shift+1/2/3).
@@ -562,12 +572,10 @@ local function moveActiveSpaceToScreen(targetScreenName)
 end
 
 for key, screenName in pairs(SCREEN_FOR_KEY) do
-  hs.hotkey.bind({ "cmd", "shift" }, key, function()
-    moveActiveSpaceToScreen(screenName)
-  end)
+  bindKey({ "cmd", "shift" }, key, function() moveActiveSpaceToScreen(screenName) end)
 end
 
-hs.hotkey.bind({ "cmd", "alt" }, "space", showStatus)
+bindKey({ "cmd", "alt" }, "space", showStatus)
 
 -- ---------------------------------------------------------------------------
 -- Reactivity — screen connect / disconnect
@@ -582,7 +590,7 @@ local function applyDefaultForScreen(screenName)
   if not defaults then return end
   local spaceName = defaults[screenName]
   if spaceName and spaceName ~= "" and config.spaces and config.spaces[spaceName] then
-    activateSpace(spaceName)
+    activateSpace(spaceName, screenName)
   end
 end
 
@@ -632,6 +640,7 @@ _G.focusWatcher = hs.application.watcher.new(function(appName, eventType, app)
   if not app then return end
   local bundleId = app:bundleID()
   if not bundleId or EXEMPT[bundleId] then return end
+  if bundleId == "org.hammerspoon.Hammerspoon" then return end
 
   -- Find which space owns this app
   local targetSpace = sessionAppOverride[bundleId]
@@ -677,7 +686,7 @@ end)
 _G.screenWatcher:start()
 
 -- Config reload
-hs.hotkey.bind({ "cmd", "alt" }, "r", function() hs.reload() end)
+bindKey({ "cmd", "alt" }, "r", function() hs.reload() end)
 
 -- Apply startup defaults
 local function applyStartupDefaults()
@@ -694,7 +703,7 @@ local function applyStartupDefaults()
       local s = screensByName[screenName]
       if s and not seenScreenId[s:id()] then
         seenScreenId[s:id()] = true
-        activateSpace(spaceName)
+        activateSpace(spaceName, screenName)
       end
     end
   end
