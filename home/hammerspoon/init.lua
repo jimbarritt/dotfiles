@@ -175,6 +175,10 @@ local function activateSpace(spaceName, forceScreenName)
 
   log.i(string.format("activate %s [%s] (screen: %s)", spaceName, screenName, screen:name()))
 
+  local alertMsg = spaceName .. " [" .. screenName .. "]"
+  if statusAlertId then refreshStatus()
+  else alert(alertMsg) end
+
   for bundleId in pairs(effectiveApps(spaceName)) do
     local app = hs.application.get(bundleId)
     if app then app:unhide() end
@@ -187,10 +191,13 @@ local function activateSpace(spaceName, forceScreenName)
     end
   end
 
+  if shouldShow["org.hammerspoon.Hammerspoon"] then hs.openConsole(false)
+  else local w = hs.console.hswindow(); if w then w:close() end end
+
   hs.timer.doAfter(0.2, function()
     applyLayout(spaceName, screen)
     if statusAlertId then refreshStatus()
-    else alert(spaceName .. " [" .. screenName .. "]") end
+    else alert(alertMsg) end
   end)
 end
 
@@ -453,6 +460,14 @@ local function dumpDiagnostics()
   print("--- activeSpace ---")
   for screenId, sName in pairs(activeSpace) do
     print(string.format("  screen id=%-12d → %s", screenId, sName))
+  end
+  print("")
+  print("--- spaces (resolved screen) ---")
+  for spaceName, space in pairs(config.spaces or {}) do
+    local scr, scrName = resolveSpaceScreen(spaceName)
+    local isActive = activeSpace[scr:id()] == spaceName
+    print(string.format("  %-12s → %-20s (%s)%s",
+      spaceName, scrName, scr:name() or "?", isActive and "  [ACTIVE]" or ""))
   end
   print("")
   print("--- sessionScreenOverride ---")
