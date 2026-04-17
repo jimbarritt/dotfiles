@@ -24,7 +24,7 @@ precedence = ["external-main", "external-secondary", "laptop"]
 
 [spaces.Scratch]
 prefer = ["external-main", "laptop"]
-apps   = ["org.hammerspoon.Hammerspoon"]
+apps   = ["org.hammerspoon.Hammerspoon", "com.1password.1password"]
 
 [spaces.Coding]
 prefer = ["external-main", "laptop"]

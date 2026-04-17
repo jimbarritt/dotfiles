@@ -622,6 +622,37 @@ local function handleScreenRemoved(removedName, prevByName)
   end
 end
 
+-- When an app is activated (e.g. via alt-tab), check if it belongs to a
+-- different space and activate that space automatically.
+local activatingSpace = false
+
+_G.focusWatcher = hs.application.watcher.new(function(appName, eventType, app)
+  if eventType ~= hs.application.watcher.activated then return end
+  if activatingSpace then return end
+  if not app then return end
+  local bundleId = app:bundleID()
+  if not bundleId or EXEMPT[bundleId] then return end
+
+  -- Find which space owns this app
+  local targetSpace = sessionAppOverride[bundleId]
+  if not targetSpace then
+    for spaceName in pairs(config.spaces or {}) do
+      if effectiveApps(spaceName)[bundleId] then targetSpace = spaceName; break end
+    end
+  end
+  if not targetSpace then return end
+
+  -- Already active on its screen — nothing to do
+  local screen = resolveSpaceScreen(targetSpace)
+  if activeSpace[screen:id()] == targetSpace then return end
+
+  log.i("focus: " .. appName .. " → activating " .. targetSpace)
+  activatingSpace = true
+  activateSpace(targetSpace)
+  hs.timer.doAfter(0.5, function() activatingSpace = false end)
+end)
+_G.focusWatcher:start()
+
 _G.screenWatcher = hs.screen.watcher.new(function()
   local prevByName = screensByName
   screensByName    = buildScreensByName()
