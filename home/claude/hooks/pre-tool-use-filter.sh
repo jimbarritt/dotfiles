@@ -51,6 +51,10 @@ if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+commit(\s|$)'; then
   deny "git commit is blocked — commit manually to retain control over what gets recorded"
 fi
 
+if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+add(\s|$)'; then
+  deny "git add is blocked — stage files manually"
+fi
+
 # ---------------------------------------------------------------------------
 # Git history rewriting / destructive git operations
 # ---------------------------------------------------------------------------
