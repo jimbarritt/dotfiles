@@ -4,6 +4,7 @@ description: Restore a previously saved conversation session to resume work
 argument-hint: "[session filename, timestamp, or 'latest']"
 allowed-tools: Read, Bash, Glob, Grep
 disable-model-invocation: false
+model: haiku
 ---
 
 # Restore Session

@@ -45,6 +45,13 @@ if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+push(\s|$)'; then
 fi
 
 # ---------------------------------------------------------------------------
+# Git commit — commit manually to retain control over what gets recorded
+# ---------------------------------------------------------------------------
+if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+commit(\s|$)'; then
+  deny "git commit is blocked — commit manually to retain control over what gets recorded"
+fi
+
+# ---------------------------------------------------------------------------
 # Git history rewriting / destructive git operations
 # ---------------------------------------------------------------------------
 if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+reset\s+--hard'; then
