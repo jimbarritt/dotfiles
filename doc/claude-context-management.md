@@ -42,6 +42,24 @@ One-line entries only. Content lives in individual memory files (loaded on deman
 
 Only loaded when explicitly restored. Cost is proportional to session length. Keep "What's left to do" and "How to resume" sections tight — the detailed history is for human reference, not re-ingestion.
 
+### Built-in Claude Code MCP services
+
+Claude Code auto-injects MCP connectors for Gmail, Google Calendar, Google Drive, and Slack at session start. These consume ~10.7k tokens (~5% of context) even if unused.
+
+**To disable them globally,** set `ENABLE_CLAUDEAI_MCP_SERVERS=false` in `~/.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
+  }
+}
+```
+
+**Why `disabledMcpjsonServers` doesn't work:** That setting only blocks servers defined in `.mcp.json` files. These built-in connectors are cloud-injected and require the env var to disable.
+
+**Granularity:** The env var is all-or-nothing; there's no per-server control yet (see [#31249](https://github.com/anthropics/claude-code/issues/31249) for the feature request).
+
 ### Conversation length
 
 For long-running work, consider:

@@ -13,6 +13,8 @@ output_tokens=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0'
 cost_usd=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 rate_5h=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
 rate_7d=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+reset_5h=$(echo "$input" | jq -r '.rate_limits.five_hour.reset_at // .rate_limits.five_hour.resets_at // empty')
+reset_7d=$(echo "$input" | jq -r '.rate_limits.seven_day.reset_at // .rate_limits.seven_day.resets_at // empty')
 
 # Shorten home directory to ~
 home="$HOME"
@@ -86,20 +88,37 @@ if [ -n "$rate_5h" ] || [ -n "$rate_7d" ]; then
     rate_5h_int=$(printf '%.0f' "$rate_5h")
     tokens_5h=$((cap_5h * rate_5h_int / 100))
     tokens_5h_k=$(( (tokens_5h + 500) / 1000 ))  # round to nearest k
+    rate_limits="${rate_limits}5h:"
     if [ "$rate_5h_int" -gt 80 ]; then
-      rate_limits="${rate_limits}5h:${bold}${rate_5h_int}% (${tokens_5h_k}k)${reset} "
+      rate_limits="${rate_limits}${bold}${rate_5h_int}%${reset}"
     else
-      rate_limits="${rate_limits}5h:${dim}${rate_5h_int}% (${tokens_5h_k}k)${reset} "
+      rate_limits="${rate_limits}${dim}${rate_5h_int}%${reset}"
     fi
+    if [ -n "$reset_5h" ] && [ "$reset_5h" != "null" ]; then
+      # Unix timestamp to HH:MM (local time)
+      reset_hhmm=$(date -r "$reset_5h" '+%H:%M' 2>/dev/null)
+      if [ -n "$reset_hhmm" ]; then
+        rate_limits="${rate_limits}${dim}@${reset_hhmm}${reset}"
+      fi
+    fi
+    rate_limits="${rate_limits} "
   fi
   if [ -n "$rate_7d" ]; then
     rate_7d_int=$(printf '%.0f' "$rate_7d")
     tokens_7d=$((cap_7d * rate_7d_int / 100))
     tokens_7d_k=$(( (tokens_7d + 500) / 1000 ))  # round to nearest k
+    rate_limits="${rate_limits}7d:"
     if [ "$rate_7d_int" -gt 80 ]; then
-      rate_limits="${rate_limits}7d:${bold}${rate_7d_int}% (${tokens_7d_k}k)${reset}"
+      rate_limits="${rate_limits}${bold}${rate_7d_int}%${reset}"
     else
-      rate_limits="${rate_limits}7d:${dim}${rate_7d_int}% (${tokens_7d_k}k)${reset}"
+      rate_limits="${rate_limits}${dim}${rate_7d_int}%${reset}"
+    fi
+    if [ -n "$reset_7d" ] && [ "$reset_7d" != "null" ]; then
+      # Unix timestamp to DD/MM (local time)
+      reset_ddmm=$(date -r "$reset_7d" '+%d/%m' 2>/dev/null)
+      if [ -n "$reset_ddmm" ]; then
+        rate_limits="${rate_limits}${dim}@${reset_ddmm}${reset}"
+      fi
     fi
   fi
   if [ -n "$rate_limits" ]; then
