@@ -56,3 +56,56 @@ Both themes use the same colour names and hierarchy. To adjust a colour,
 change it in both files to keep them in sync. The Ghostty theme maps colours
 to the 16 ANSI slots; the Neovim theme applies them to highlight groups
 directly.
+
+### Palette 8 (bright black / secondary text)
+
+`palette = 8` ("bright black") does **double duty**, which is why it can't
+just be darkened:
+
+1. **As a foreground** for secondary/dim text — wants to be *dark* so it reads
+   on the white background:
+   - Claude Code's truncated-output hints (`… +6 lines (ctrl+o to expand)`)
+   - Claude Code statusline secondary fields
+   - Test runner output (test names, timing in parentheses)
+2. **As a background** — Claude Code draws the *submitted prompt* in a box
+   whose background is ANSI 8, with the prompt text in the foreground colour
+   (`#111811`). This wants palette 8 to be *light* so the dark text reads.
+
+These pull in opposite directions, so no single value is perfect — the goal is
+a medium grey that clears ~4:1 contrast in *both* roles.
+
+> **Why Claude Code uses ANSI 8 here, and why we stay on `dark-ansi`.**
+> Claude Code's theme maps the submitted-prompt highlight
+> (`userMessageBackground`) to a palette slot that depends on the chosen theme:
+> `dark-ansi` → `ansi:blackBright` (**palette 8**); `light-ansi` →
+> `ansi:white` (**palette 7**). Our palette deliberately *inverts* the
+> black/white slots (palette 7 = `#111811` dark, palette 0 = `#dce4dc` light)
+> so that `dark-ansi`'s bright-white text renders dark on the light bg. That
+> inversion is why `light-ansi` looks wrong — it grabs palette 7 (`#111811`)
+> for the prompt box and turns it into a near-black bar. So keep Claude Code on
+> **`dark-ansi`** with this terminal theme; do *not* switch it to `light-ansi`.
+>
+> To remove the prompt highlight entirely you'd set palette 8 = `#ffffff` (=
+> background), but that re-breaks dim grey foreground text in other tools — the
+> double-duty conflict is irreducible on a single slot. We chose readable dim
+> text (`#6a766a`) over a hidden bar.
+
+| Value | Dim text on white | Prompt-box text | Verdict |
+|-------|-------------------|-----------------|---------|
+| `#c4d0c4` | ~1.3:1 — invisible | good | box fine, hints gone |
+| `#353b35` | good | ~1.5:1 — unreadable | hints fine, box inverted |
+| `#6a766a` | ~4.5:1 | ~4.0:1 | **Current** — both readable |
+
+Don't push darker than `#6a766a`: it re-breaks the submitted-prompt box
+(dark-on-dark). If dim text needs more presence, increase contrast on the
+white background another way rather than darkening this slot further.
+
+#### The dark theme has the same slot
+
+The same `userMessageBackground` → palette 8 mapping applies to the dark
+`green-tinted` theme — there the bar is a *lighter* lift on the near-black
+background instead of a darker one. It's tuned to `#1d401d` (down from a
+brighter `#2d5c2d`): a gentle lift that keeps the prompt bar subtle while dim
+grey-green text stays readable on the `#0a1f0a` background. Same trade-off,
+opposite direction — pull it toward the background to hide the bar, away from
+it for more readable dim text.

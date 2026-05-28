@@ -11,7 +11,7 @@ selection-foreground = #111811
 
 # Black (UI chrome, borders)
 palette = 0=#dce4dc
-palette = 8=#c4d0c4
+palette = 8=#6a766a
 
 # Red (errors, unstaged changes)
 palette = 1=#8a3a3a

@@ -11,6 +11,8 @@
       "Write(**)",
       "Write(~/**)",
       "Edit(~/**)",
+      "Update(~/**)",
+      "Update(**)",
       "Read(~/**)",
       "WebSearch"
     ],
