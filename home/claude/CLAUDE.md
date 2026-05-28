@@ -1,13 +1,24 @@
-# Claude Code Configuration
+# Global instructions
 
-This directory is symlinked to `~/.claude/` via the dotfiles repo.
+## Language
 
-## Session Management
+Use **British English** throughout code and documentation (e.g., "initialise", "colour", "organise"). This applies to variable names, function names, comments, and docs.
 
-Use `/save-session` and `/restore-session` to preserve and resume conversation context. This is **strongly preferred over letting conversations compact** — saved sessions capture richer, more intentional context than automatic compaction.
+## Tools
 
-- **Before ending a conversation**: run `/save-session` with a brief description of what you were doing
-- **When starting a new conversation** that continues previous work: run `/restore-session latest`
-- Sessions are stored in `.claude-sessions/` (relative to the repo root)
+- **Marq** — Native macOS markdown viewer. When asked to "show me the markdown", "preview this", or "open in Marq", run `open -a Marq path/to/file.md`. If Marq is already running, this switches to the new file in the same window. Installed via `brew install --cask jimbarritt/tap/marq`.
 
-When you notice a conversation is getting long or the user mentions stopping, proactively suggest saving the session.
+## Agents
+
+- Delegate self-contained doc updates to a general-purpose agent rather than doing them inline. "Read this file, make these edits based on X" is always a good agent candidate — it costs ~1% context vs 3-5% inline.
+- **Use background agents by default** for iterative work. Send messages to agents (via SendMessage) and let them run in the background while you continue — get notified when done. More efficient than waiting inline for results, especially for multi-turn refinement loops.
+
+## Compaction
+
+When compacting, prioritise preserving:
+- Current task state and what's left to do (ordered)
+- Files created or modified (with paths)
+- Key decisions made and why
+- Non-obvious context: gotchas, constraints, workarounds, external references
+
+Discard: exploratory tangents, superseded approaches, verbose tool output, reasoning steps that led to a dead end.

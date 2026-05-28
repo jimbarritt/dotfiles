@@ -1,38 +1,107 @@
 {
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
   },
   "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Read(**)",
+      "Edit(**)",
+      "Write(**)",
+      "Write(~/**)",
+      "Edit(~/**)",
+      "Read(~/**)",
+      "WebSearch"
+    ],
     "deny": [
-      "Bash(rm *)",
-      "Bash(rm -rf *)",
-      "Bash(sudo rm *)",
-      "Bash(git push --force*)"
+      "Bash(rm:*)",
+      "Bash(sudo:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push --force-with-lease:*)",
+      "Bash(git add:*)",
+      "Bash(./do.sh:*)",
+      "Bash(do.sh:*)",
+      "Bash(./bin/:*)",
+      "Bash(bin/:*)"
     ]
   },
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ctx-trakr hook tool-use",
+            "timeout": 5
+          }
+        ]
+      },
       {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/pre-tool-use-filter.sh",
+            "command": "rtk hook claude",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"allow\"}}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ctx-trakr hook session-start",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ctx-trakr hook session-end",
             "timeout": 5
           }
         ]
       }
     ]
   },
-  "enabledPlugins": {
-    "rust-analyzer-lsp@claude-plugins-official": true
-  },
-  "effortLevel": "medium",
-  "voiceEnabled": true,
-  "skipDangerousModePermissionPrompt": true,
-  "model": "opus",
   "statusLine": {
     "type": "command",
-    "command": "sh ~/.claude/statusline-command.sh"
-  }
+    "command": "sh ~/.claude/statusline-command.sh",
+    "padding": 2
+  },
+  "enabledPlugins": {},
+  "effortLevel": "medium",
+  "autoUpdatesChannel": "latest",
+  "minimumVersion": "2.1.81",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "skipDangerousModePermissionPrompt": false,
+  "theme": "dark-ansi",
+  "editorMode": "vim",
+  "agentPushNotifEnabled": true,
+  "voiceEnabled": true
 }
