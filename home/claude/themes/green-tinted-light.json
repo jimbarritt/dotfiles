@@ -1,0 +1,18 @@
+{
+  "name": "Green Tinted Light",
+  "base": "light",
+  "overrides": {
+    "text": "#111811",
+    "background": "#ffffff",
+    "userMessageBackground": "#eef4ee",
+    "inactive": "#6a766a",
+    "subtle": "#9bb09b",
+    "claude": "#1a7a1a",
+    "success": "#0a5a0a",
+    "error": "#8a3a3a",
+    "warning": "#7a6a00",
+    "promptBorder": "#5a8a5a",
+    "diffAdded": "#d8ecd8",
+    "diffRemoved": "#f2dada"
+  }
+}
