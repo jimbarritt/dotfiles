@@ -38,9 +38,12 @@ if $_git_timeout git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2>&1; 
 fi
 
 # Build output: green path, cyan branch, dim model, context %
+# `dim` uses bright-black (palette 8 / secondary-text slot) rather than the
+# ANSI dim attribute (\033[2m), which washes out to near-invisible on the light
+# theme's white background. Palette 8 is a readable mid-tone in both themes.
 green='\033[32m'
 cyan='\033[36m'
-dim='\033[2m'
+dim='\033[90m'
 reset='\033[0m'
 
 output=""
