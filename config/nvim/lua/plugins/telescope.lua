@@ -15,11 +15,15 @@ return {
             },
           },
           mappings = {
+            -- Ghostty rewrites ctrl+g -> Esc (see config/ghostty/config), so a
+            -- <C-g> mapping never fires here. Map <Esc> -> close instead, in
+            -- insert mode too, so one press closes the picker straight from the
+            -- prompt rather than first dropping into Telescope's normal mode.
             i = {  -- Insert mode
-              ["<C-g>"] = "close",
+              ["<Esc>"] = "close",
             },
             n = {  -- Normal mode
-              ["<C-g>"] = "close",
+              ["<Esc>"] = "close",
             },
           },
         },
