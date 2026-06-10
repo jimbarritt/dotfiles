@@ -8,13 +8,12 @@ cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // ""')
 model=$(echo "$input" | jq -r '.model.display_name // .model.id // ""')
 version=$(echo "$input" | jq -r '.version // empty')
 ctx_remaining=$(echo "$input" | jq -r '.context_window.remaining_percentage // empty')
-input_tokens=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0')
-output_tokens=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0')
 cost_usd=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 rate_5h=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
 rate_7d=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 reset_5h=$(echo "$input" | jq -r '.rate_limits.five_hour.reset_at // .rate_limits.five_hour.resets_at // empty')
 reset_7d=$(echo "$input" | jq -r '.rate_limits.seven_day.reset_at // .rate_limits.seven_day.resets_at // empty')
+on_subscription=$(echo "$input" | jq 'has("rate_limits")')
 
 # Shorten home directory to ~
 home="$HOME"
@@ -73,24 +72,14 @@ if [ -n "$ctx_remaining" ]; then
   fi
 fi
 
-# Session tokens and cost
-total_tokens=$((input_tokens + output_tokens))
-if [ "$total_tokens" -gt 0 ]; then
-  cost_gbp=$(echo "$cost_usd * 0.74" | bc -l | xargs printf '%.2f')
-  output="${output} - $(printf "${dim}%sk tokens / £%s${reset}" "$((total_tokens / 1000))" "$cost_gbp")"
-fi
-
-# Rate limits (Pro: 44k/5h, ~320k/7d)
-if [ -n "$rate_5h" ] || [ -n "$rate_7d" ]; then
+if [ "$on_subscription" = "true" ]; then
+  # Subscription mode (Pro/Max): show rate limits; show cost only when at/over a limit
+  rate_5h_int=0
+  rate_7d_int=0
   rate_limits=""
-  # Pro plan token caps
-  cap_5h=44000
-  cap_7d=320000
 
   if [ -n "$rate_5h" ]; then
     rate_5h_int=$(printf '%.0f' "$rate_5h")
-    tokens_5h=$((cap_5h * rate_5h_int / 100))
-    tokens_5h_k=$(( (tokens_5h + 500) / 1000 ))  # round to nearest k
     rate_limits="${rate_limits}5h:"
     if [ "$rate_5h_int" -gt 80 ]; then
       rate_limits="${rate_limits}${bold}${rate_5h_int}%${reset}"
@@ -98,7 +87,6 @@ if [ -n "$rate_5h" ] || [ -n "$rate_7d" ]; then
       rate_limits="${rate_limits}${dim}${rate_5h_int}%${reset}"
     fi
     if [ -n "$reset_5h" ] && [ "$reset_5h" != "null" ]; then
-      # Unix timestamp to HH:MM (local time)
       reset_hhmm=$(date -r "$reset_5h" '+%H:%M' 2>/dev/null)
       if [ -n "$reset_hhmm" ]; then
         rate_limits="${rate_limits}${dim}@${reset_hhmm}${reset}"
@@ -106,10 +94,9 @@ if [ -n "$rate_5h" ] || [ -n "$rate_7d" ]; then
     fi
     rate_limits="${rate_limits} "
   fi
+
   if [ -n "$rate_7d" ]; then
     rate_7d_int=$(printf '%.0f' "$rate_7d")
-    tokens_7d=$((cap_7d * rate_7d_int / 100))
-    tokens_7d_k=$(( (tokens_7d + 500) / 1000 ))  # round to nearest k
     rate_limits="${rate_limits}7d:"
     if [ "$rate_7d_int" -gt 80 ]; then
       rate_limits="${rate_limits}${bold}${rate_7d_int}%${reset}"
@@ -117,16 +104,26 @@ if [ -n "$rate_5h" ] || [ -n "$rate_7d" ]; then
       rate_limits="${rate_limits}${dim}${rate_7d_int}%${reset}"
     fi
     if [ -n "$reset_7d" ] && [ "$reset_7d" != "null" ]; then
-      # Unix timestamp to DD/MM (local time)
       reset_ddmm=$(date -r "$reset_7d" '+%d/%m' 2>/dev/null)
       if [ -n "$reset_ddmm" ]; then
         rate_limits="${rate_limits}${dim}@${reset_ddmm}${reset}"
       fi
     fi
   fi
+
   if [ -n "$rate_limits" ]; then
     output="${output} - ${rate_limits}"
   fi
+
+  # Show cost only when in extra usage (at or over a rate limit)
+  if [ "$rate_5h_int" -ge 100 ] || [ "$rate_7d_int" -ge 100 ]; then
+    cost_gbp=$(echo "$cost_usd * 0.74" | bc -l | xargs printf '%.2f')
+    output="${output} - $(printf "${bold}extra: £%s${reset}" "$cost_gbp")"
+  fi
+else
+  # API mode: always show cost, no rate limits
+  cost_gbp=$(echo "$cost_usd * 0.74" | bc -l | xargs printf '%.2f')
+  output="${output} - $(printf "${dim}£%s${reset}" "$cost_gbp")"
 fi
 
 printf "%b\n" "$output"
