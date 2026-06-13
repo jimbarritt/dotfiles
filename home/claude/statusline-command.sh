@@ -7,7 +7,7 @@ input=$(cat)
 cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // ""')
 model=$(echo "$input" | jq -r '.model.display_name // .model.id // ""')
 version=$(echo "$input" | jq -r '.version // empty')
-ctx_remaining=$(echo "$input" | jq -r '.context_window.remaining_percentage // empty')
+ctx_tokens=$(echo "$input" | jq -r '(.context_window.total_input_tokens + .context_window.total_output_tokens) // empty')
 cost_usd=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 rate_5h=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
 rate_7d=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
@@ -36,7 +36,7 @@ if $_git_timeout git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2>&1; 
     rev-parse --short HEAD 2>/dev/null)
 fi
 
-# Build output: green path, cyan branch, dim model, context %
+# Build output: green path, cyan branch, dim model, context tokens
 # `dim` uses bright-black (palette 8 / secondary-text slot) rather than the
 # ANSI dim attribute (\033[2m), which washes out to near-invisible on the light
 # theme's white background. Palette 8 is a readable mid-tone in both themes.
@@ -62,13 +62,14 @@ output="${output} - $(printf "${dim}%s${reset}" "$model_str")"
 bold='\033[1m'
 yellow='\033[33m'
 
-if [ -n "$ctx_remaining" ]; then
-  ctx_remaining_int=$(printf '%.0f' "$ctx_remaining")
-  ctx_used=$((100 - ctx_remaining_int))
-  if [ "$ctx_used" -gt 50 ]; then
-    output="${output} - $(printf "${bold}ctx:%s%% !!${reset}" "$ctx_used")"
+if [ -n "$ctx_tokens" ]; then
+  ctx_k=$((ctx_tokens / 1000))
+  if [ "$ctx_k" -ge 170 ]; then
+    output="${output} - $(printf "${bold}!!ctx:%sk!!${reset}" "$ctx_k")"
+  elif [ "$ctx_k" -ge 150 ]; then
+    output="${output} - $(printf "${bold}ctx:%sk${reset}" "$ctx_k")"
   else
-    output="${output} - $(printf "${dim}ctx:%s%%${reset}" "$ctx_used")"
+    output="${output} - $(printf "${dim}ctx:%sk${reset}" "$ctx_k")"
   fi
 fi
 
@@ -104,7 +105,7 @@ if [ "$on_subscription" = "true" ]; then
       rate_limits="${rate_limits}${dim}${rate_7d_int}%${reset}"
     fi
     if [ -n "$reset_7d" ] && [ "$reset_7d" != "null" ]; then
-      reset_ddmm=$(date -r "$reset_7d" '+%d/%m' 2>/dev/null)
+      reset_ddmm=$(date -r "$reset_7d" '+%d/%m %H:%M' 2>/dev/null)
       if [ -n "$reset_ddmm" ]; then
         rate_limits="${rate_limits}${dim}@${reset_ddmm}${reset}"
       fi

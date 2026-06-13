@@ -220,3 +220,39 @@ The system prompt and core I/O tools are injected by the Claude Code harness and
 ## Known Issues
 
 **Agent type display inconsistency:** When spawning agents via the Agent tool, the harness sometimes doesn't display the agent type/model in the tool call UI. This is due to inconsistent harness behavior and parsing bugs, not a feature. Check the agent's output to infer its type, or use the agent ID if visible. Related: #24094, #31898, #20931, #20368.
+
+## Monitoring context size — absolute tokens vs percentage
+
+The statusline shows absolute token count in thousands (`ctx: 29k`), not percentage remaining.
+
+**Why:** Percentage is relative to capacity and doesn't reflect whether the *amount* of context is enough to cause rot. A session at 15% of 200k (30k tokens) behaves very differently to 15% of a future 1M-token model. The absolute number is what matters empirically.
+
+**How it's calculated:** `context_window.total_input_tokens + context_window.total_output_tokens` from the Claude Code statusline JSON. Not just `total_input_tokens` — output tokens accumulate in the conversation history too.
+
+**Three-level warning system:**
+- 0–149k: dim text — normal range, no concern
+- 150–169k: bold text — approaching danger
+- 170k+: `!!ctx:175k!!` bold with exclamation marks — danger zone
+
+## Context rot canary — the secret word test
+
+**Concept:** Place a "canary" string early in the conversation. When context gets long and auto-compaction fires, early turns get summarised lossily. Ask "what's the secret word?" — if Claude doesn't know, context rot has occurred.
+
+**Why not CLAUDE.md:** The global/project CLAUDE.md is part of the system prompt, re-injected at position zero every turn. A canary there would never rot.
+
+**Why not a file:** Claude can always re-read a file. That tests file access, not memory.
+
+**The right place:** Early conversation turns — these are subject to compaction. The canary must be in the conversation history, not the system prompt.
+
+**Implementation:** A `UserPromptSubmit` hook at `home/claude/hooks/canary-inject.sh`:
+- Fires on every user message submit
+- Uses a `/tmp/claude-canary-<session_id>` marker file to detect the first message of each session
+- On first message only: outputs `additionalContext` JSON with the secret word
+- `additionalContext` appears as a `<system-reminder>` in the conversation at turn 1, which is included in conversation history and is subject to later compaction
+- Subsequent turns: exits 0 silently (no re-injection)
+
+The hook is wired into `settings.json` under `UserPromptSubmit`.
+
+**The secret word is `ramalamadingdong`.**
+
+**Related benchmark:** This is a personal version of the industry-standard **Needle in a Haystack (NIAH)** test — place a "needle" (the canary) early in a long "haystack" (conversation), then probe for it later. Chroma's 2025 research found every frontier model (GPT-4.1, Claude Opus 4, Gemini 2.5) degrades at increasing context lengths: https://www.trychroma.com/research/context-rot

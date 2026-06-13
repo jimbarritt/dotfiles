@@ -14,7 +14,8 @@
       "Update(~/**)",
       "Update(**)",
       "Read(~/**)",
-      "WebSearch"
+      "WebSearch",
+      "Skill(*)"
     ],
     "deny": [
       "Bash(rm:*)",
@@ -26,7 +27,8 @@
       "Bash(./do.sh:*)",
       "Bash(do.sh:*)",
       "Bash(./bin/:*)",
-      "Bash(bin/:*)"
+      "Bash(bin/:*)",
+      "Bash(git stash:*)"
     ]
   },
   "model": "opus",
@@ -58,6 +60,18 @@
           {
             "type": "command",
             "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"allow\"}}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh ~/.claude/hooks/canary-inject.sh",
             "timeout": 5
           }
         ]
