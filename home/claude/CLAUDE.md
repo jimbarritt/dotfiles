@@ -1,5 +1,9 @@
 # Global instructions
 
+## Session start
+
+If `doc/planning/plan.md` exists in the current project, read it at the start of each session and briefly orient on current state and next step before doing anything else.
+
 ## Language
 
 Use **British English** throughout code and documentation (e.g., "initialise", "colour", "organise"). This applies to variable names, function names, comments, and docs.

@@ -12,6 +12,10 @@ install:
 link *args:
     ./do.sh link {{args}}
 
+# Link Claude config files into ~/.claude/ (pass --dry-run to preview)
+link-claude *args:
+    ./do.sh link-claude {{args}}
+
 # Check all the scripts pass shellcheck
 test:
     @shellcheck do.sh && echo "\033[32m[OK] do.sh passed shellcheck\033[0m"

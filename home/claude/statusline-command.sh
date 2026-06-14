@@ -127,5 +127,25 @@ else
   output="${output} - $(printf "${dim}£%s${reset}" "$cost_gbp")"
 fi
 
+# Monthly spend from trakr (fast DB read — no reconciliation)
+trakr_json=""
+if command -v trakr >/dev/null 2>&1; then
+  trakr_json=$(trakr spend --json 2>/dev/null)
+fi
+if [ -n "$trakr_json" ]; then
+  trakr_spent=$(echo "$trakr_json" | jq -r '.spent_usd')
+  trakr_budget=$(echo "$trakr_json" | jq -r '.budget_usd')
+  trakr_pct=$(echo "$trakr_json" | jq -r '.pct')
+  trakr_pct_int=$(printf '%.0f' "$trakr_pct")
+  trakr_str=$(printf '$%.2f/$%.2f' "$trakr_spent" "$trakr_budget")
+  if [ "$trakr_pct_int" -ge 100 ]; then
+    output="${output} - $(printf "${bold}\033[31m%s${reset}" "$trakr_str")"
+  elif [ "$trakr_pct_int" -ge 80 ]; then
+    output="${output} - $(printf "${bold}${yellow}%s${reset}" "$trakr_str")"
+  else
+    output="${output} - $(printf "${dim}%s${reset}" "$trakr_str")"
+  fi
+fi
+
 printf "%b\n" "$output"
 exit 0

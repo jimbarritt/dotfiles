@@ -12,7 +12,7 @@ slurp_arguments() {
         DRY_RUN=true
         shift
         ;;
-      install|link|unlink)
+      install|link|unlink|link-claude|unlink-claude)
 	CMD_TO_RUN=$1
 	shift
 	;;
@@ -73,6 +73,15 @@ backup_existing_file() {
   fi
 }
 
+ensure_dir() {
+  _dir="$1"
+  if [ "$DRY_RUN" = "true" ]; then
+    printf "[dry-run]: mkdir -p '%s'\n" "$_dir"
+  else
+    mkdir -p "$_dir"
+  fi
+}
+
 link_home() {
   _src="$1"
 
@@ -101,6 +110,65 @@ link_config() {
   create_symlink "$_target" "$_link"
 }
 
+link_claude() {
+  echo "Linking Claude config into ~/.claude/"
+
+  ensure_dir "${HOME}/.claude/skills"
+  ensure_dir "${HOME}/.claude/hooks"
+  ensure_dir "${HOME}/.claude/themes"
+
+  backup_existing_file "${HOME}/.claude/CLAUDE.md"
+  create_symlink "${DOTFILES_DIR}/home/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
+
+  backup_existing_file "${HOME}/.claude/settings.json"
+  create_symlink "${DOTFILES_DIR}/home/claude/settings.json" "${HOME}/.claude/settings.json"
+
+  backup_existing_file "${HOME}/.claude/keybindings.json"
+  create_symlink "${DOTFILES_DIR}/home/claude/keybindings.json" "${HOME}/.claude/keybindings.json"
+
+  backup_existing_file "${HOME}/.claude/statusline-command.sh"
+  create_symlink "${DOTFILES_DIR}/home/claude/statusline-command.sh" "${HOME}/.claude/statusline-command.sh"
+
+  for _skill_dir in "${DOTFILES_DIR}/home/claude/skills"/*/; do
+    _skill_name=$(basename "${_skill_dir%/}")
+    create_symlink "${_skill_dir%/}" "${HOME}/.claude/skills/${_skill_name}"
+  done
+
+  for _hook in "${DOTFILES_DIR}/home/claude/hooks/"*.sh; do
+    _hook_name=$(basename "$_hook")
+    create_symlink "$_hook" "${HOME}/.claude/hooks/${_hook_name}"
+  done
+
+  for _theme in "${DOTFILES_DIR}/home/claude/themes/"*; do
+    _theme_name=$(basename "$_theme")
+    create_symlink "$_theme" "${HOME}/.claude/themes/${_theme_name}"
+  done
+}
+
+unlink_claude() {
+  echo "Removing Claude config symlinks from ~/.claude/"
+
+  remove_symlink "${HOME}/.claude/CLAUDE.md"
+  remove_symlink "${HOME}/.claude/settings.json"
+  remove_symlink "${HOME}/.claude/keybindings.json"
+  remove_symlink "${HOME}/.claude/statusline-command.sh"
+
+  for _skill_dir in "${DOTFILES_DIR}/home/claude/skills"/*/; do
+    _skill_name=$(basename "${_skill_dir%/}")
+    remove_symlink "${HOME}/.claude/skills/${_skill_name}"
+  done
+
+  for _hook in "${DOTFILES_DIR}/home/claude/hooks/"*.sh; do
+    _hook_name=$(basename "$_hook")
+    remove_symlink "${HOME}/.claude/hooks/${_hook_name}"
+  done
+
+  for _theme in "${DOTFILES_DIR}/home/claude/themes/"*; do
+    _theme_name=$(basename "$_theme")
+    remove_symlink "${HOME}/.claude/themes/${_theme_name}"
+  done
+}
+
 link_all() {
   echo "Linking dotfiles into your home dir @ [$HOME]"
   link_home zshrc
@@ -117,6 +185,7 @@ link_all() {
   create_symlink "${DOTFILES_DIR}/home/oh-my-zsh/green-tinted.zsh-theme" "${HOME}/.oh-my-zsh/custom/themes/green-tinted.zsh-theme"
   create_symlink "${DOTFILES_DIR}/bin" "${HOME}/bin"
   link_config key-help
+  link_claude
 }
 
 
@@ -126,6 +195,7 @@ unlink_all() {
   unlink_home zshrc
   unlink_home gitconfig
   unlink_home hammerspoon
+  unlink_claude
 }
 
 install_zsh_plugins() {
@@ -166,8 +236,14 @@ main() {
     link)
       link_all
       ;;
+    link-claude)
+      link_claude
+      ;;
     unlink)
       unlink_all
+      ;;
+    unlink-claude)
+      unlink_claude
       ;;
     *)
       echo "Invalid command [$CMD_TO_RUN] don't know what to do. Panic!"
