@@ -133,7 +133,7 @@ if command -v trakr >/dev/null 2>&1; then
   trakr_json=$(trakr spend --json 2>/dev/null)
 fi
 if [ -n "$trakr_json" ]; then
-  trakr_spent=$(echo "$trakr_json" | jq -r '.spent_usd')
+  trakr_spent=$(echo "$trakr_json" | jq -r '.total_usd')
   trakr_budget=$(echo "$trakr_json" | jq -r '.budget_usd')
   trakr_pct=$(echo "$trakr_json" | jq -r '.pct')
   trakr_pct_int=$(printf '%.0f' "$trakr_pct")

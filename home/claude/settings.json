@@ -1,8 +1,50 @@
 {
+  "agentPushNotifEnabled": true,
+  "autoUpdatesChannel": "latest",
+  "editorMode": "vim",
+  "effortLevel": "high",
+  "enabledPlugins": {},
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "rtk hook claude",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"allow\"}}'",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "WebFetch"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "sh ~/.claude/hooks/canary-inject.sh",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ]
+  },
+  "minimumVersion": "2.1.81",
   "permissions": {
     "allow": [
       "Bash(*)",
@@ -32,59 +74,17 @@
       "Bash(git stash:*)"
     ]
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "rtk hook claude",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "WebFetch",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"allow\"}}'",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh ~/.claude/hooks/canary-inject.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ]
-  },
+  "skipDangerousModePermissionPrompt": false,
   "statusLine": {
-    "type": "command",
     "command": "sh ~/.claude/statusline-command.sh",
-    "padding": 2
+    "padding": 2,
+    "type": "command"
   },
-  "enabledPlugins": {},
-  "effortLevel": "high",
-  "autoUpdatesChannel": "latest",
-  "minimumVersion": "2.1.81",
+  "theme": "dark-ansi",
   "tui": "fullscreen",
   "voice": {
     "enabled": true,
     "mode": "hold"
   },
-  "skipDangerousModePermissionPrompt": false,
-  "theme": "dark-ansi",
-  "editorMode": "vim",
-  "agentPushNotifEnabled": true,
   "voiceEnabled": true
 }
