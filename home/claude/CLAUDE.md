@@ -2,7 +2,7 @@
 
 ## Session start
 
-If `doc/planning/plan.md` exists in the current project, read it at the start of each session and briefly orient on current state and next step before doing anything else.
+**Before responding to the user's first message:** check whether `doc/planning/plan.md` exists in the current project. If it does, read it immediately and briefly orient on current state and next step. Do this before saying anything else — it is your first action, not an optional one.
 
 ## Language
 
