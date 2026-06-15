@@ -1,7 +1,7 @@
 # Dotfiles — Implementation Plan
 
 ## ── WHAT'S NEXT ──────────────────────────────────────────────────────────
-**Next:** Action 1.3 — Move proofread and publish-crate skill dirs into dotfiles
+**Next:** Action 2.1 — Wire Claude config into do.sh
 **Sub-doc:** (none)
 **Blockers:** None
 ─────────────────────────────────────────────────────────────────────────────
@@ -24,7 +24,7 @@
 
 ### Action 1.3: Claude config documentation
 - ✓ DONE — Create `home/claude/README.md` with all manual `ln` commands
-- TODO — Move `proofread` and `publish-crate` skill dirs into dotfiles and add symlinks
+- ✓ DONE — Move `proofread` and `publish-crate` skill dirs into dotfiles and add symlinks
 
 ### Action 1.4: Context rot canary hook
 - ✓ DONE — Write `home/claude/hooks/canary-inject.sh` — injects secret word on first message of each session via `UserPromptSubmit` hook
@@ -89,6 +89,22 @@ Statusline now shows meaningful context rot signal. Canary hook confirmed workin
 
 ─────────────────────────────────────────────────────────────────────────────
 
+## ── CHECKPOINT: Session 2026-06-14 ──────────────────────────────────────
+
+**What was completed this session:**
+- Discovered Action 1.3 was already done in a previous session (proofread and publish-crate are in `home/claude/skills/` and symlinked) — plan updated to reflect this
+- Updated stale Implementation Notes line about proofread/publish-crate
+
+**State of the project:**
+Phase 1 is complete except for the extra-usage branch verification (deferred to Phase 3). All skills are tracked in dotfiles. Phase 2 (do.sh wiring and README rewrite) is next.
+
+**Immediate next priorities:**
+1. Action 2.1 — Add `link_claude` function to `do.sh` covering all Claude config
+2. Action 2.1 — Call `link_claude` from `link_all`; add `unlink_claude` entries
+3. Action 2.2 — Rewrite `README.md` to reflect current setup
+
+─────────────────────────────────────────────────────────────────────────────
+
 ---
 
 ## Implementation Notes
@@ -97,7 +113,7 @@ Statusline now shows meaningful context rot signal. Canary hook confirmed workin
 - All Claude config lives in `home/claude/` and must be manually symlinked into `~/.claude/` until `do.sh` is updated (see `home/claude/README.md` for current `ln` commands)
 - Hooks live in `home/claude/hooks/` — symlink individual scripts into `~/.claude/hooks/`
 - Skills are directory symlinks — symlink the whole dir, not individual files
-- `proofread/` and `publish-crate/` in `~/.claude/skills/` are currently real directories, not tracked in dotfiles
+- All skills in `~/.claude/skills/` are now directory symlinks into `home/claude/skills/` — fully tracked in dotfiles
 - Statusline script uses `jq 'has("rate_limits")'` to detect subscription vs API mode
 - Rate limit reset timestamps come as Unix timestamps; converted to HH:MM (5h) and DD/MM (7d) via `date -r`
 - `git stash` is denied globally — added after Sonnet stashed commits and lost track of them
