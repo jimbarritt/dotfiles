@@ -118,11 +118,11 @@ if [ "$on_subscription" = "true" ]; then
 
   # Show cost only when in extra usage (at or over a rate limit)
   if [ "$rate_5h_int" -ge 100 ] || [ "$rate_7d_int" -ge 100 ]; then
-    output="${output} - $(printf "${bold}extra: \$%.2f${reset}" "$cost_usd")"
+    output="${output} - $(printf "${bold}extra: \$%.0f${reset}" "$cost_usd")"
   fi
 else
   # API mode: always show cost, no rate limits
-  output="${output} - $(printf "${dim}\$%.2f${reset}" "$cost_usd")"
+  output="${output} - $(printf "${dim}\$%.0f${reset}" "$cost_usd")"
 fi
 
 # Monthly spend from trakr (fast DB read — no reconciliation)

@@ -58,20 +58,21 @@
       "Read(~/**)",
       "Read(/**)",
       "WebSearch",
-      "Skill(*)"
+      "Skill(*)",
+      "Bash(cp *)"
     ],
     "deny": [
-      "Bash(rm:*)",
-      "Bash(sudo:*)",
-      "Bash(git push --force:*)",
-      "Bash(git push -f:*)",
-      "Bash(git push --force-with-lease:*)",
-      "Bash(git add:*)",
-      "Bash(./do.sh:*)",
-      "Bash(do.sh:*)",
-      "Bash(./bin/:*)",
-      "Bash(bin/:*)",
-      "Bash(git stash:*)"
+      "Bash(rm *)",
+      "Bash(sudo *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push --force-with-lease *)",
+      "Bash(git add *)",
+      "Bash(./do.sh *)",
+      "Bash(do.sh *)",
+      "Bash(./bin/*)",
+      "Bash(bin/*)",
+      "Bash(git stash *)"
     ]
   },
   "skipDangerousModePermissionPrompt": false,
