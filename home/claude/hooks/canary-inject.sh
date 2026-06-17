@@ -5,7 +5,7 @@
 # to test whether the session has lost its early context.
 
 input=$(cat)
-session_id=$(echo "$input" | jq -r '.session_id // empty')
+session_id=$(echo "$input" | jq -r '.session_id // empty' 2>/dev/null)
 
 if [ -z "$session_id" ]; then
   exit 0

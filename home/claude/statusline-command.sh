@@ -64,7 +64,7 @@ yellow='\033[33m'
 
 if [ -n "$ctx_tokens" ]; then
   ctx_k=$((ctx_tokens / 1000))
-  if [ "$ctx_k" -ge 150 ]; then
+  if [ "$ctx_k" -ge 120 ]; then
     output="${output} - $(printf "${bold}!!ctx:%sk!!${reset}" "$ctx_k")"
   elif [ "$ctx_k" -ge 100 ]; then
     output="${output} - $(printf "${bold}ctx:%sk${reset}" "$ctx_k")"
