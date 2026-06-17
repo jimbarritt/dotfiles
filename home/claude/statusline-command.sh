@@ -137,7 +137,7 @@ if [ -n "$trakr_json" ]; then
   trakr_budget=$(echo "$trakr_json" | jq -r '.budget_usd')
   trakr_pct=$(echo "$trakr_json" | jq -r '.pct')
   trakr_pct_int=$(printf '%.0f' "$trakr_pct")
-  trakr_str=$(printf '$%.2f/$%.2f' "$trakr_spent" "$trakr_budget")
+  trakr_str=$(printf '$%.0f/$%.0f' "$trakr_spent" "$trakr_budget")
   if [ "$trakr_pct_int" -ge 100 ]; then
     output="${output} - $(printf "${bold}\033[31m%s${reset}" "$trakr_str")"
   elif [ "$trakr_pct_int" -ge 80 ]; then
