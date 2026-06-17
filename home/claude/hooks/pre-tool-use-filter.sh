@@ -164,6 +164,13 @@ if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)crontab\s+-r'; then
 fi
 
 # ---------------------------------------------------------------------------
+# Broad filesystem scans — expensive, rarely correct
+# ---------------------------------------------------------------------------
+if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)find\s+(~|/Users/|/home/|/)(\s|/)'; then
+  deny "broad find from home/root is blocked — search within the project or ask instead"
+fi
+
+# ---------------------------------------------------------------------------
 # All clear
 # ---------------------------------------------------------------------------
 exit 0

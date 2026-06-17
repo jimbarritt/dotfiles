@@ -13,6 +13,11 @@
       {
         "hooks": [
           {
+            "command": "sh ~/.claude/hooks/pre-tool-use-filter.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
             "command": "rtk hook claude",
             "timeout": 10,
             "type": "command"
