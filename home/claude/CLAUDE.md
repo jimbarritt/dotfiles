@@ -4,6 +4,10 @@
 
 **Before responding to the user's first message:** check whether `doc/planning/plan.md` exists in the current project. If it does, read it immediately and briefly orient on current state and next step. Do this before saying anything else — it is your first action, not an optional one.
 
+## Task tracking
+
+`doc/planning/plan.md` is the source of truth for task tracking. Do not use the built-in task tools (TaskCreate, TaskUpdate, TaskList, etc.) — they duplicate the plan and add unnecessary context overhead.
+
 ## Projects
 
 Projects live in `~/projects/`. When given an ambiguous project reference, check there first.
