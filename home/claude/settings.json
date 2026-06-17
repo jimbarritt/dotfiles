@@ -64,6 +64,7 @@
       "Read(/**)",
       "WebSearch",
       "Skill(*)",
+      "mcp__linear__*",
       "Bash(cp *)"
     ],
     "deny": [

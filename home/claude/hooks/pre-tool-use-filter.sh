@@ -10,7 +10,7 @@
 set -euo pipefail
 
 INPUT=$(cat /dev/stdin)
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null) || COMMAND=""
 
 deny() {
   local reason="$1"
