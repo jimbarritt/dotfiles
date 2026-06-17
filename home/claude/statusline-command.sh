@@ -118,13 +118,11 @@ if [ "$on_subscription" = "true" ]; then
 
   # Show cost only when in extra usage (at or over a rate limit)
   if [ "$rate_5h_int" -ge 100 ] || [ "$rate_7d_int" -ge 100 ]; then
-    cost_gbp=$(echo "$cost_usd * 0.74" | bc -l | xargs printf '%.0f')
-    output="${output} - $(printf "${bold}extra: £%s${reset}" "$cost_gbp")"
+    output="${output} - $(printf "${bold}extra: \$%.2f${reset}" "$cost_usd")"
   fi
 else
   # API mode: always show cost, no rate limits
-  cost_gbp=$(echo "$cost_usd * 0.74" | bc -l | xargs printf '%.0f')
-  output="${output} - $(printf "${dim}£%s${reset}" "$cost_gbp")"
+  output="${output} - $(printf "${dim}\$%.2f${reset}" "$cost_usd")"
 fi
 
 # Monthly spend from trakr (fast DB read — no reconciliation)
