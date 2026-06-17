@@ -4,6 +4,10 @@
 
 **Before responding to the user's first message:** check whether `doc/planning/plan.md` exists in the current project. If it does, read it immediately and briefly orient on current state and next step. Do this before saying anything else — it is your first action, not an optional one.
 
+## Projects
+
+Projects live in `~/projects/`. When given an ambiguous project reference, check there first.
+
 ## Language
 
 Use **British English** throughout code and documentation (e.g., "initialise", "colour", "organise"). This applies to variable names, function names, comments, and docs.
