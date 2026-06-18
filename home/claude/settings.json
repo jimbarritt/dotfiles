@@ -62,6 +62,7 @@
       "Update(**)",
       "Read(~/**)",
       "Read(/**)",
+      "Read(/tmp/**)",
       "WebSearch",
       "Skill(*)",
       "mcp__linear__*",
