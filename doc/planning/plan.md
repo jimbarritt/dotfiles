@@ -163,6 +163,22 @@ Phase 1 and 2.1 complete. The `/tmp` permission prompt is now fully resolved —
 
 ─────────────────────────────────────────────────────────────────────────────
 
+## ── CHECKPOINT: Session 2026-07-01 ──────────────────────────────────────
+
+**What was completed this session:**
+- Added `configure_macos` function to `do.sh` — runs `defaults write com.mitchellh.ghostty NSWindowShadowEnabled -bool false` to disable Ghostty window shadows that bleed onto adjacent tiled windows
+- `configure_macos` is now called from `install` alongside `install_zsh_plugins` and `install_git_hooks`
+
+**State of the project:**
+Phase 1 and 2.1 complete. A new macOS defaults step is now part of `do.sh install`. No existing plan TODOs were completed this session — the Ghostty shadow fix was a new addition not previously tracked.
+
+**Immediate next priorities:**
+1. Action 2.2 — Rewrite `README.md` to reflect current setup
+2. Action 3.1 — Verify extra usage detection in statusline
+3. Action 3.2 — Review plan skill behaviour after sustained use
+
+─────────────────────────────────────────────────────────────────────────────
+
 ---
 
 ## Implementation Notes

@@ -221,9 +221,17 @@ install_git_hooks() {
   echo "✓ Configured git hooks"
 }
 
+configure_macos() {
+  echo "Applying macOS defaults..."
+  # Disable window shadow on Ghostty — shadows bleed onto adjacent tiled windows
+  defaults write com.mitchellh.ghostty NSWindowShadowEnabled -bool false
+  echo "✓ Ghostty: window shadow disabled"
+}
+
 install() {
   install_zsh_plugins
   install_git_hooks
+  configure_macos
 }
 
 main() {
