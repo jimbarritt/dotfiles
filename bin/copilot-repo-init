@@ -68,15 +68,22 @@ else
 fi
 
 # ── Next steps ────────────────────────────────────────────────────────────────
+script_dir="$(cd "$(dirname "$0")" && pwd -P)"
+compat_doc="$(dirname "$script_dir")/doc/claude-copilot-compatibility.md"
+
+if command -v pbcopy &>/dev/null && [ -f "$compat_doc" ]; then
+  printf '%s' "$compat_doc" | pbcopy
+  info "compatibility doc path copied to clipboard"
+fi
+
 echo ""
 if [ "$needs_merge" = true ]; then
   echo "Mechanical setup done, but existing instruction content needs merging."
-  echo "Ask Claude:"
+  echo "Ask Claude (doc path is on the clipboard):"
   echo ""
-  echo "  Make this repo Copilot-compatible: read doc/claude-copilot-compatibility.md"
-  echo "  in the dotfiles repo and apply the recommended pattern — move shared content"
-  echo "  from CLAUDE.md into AGENTS.md, keep Claude-only extras below the @AGENTS.md"
-  echo "  import, and show me the diff."
+  echo "  Make this repo Copilot-compatible: read <paste doc path> and apply the"
+  echo "  recommended pattern — move shared content from CLAUDE.md into AGENTS.md,"
+  echo "  keep Claude-only extras below the @AGENTS.md import, and show me the diff."
 else
   echo "Done. Fill in AGENTS.md if it's a fresh skeleton, then review and commit."
 fi
