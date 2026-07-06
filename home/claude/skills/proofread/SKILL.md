@@ -1,3 +1,8 @@
+---
+name: proofread
+description: Proofread text (e.g. social media posts) for spelling, grammar, punctuation, and style issues without rewriting or suggesting alternative phrasing. Use when asked to proofread or check a piece of writing.
+---
+
 # Proofread
 
 Proofread the provided text for errors and style issues. The author's voice and word choices must be preserved exactly — do not rewrite anything.

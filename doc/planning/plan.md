@@ -1,9 +1,9 @@
 # Dotfiles — Implementation Plan
 
 ## ── WHAT'S NEXT ──────────────────────────────────────────────────────────
-**Next:** Action 2.2 — Rewrite README.md
-**Sub-doc:** (none)
-**Blockers:** None
+**Next:** Action 1.8 — Decide how Claude actually discovers `doc/graphify.md` (no automatic pointer exists after the global CLAUDE.md section was reverted)
+**Sub-doc:** `doc/graphify.md`
+**Blockers:** None — deliberately deferred by user until install/config was settled, which it now is
 ─────────────────────────────────────────────────────────────────────────────
 
 ## Phase 1: Claude Tooling
@@ -52,6 +52,22 @@
 - ✓ DONE — Replace live `~/.claude/settings.json` plain file with symlink to dotfiles
 - ✓ DONE — Add `mcp__linear__*` to allow list
 - ✓ DONE — Add `Read(/tmp/**)` to allow list (Claude Code glob doesn't match `/tmp` via `/**`)
+
+### Action 1.8: Graphify awareness doc
+- ✓ DONE — Added, then reverted, a `## Graphify` section in global `home/claude/CLAUDE.md` — moved instead to a `## At a glance (for Claude)` section at the top of `doc/graphify.md` (covers: when it's worth suggesting, existing-graph usage, staleness caveat, hook compatibility caveat, install commands)
+- ✓ DONE — Split old `## Claude Code integration` section in `doc/graphify.md` into standalone `## Installation (once per machine)` and `## Configuring a repo` step-by-step sections
+- ✓ DONE — Verified and fixed the Grep/Glob hook-compatibility claim's source (roborhythms.com review — not graphify's own docs) and added inline citations
+- ✓ DONE — Reconciled `doc/graphify.md` with a second-hand doc (`doc/installing-graphify.md`, scrubbed of internal work project references): corrected output location to `graphify-out/` (confirmed via web search against graphify's own GitHub/CLI docs — the original root-level `graph.json` claim was wrong), added `graphify hook install` (post-commit auto-rebuild, resolves the staleness caveat), MCP server option (`python -m graphify.serve`), and the `graphify claude install` CLAUDE.md-injection caveat relevant to manually-managed CLAUDE.md files
+- ✓ DONE — `doc/installing-graphify.md` deleted by user now its useful content is folded into `doc/graphify.md`
+- ✓ DONE — User located the real work `bootstrap.sh` (in `~/Downloads`) that the deleted doc was derived from; read it and cross-checked it corroborates our `doc/graphify.md` content almost verbatim (confirms `graphify-out/`, the CLAUDE.md-injection caveat/workaround, `graphify hook install`, MCP server invocation) and confirms the hook-compatibility risk is live: the hook's matcher is literally `Glob|Grep`, tool names this environment doesn't have (uses `Bash` for search instead)
+- ✓ DONE — Created `home/claude/graphify-install.sh`, extracting only the graphify-relevant steps from `bootstrap.sh` (skips unrelated `code-review-graph`/`TrueCourse`/`Superpowers` sections)
+- ✓ DONE — User flagged confusion: the CLI + `PreToolUse` hook are genuinely global (`~/.claude/settings.json` applies to every project already) but the graph/`.mcp.json`/post-commit hook are inherently per-repo — split the single script into two: `home/claude/graphify-install.sh` (global, once per machine: pipx install + hook merge) and `home/claude/graphify-configure-repo.sh` (per-repo: `.mcp.json` entry, `graphify hook install`, `.gitignore`)
+- ✓ DONE — Rewrote "Installation (once per machine)" and "Configuring a repo" sections in `doc/graphify.md` to match the two-script split, explaining why the split exists
+- ✓ DONE — Moved "Installation" and "Configuring a repo" sections to the top of `doc/graphify.md`, right after the title
+- ✓ DONE — Fixed `graphify-install.sh` to use `uv tool install graphifyy` instead of `pipx` (copied unreflectively from `bootstrap.sh` — this machine already has `uv`, not `pipx`); doc updated to explain the swap
+- TODO — Decide how Claude actually discovers `doc/graphify.md` in future sessions (no automatic pointer currently exists, after the global CLAUDE.md section was reverted) — deferred until install/config is settled
+- Note: no `/graphify` skill is packaged in this dotfiles repo's `home/claude/skills/` — the skill comes from `pipx install graphifyy` / `graphify install` directly, outside dotfiles tracking. Open question noticed while reading `bootstrap.sh`: it never calls `graphify install`, yet expects `/graphify` to work — unverified whether the skill self-registers on `pipx install`
+- Still open: exact Homebrew install command user used (not found as a formula in current taps — doc currently only documents `uv tool install` / `pipx install`)
 
 ## Phase 2: Dotfiles Install Script
 
@@ -176,6 +192,32 @@ Phase 1 and 2.1 complete. A new macOS defaults step is now part of `do.sh instal
 1. Action 2.2 — Rewrite `README.md` to reflect current setup
 2. Action 3.1 — Verify extra usage detection in statusline
 3. Action 3.2 — Review plan skill behaviour after sustained use
+
+─────────────────────────────────────────────────────────────────────────────
+
+## ── CHECKPOINT: Session 2026-07-01b ─────────────────────────────────────
+
+**What was completed this session:**
+- Investigated graphify setup end-to-end for the dotfiles repo (Action 1.8), starting from `doc/graphify.md` (already existed)
+- Attempted adding a `## Graphify` section to global `home/claude/CLAUDE.md`, then reverted it at user's request — moved the content into `doc/graphify.md` instead as a `## At a glance (for Claude)` section
+- Verified the Grep/Glob `PreToolUse` hook-compatibility claim's actual source (roborhythms.com review, not graphify's own docs) via web search; added inline citations
+- User surfaced a second-hand doc (`doc/installing-graphify.md`) claiming to derive from a work `bootstrap.sh` — initially flagged as suspicious (citation to a nonexistent local path, embedded script touching `~/.claude/settings.json`) since it was unverifiable at the time; user clarified it came from another Claude instance's analysis of a real work script
+- Reconciled `doc/graphify.md` against that doc and independent web search: corrected the output directory to `graphify-out/` (original doc had this wrong — root-level files), added `graphify hook install` (resolves the staleness caveat), the MCP server option, and the CLAUDE.md-injection caveat on `graphify claude install`
+- User located and shared the actual `bootstrap.sh` (in `~/Downloads`) — read it, confirmed it corroborates the reconciled doc almost verbatim, and confirmed the hook-compatibility risk is live in this exact environment (hook matcher is `Glob|Grep`, tool names this session doesn't have)
+- Removed all references to the internal `north-star` project name from the (now-deleted) second-hand doc at user's request
+- Created two tracked scripts: `home/claude/graphify-install.sh` (global, once-per-machine: CLI install + `PreToolUse` hook merge into `~/.claude/settings.json`) and `home/claude/graphify-configure-repo.sh` (per-repo: `.mcp.json` entry, `graphify hook install`, `.gitignore`) — split after user was confused why a "per-repo" script was doing genuinely global work
+- Reordered `doc/graphify.md` so "Installation" and "Configuring a repo" are the first two sections, right after the title
+- Fixed `graphify-install.sh` to use `uv tool install graphifyy` instead of `pipx` — copied unreflectively from `bootstrap.sh`, but this machine already has `uv` (via mise) and no `pipx`
+
+**State of the project:**
+`doc/graphify.md` is now a reconciled, cited, and corrected reference doc with install/config instructions at the top. Two executable scripts exist (`home/claude/graphify-install.sh`, `home/claude/graphify-configure-repo.sh`) but neither has been run yet — graphify is not actually installed on this machine. Neither script is wired into `do.sh`; both are deliberately manual/opt-in, consistent with this repo's convention of not auto-running installer scripts.
+
+**Immediate next priorities:**
+1. Action 1.8 — Decide how Claude should discover `doc/graphify.md` in future sessions (no automatic pointer currently exists)
+2. Run `home/claude/graphify-install.sh` (global) when ready, then `graphify-configure-repo.sh` in a specific large-enough repo to actually try it
+3. Action 2.2 — Rewrite `README.md` to reflect current setup
+4. Action 3.1 — Verify extra usage detection in statusline
+5. Action 3.2 — Review plan skill behaviour after sustained use
 
 ─────────────────────────────────────────────────────────────────────────────
 

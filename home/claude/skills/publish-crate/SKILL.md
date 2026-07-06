@@ -1,3 +1,8 @@
+---
+name: publish-crate
+description: Set up and publish a Rust crate to crates.io following the ubiq-architecture publishing conventions. Use when asked to publish, reserve, or scaffold a new crate.
+---
+
 # Publish Crate
 
 Set up and publish a Rust crate to crates.io, following the conventions in `~/projects/ubiq-architecture/publishing-crates.md`.
