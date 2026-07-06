@@ -169,6 +169,21 @@ unlink_claude() {
   done
 }
 
+link_copilot() {
+  echo "Linking global CLAUDE.md as Copilot CLI global instructions"
+
+  ensure_dir "${HOME}/.copilot"
+
+  backup_existing_file "${HOME}/.copilot/copilot-instructions.md"
+  create_symlink "${DOTFILES_DIR}/home/claude/CLAUDE.md" "${HOME}/.copilot/copilot-instructions.md"
+}
+
+unlink_copilot() {
+  echo "Removing Copilot instructions symlink from ~/.copilot/"
+
+  remove_symlink "${HOME}/.copilot/copilot-instructions.md"
+}
+
 link_all() {
   echo "Linking dotfiles into your home dir @ [$HOME]"
   link_home zshrc
@@ -186,6 +201,7 @@ link_all() {
   create_symlink "${DOTFILES_DIR}/bin" "${HOME}/bin"
   link_config key-help
   link_claude
+  link_copilot
 }
 
 
@@ -196,6 +212,7 @@ unlink_all() {
   unlink_home gitconfig
   unlink_home hammerspoon
   unlink_claude
+  unlink_copilot
 }
 
 install_zsh_plugins() {
@@ -247,11 +264,17 @@ main() {
     link-claude)
       link_claude
       ;;
+    link-copilot)
+      link_copilot
+      ;;
     unlink)
       unlink_all
       ;;
     unlink-claude)
       unlink_claude
+      ;;
+    unlink-copilot)
+      unlink_copilot
       ;;
     *)
       echo "Invalid command [$CMD_TO_RUN] don't know what to do. Panic!"
