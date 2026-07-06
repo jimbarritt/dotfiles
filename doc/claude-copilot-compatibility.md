@@ -60,11 +60,22 @@ The Copilot link is created by `./do.sh link-copilot` (also included in `./do.sh
 
 **Caveat:** `home/claude/CLAUDE.md` contains some Claude-Code-specific instructions (built-in task tools, compaction guidance, skill invocation). Copilot will read these but can't act on all of them — harmless, but if the file grows more Claude-specific machinery, consider splitting the shared parts out.
 
-## Global command allowlist
+## Global permissions: allow everything, deny the dangerous
 
-Copilot CLI has no global permissions allowlist — its `~/.copilot/permissions-config.json` stores approvals **per directory** (keys must match the working directory exactly; no wildcards — [open feature request](https://github.com/github/copilot-cli/issues/2398)). Claude's global `permissions.allow` has no direct equivalent.
+Copilot CLI has no global permissions config — its `~/.copilot/permissions-config.json` stores approvals **per directory** (keys must match the working directory exactly; no wildcards — [open feature request](https://github.com/github/copilot-cli/issues/2398)). Claude's global `permissions` block has no direct equivalent.
 
-The workaround: `--allow-all-tools` / `--deny-tool` flags apply session-wide regardless of directory, so a `copilot()` function in `home/zshrc` applies the same posture as Claude's permissions (allow everything + deny list) at launch: `--allow-all-tools`, then expands `~/.copilot/denied-commands` (symlinked from `home/copilot/denied-commands` by `./do.sh link-copilot`) into `--deny-tool "shell(...)"` flags, which take precedence over the blanket allow. The denylist mirrors `home/claude/settings.json`'s deny list (`rm`, `sudo`, force-push, `git add`, `git stash`, `do.sh`) — keep the two in sync when either changes. Piecemeal alternatives proved torturous: enumerating allowed commands means prompts for every builtin (`test`, ...), and per-kind allows (`shell`, `write`, `web_fetch`) still missed prompts for other tool kinds.
+The workaround: launch flags apply session-wide regardless of directory, so a `copilot()` function in `home/zshrc` (it shadows the binary — plain `copilot` gets the policy, `command copilot` bypasses it) applies the same posture as Claude's permissions at launch:
+
+1. `--allow-all` — tools, paths, and URLs. Anything narrower re-introduces prompts: `--allow-tool "shell(...)"` per command means a prompt for every builtin not listed (`test`, ...); per-kind allows (`shell`, `write`, `web_fetch`) still miss other kinds (file-edit path approvals, URL fetches).
+2. Each non-comment line of `~/.copilot/denied-commands` (symlinked from `home/copilot/denied-commands` by `./do.sh link-copilot`) becomes `--deny-tool "shell(<line>)"`, which takes precedence over the blanket allow. Patterns use Copilot's `cmd:*` syntax, e.g. `rm:*`, `git push --force:*`.
+
+The denylist mirrors `home/claude/settings.json`'s deny list (`rm`, `sudo`, force-push, `git add`, `git stash`, `do.sh`) — **keep the two in sync when either changes**.
+
+Caveats:
+
+- `--allow-all` covers any configured MCP tools too — broader than shell-only, same trade-off as Claude's `Bash(*)` + deny list.
+- The deny patterns are applied as documented but their matching semantics haven't been battle-tested — if a denied command gets through, check the pattern syntax against `copilot --help`.
+- Flag names may drift across CLI versions; if new prompts appear, compare against `command copilot --help | grep -i allow`.
 
 `permissions-config.json` itself stays untracked and machine-local — it accumulates directory-specific "always allow" answers on top of the baseline, and on a work machine it contains employer-specific paths that must not be committed to this public repo.
 
@@ -108,3 +119,4 @@ Sources for this section: [official @AGENTS.md import confirmation](https://gist
 - [GitHub Docs — Adding custom instructions for Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions) — confirms `$HOME/.copilot/copilot-instructions.md` as the global instructions path
 - [GitHub Docs — Installing GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli) — install methods and auto-update behaviour for the standalone CLI
 - [GitHub Changelog — Copilot CLI via the GitHub CLI (Jan 2026)](https://github.blog/changelog/2026-01-21-install-and-use-github-copilot-cli-directly-from-the-github-cli/) — `gh copilot` now delegates to the standalone CLI; old extension retired
+- [GitHub Docs — Allowing and denying tool use](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/allowing-tools) — `--allow-all`, `--allow-tool`/`--deny-tool` flags and per-directory `permissions-config.json` behaviour

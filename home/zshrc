@@ -314,13 +314,13 @@ alias dc="docker-compose"
 
 # Copilot CLI has no global permissions config (approvals are per-directory),
 # so apply one at launch, mirroring the Claude posture (allow everything, deny
-# the dangerous): --allow-all-tools, then expand ~/.copilot/denied-commands
-# into --deny-tool flags, which take precedence over the allow.
+# the dangerous): --allow-all (tools + paths + URLs), then expand
+# ~/.copilot/denied-commands into --deny-tool flags, which take precedence.
 # See doc/claude-copilot-compatibility.md in the dotfiles repo.
 copilot() {
   local denylist="$HOME/.copilot/denied-commands"
   local -a flags
-  flags=(--allow-all-tools)
+  flags=(--allow-all)
   if [[ -f "$denylist" ]]; then
     local line
     while IFS= read -r line; do
