@@ -1,0 +1,13 @@
+# Global Copilot CLI shell-command denylist.
+# All shell commands are allowed by default (--allow-tool shell); these
+# patterns are expanded to --deny-tool "shell(...)" flags by the copilot()
+# wrapper in zshrc. Mirrors the deny list in home/claude/settings.json.
+rm:*
+sudo:*
+git push --force:*
+git push -f:*
+git push --force-with-lease:*
+git add:*
+git stash:*
+./do.sh:*
+do.sh:*

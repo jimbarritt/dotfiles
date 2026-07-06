@@ -177,8 +177,8 @@ link_copilot() {
   backup_existing_file "${HOME}/.copilot/copilot-instructions.md"
   create_symlink "${DOTFILES_DIR}/home/claude/CLAUDE.md" "${HOME}/.copilot/copilot-instructions.md"
 
-  backup_existing_file "${HOME}/.copilot/allowed-commands"
-  create_symlink "${DOTFILES_DIR}/home/copilot/allowed-commands" "${HOME}/.copilot/allowed-commands"
+  backup_existing_file "${HOME}/.copilot/denied-commands"
+  create_symlink "${DOTFILES_DIR}/home/copilot/denied-commands" "${HOME}/.copilot/denied-commands"
 
   for _skill_dir in "${DOTFILES_DIR}/home/claude/skills"/*/; do
     _skill_name=$(basename "${_skill_dir%/}")
@@ -190,7 +190,7 @@ unlink_copilot() {
   echo "Removing Copilot symlinks from ~/.copilot/"
 
   remove_symlink "${HOME}/.copilot/copilot-instructions.md"
-  remove_symlink "${HOME}/.copilot/allowed-commands"
+  remove_symlink "${HOME}/.copilot/denied-commands"
 
   for _skill_dir in "${DOTFILES_DIR}/home/claude/skills"/*/; do
     _skill_name=$(basename "${_skill_dir%/}")

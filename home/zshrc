@@ -312,19 +312,20 @@ alias claude-yolo='claude --dangerously-skip-permissions'
 alias glow='glow -p'
 alias dc="docker-compose"
 
-# Copilot CLI has no global permissions allowlist (approvals are per-directory),
-# so apply one at launch: expand ~/.copilot/allowed-commands into --allow-tool
-# flags. See doc/claude-copilot-compatibility.md in the dotfiles repo.
+# Copilot CLI has no global permissions config (approvals are per-directory),
+# so apply one at launch, mirroring the Claude posture (allow all shell, deny
+# the dangerous): expand ~/.copilot/denied-commands into --deny-tool flags.
+# See doc/claude-copilot-compatibility.md in the dotfiles repo.
 copilot() {
-  local allowlist="$HOME/.copilot/allowed-commands"
+  local denylist="$HOME/.copilot/denied-commands"
   local -a flags
-  flags=(--allow-tool 'write' --allow-tool 'web_fetch' --allow-tool 'web_search')
-  if [[ -f "$allowlist" ]]; then
+  flags=(--allow-tool 'shell' --allow-tool 'write' --allow-tool 'web_fetch' --allow-tool 'web_search')
+  if [[ -f "$denylist" ]]; then
     local line
     while IFS= read -r line; do
       [[ -z "$line" || "$line" == \#* ]] && continue
-      flags+=(--allow-tool "shell($line)")
-    done < "$allowlist"
+      flags+=(--deny-tool "shell($line)")
+    done < "$denylist"
   fi
   echo "starting copilot with allow-list"
   command copilot "${flags[@]}" "$@"
