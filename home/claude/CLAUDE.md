@@ -16,6 +16,10 @@ Never use `find` rooted at `~`, `/`, `/Users/`, or cache directories (`~/.gradle
 
 Projects live in `~/projects/`. When given an ambiguous project reference, check there first.
 
+## Pull requests
+
+When drafting a PR (title, body, commit messages), do not add Claude references — no "Generated with Claude Code" footers, no Co-Authored-By Claude trailers, no mention of AI assistance.
+
 ## Language
 
 Use **British English** throughout code and documentation (e.g., "initialise", "colour", "organise"). This applies to variable names, function names, comments, and docs.

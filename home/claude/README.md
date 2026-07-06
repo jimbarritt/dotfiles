@@ -46,7 +46,6 @@ ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/update-plan ~/.clau
 ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/proofread ~/.claude/skills/proofread
 ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/publish-crate ~/.claude/skills/publish-crate
 ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/save-session ~/.claude/skills/save-session
-ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/copilot-repo-init ~/.claude/skills/copilot-repo-init
 ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/restore-session ~/.claude/skills/restore-session
 ```
 

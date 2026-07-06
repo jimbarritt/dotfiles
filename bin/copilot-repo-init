@@ -1,0 +1,82 @@
+#!/bin/bash
+# copilot-repo-init
+#
+# Mechanical setup to make the current repo's agent instructions work across
+# Claude Code, GitHub Copilot, and other AGENTS.md-aware tools.
+#
+# The judgement half — deciding which CLAUDE.md content is shared vs
+# Claude-specific and merging it into AGENTS.md — is LLM work: ask Claude to
+# apply the recommended pattern in doc/claude-copilot-compatibility.md
+# (in the dotfiles repo).
+#
+# Run from the root of the target repository.
+
+set -euo pipefail
+
+info()    { echo "[*] $*"; }
+success() { echo "[+] $*"; }
+warn()    { echo "[!] $*"; }
+error()   { echo "[x] $*"; exit 1; }
+
+[ -d .git ] || error "run this from the root of a git repository"
+
+needs_merge=false
+
+# ── AGENTS.md ────────────────────────────────────────────────────────────────
+if [ -f AGENTS.md ]; then
+  success "AGENTS.md already exists"
+else
+  if [ -f CLAUDE.md ]; then
+    warn "CLAUDE.md exists but AGENTS.md doesn't — creating a skeleton."
+    needs_merge=true
+  fi
+  cat > AGENTS.md << 'EOF'
+# Agent Instructions
+
+<!-- Canonical instructions for all coding agents (Claude Code, Copilot,
+     Codex, Cursor, ...). Tool-specific extras live in that tool's own file
+     (e.g. CLAUDE.md), below its import of this one. -->
+
+## Commands
+
+## Conventions
+EOF
+  success "AGENTS.md skeleton created"
+fi
+
+# ── CLAUDE.md imports AGENTS.md ──────────────────────────────────────────────
+if [ -f CLAUDE.md ]; then
+  if head -1 CLAUDE.md | grep -qx "@AGENTS.md"; then
+    success "CLAUDE.md already imports AGENTS.md"
+  else
+    warn "CLAUDE.md does not start with @AGENTS.md — content merge needed (see below)"
+    needs_merge=true
+  fi
+else
+  printf '@AGENTS.md\n' > CLAUDE.md
+  success "CLAUDE.md created (import only)"
+fi
+
+# ── .github/copilot-instructions.md → ../AGENTS.md ───────────────────────────
+mkdir -p .github
+if [ -e .github/copilot-instructions.md ] && [ ! -L .github/copilot-instructions.md ]; then
+  warn ".github/copilot-instructions.md exists as a real file — not touching it; merge it into AGENTS.md and replace it with a symlink"
+  needs_merge=true
+else
+  ln -sf ../AGENTS.md .github/copilot-instructions.md
+  success ".github/copilot-instructions.md -> ../AGENTS.md"
+fi
+
+# ── Next steps ────────────────────────────────────────────────────────────────
+echo ""
+if [ "$needs_merge" = true ]; then
+  echo "Mechanical setup done, but existing instruction content needs merging."
+  echo "Ask Claude:"
+  echo ""
+  echo "  Make this repo Copilot-compatible: read doc/claude-copilot-compatibility.md"
+  echo "  in the dotfiles repo and apply the recommended pattern — move shared content"
+  echo "  from CLAUDE.md into AGENTS.md, keep Claude-only extras below the @AGENTS.md"
+  echo "  import, and show me the diff."
+else
+  echo "Done. Fill in AGENTS.md if it's a fresh skeleton, then review and commit."
+fi

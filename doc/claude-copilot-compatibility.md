@@ -82,7 +82,7 @@ For repos that need cross-agent compatibility, make `AGENTS.md` the source of tr
 <!-- Claude-specific instructions below, invisible to other tools -->
 ```
 
-The `/copilot-repo-init` skill (`home/claude/skills/copilot-repo-init/`) automates this conversion for any repo — it references this doc and applies the steps below.
+`bin/copilot-repo-init` (on PATH via `~/bin`) does the mechanical half of this conversion — AGENTS.md skeleton, `@AGENTS.md` import, `.github` symlink — and prints a prompt for the judgement half: ask Claude to read this doc and move shared content from `CLAUDE.md` into `AGENTS.md`, keeping Claude-only extras below the import.
 
 Why this direction and not the reverse (canonical `CLAUDE.md`, with `AGENTS.md` pointing at it):
 
