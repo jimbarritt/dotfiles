@@ -48,7 +48,14 @@ export VISUAL="nvim"
 
 export LESS='-F -R -X'
 
-alias reload="exec zsh"
+alias reload-zshrc="exec zsh"
+
+reload() {
+  echo "How to reload things"
+  echo "  reload-zshrc       restart the shell (picks up zshrc changes)"
+  echo "  reload-tmux        re-source ~/.tmux.conf"
+  echo "  reload-flashspace  restart FlashSpace (re-reads its config)"
+}
 
 # Load local OpenAI key if present
 if [ -f "$HOME/.config/.open_api_key" ]; then
