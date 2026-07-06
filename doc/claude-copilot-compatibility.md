@@ -64,7 +64,7 @@ The Copilot link is created by `./do.sh link-copilot` (also included in `./do.sh
 
 Copilot CLI has no global permissions allowlist — its `~/.copilot/permissions-config.json` stores approvals **per directory** (keys must match the working directory exactly; no wildcards — [open feature request](https://github.com/github/copilot-cli/issues/2398)). Claude's global `permissions.allow` has no direct equivalent.
 
-The workaround: `--allow-tool` flags apply session-wide regardless of directory, so a `copilot()` function in `home/zshrc` expands `~/.copilot/allowed-commands` (symlinked from `home/copilot/allowed-commands` by `./do.sh link-copilot`) into `--allow-tool "shell(...)"` flags at launch, plus `--allow-tool write`. One tracked list, applied globally on every machine.
+The workaround: `--allow-tool` flags apply session-wide regardless of directory, so a `copilot()` function in `home/zshrc` expands `~/.copilot/allowed-commands` (symlinked from `home/copilot/allowed-commands` by `./do.sh link-copilot`) into `--allow-tool "shell(...)"` flags at launch, plus `--allow-tool write`, `web_fetch`, and `web_search` (matching Claude's posture, where WebSearch is allowed and WebFetch is auto-approved via hook). One tracked list, applied globally on every machine.
 
 `permissions-config.json` itself stays untracked and machine-local — it accumulates directory-specific "always allow" answers on top of the baseline, and on a work machine it contains employer-specific paths that must not be committed to this public repo.
 
