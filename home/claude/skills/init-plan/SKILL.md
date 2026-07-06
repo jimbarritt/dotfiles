@@ -15,7 +15,11 @@ Create a new `doc/planning/plan.md` for this project using the standard structur
 - If `doc/planning/plan.md` already exists: tell the user and stop — do not overwrite.
 - If `doc/plan.md` exists: tell the user to run `/load-plan` instead, which will migrate it.
 
-## Step 2: Understand the project
+## Step 2: Read the shared plan format
+
+Read `../plan-format/PLAN-FORMAT.md` (relative to this skill's own directory). It defines the canonical structure and terminology (Deltas, Tasks, the Summary table, no ASCII separators) — follow it exactly.
+
+## Step 3: Understand the project
 
 Read enough to write a meaningful plan skeleton:
 - `CLAUDE.md` (if it exists)
@@ -25,51 +29,21 @@ Read enough to write a meaningful plan skeleton:
 
 If `$ARGUMENTS` was provided, use it as the project description.
 
-## Step 3: Create the directory
+## Step 4: Create the directory
 
 ```bash
 mkdir -p doc/planning
 ```
 
-## Step 4: Write the plan file
+## Step 5: Write the plan file
 
-Use this structure:
+Follow the structure in `../plan-format/PLAN-FORMAT.md` verbatim: `## What's Next`, the `## Summary` table, then one `## Delta N: {Name}` section per delta with `### Task N.n: {Title}` items underneath, then `## Implementation Notes`.
 
-```markdown
-# {Project Name} — Implementation Plan
+Populate the Deltas and Tasks based on what you learned about the project. If you cannot infer a meaningful breakdown, write 2–3 placeholder Deltas with clearly labelled `TODO` Tasks and tell the user to fill them in. Make sure the Summary table's links and statuses match the body exactly.
 
-## ── WHAT'S NEXT ──────────────────────────────────────────────────────────
-**Next:** Action 1.1 — {first action title}
-**Sub-doc:** (none)
-**Blockers:** None
-─────────────────────────────────────────────────────────────────────────────
-
-## Phase 1: {Phase Name}
-
-### Action 1.1: {Action Title}
-- TODO — {description}
-
-### Action 1.2: {Action Title}
-- TODO — {description}
-
-## Phase 2: {Phase Name}
-
-### Action 2.1: {Action Title}
-- TODO — {description}
-
----
-
-## Implementation Notes
-
-### Architecture
-{Brief notes on key decisions, constraints, or design choices — leave blank if unknown}
-```
-
-Populate the phases and actions based on what you learned about the project. If you cannot infer a meaningful breakdown, write 2–3 placeholder phases with clearly labelled `TODO` actions and tell the user to fill them in.
-
-## Step 5: Confirm
+## Step 6: Confirm
 
 Tell the user:
 - Where the file was created
-- How many phases/actions were scaffolded
+- How many Deltas/Tasks were scaffolded
 - That they can run `/update-plan` after each session to keep it current

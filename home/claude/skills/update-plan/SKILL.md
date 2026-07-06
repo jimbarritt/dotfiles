@@ -10,6 +10,8 @@ disable-model-invocation: false
 
 Update the project plan to reflect completed work, refresh the WHAT'S NEXT pointer, and append a dated checkpoint.
 
+Deciding *what happened this session* requires the main conversation's context and stays with the current model. The mechanical file edit is delegated to a Haiku subagent — **except when the plan needs migrating** to the current format, which is judgement-heavy and must run inline in the current model (see Step 6).
+
 ## Step 1: Find the plan file
 
 Check in order:
@@ -23,66 +25,42 @@ If found at `doc/plan.md` (and `doc/planning/` does not already have a plan.md):
 
 If neither exists: tell the user no plan file was found and stop.
 
-## Step 2: Read the plan
+## Step 2: Read the shared plan format
 
-Read the full plan file. Also read any sub-documents linked from actions that are being marked complete (look for lines like `Design doc: \`path/to/file.md\``).
+Read `../plan-format/PLAN-FORMAT.md` (relative to this skill's own directory). It defines the canonical structure and terminology (Deltas, Tasks, the Summary table, no ASCII separators).
 
-## Step 3: Update TODO → DONE in the plan body
+## Step 3: Read the plan and check its format
 
-Based on what was accomplished in this conversation:
-- Change `- TODO` items to `- ✓ DONE` for completed actions
-- If a completed action has a linked sub-document, open it and mark completed items there too
-- Do not invent completions — only mark items genuinely done in this session
+Read the full plan file. Also read any sub-documents linked from Tasks that are being marked complete (look for lines like `Sub-doc: \`path/to/file.md\``).
 
-## Step 4: Identify the next step
+Decide: does the plan need **migrating**? It does if it still uses old terminology ("Phase"/"Action"), the old boxed `WHAT'S NEXT`/`CHECKPOINT` separators, or lacks the Summary table.
 
-Look at the plan after your updates. Find the first remaining `TODO` item across all phases. Note:
-- The action number and title
-- Whether it has a linked sub-document
-- Any blockers or open questions
+## Step 4: Compose the session summary (current model — do not delegate)
 
-## Step 5: Refresh the WHAT'S NEXT pointer
+From the main conversation, work out:
+- Which plan TODOs were genuinely completed this session (Delta/Task numbers + which bullets). Do not invent completions.
+- The checkpoint content: what was completed (specific, file-level where useful), state of the project (2–4 sentences), immediate next priorities (3–5 items)
+- The next step: the first remaining `TODO` across all Deltas — its Task number and title, any linked sub-document, any blockers
+- Today's date (`date +%Y-%m-%d`)
 
-The plan file must start (after the `# Title` line) with a pointer block in this format:
+If `$ARGUMENTS` was provided, incorporate it.
 
-```markdown
-## ── WHAT'S NEXT ──────────────────────────────────────────────────────────
-**Next:** {Action X.Y} — {action title}
-**Sub-doc:** {relative path to sub-doc, or "(none)"}
-**Blockers:** {list blockers, or "None"}
-─────────────────────────────────────────────────────────────────────────────
-```
+## Step 5: Apply the update
 
-Update this block with the current next step. If the pointer block doesn't exist yet, insert it after the first `#` heading line.
+**If the plan needs migrating (per Step 3): do everything inline in the current model** — migration involves rewording historical text, renaming headings, and computing anchor slugs, which needs judgement. Rewrite the plan to conform to `PLAN-FORMAT.md` exactly, apply the Step 4 updates, and skip to Step 6.
 
-## Step 6: Append a checkpoint
+**Otherwise, delegate the mechanical edit** to a background subagent with `model: haiku` (general-purpose). The prompt must contain everything the agent needs, since it starts cold:
+- Absolute paths to the plan file and to `PLAN-FORMAT.md` (tell it to read both first and follow the format exactly)
+- The full Step 4 summary: exact bullets to flip `- TODO` → `- ✓ DONE` (and any sub-doc items), the complete checkpoint text to append, and the new What's Next values
+- The standing rules: update every Summary table row whose status changed (statuses per PLAN-FORMAT.md: `TODO` / `IN PROGRESS` / `✓ DONE` — the table must never drift from the body); append the checkpoint as `## Checkpoint: Session {date}` before `## Implementation Notes` (or at the end if that section doesn't exist), suffixing `b`, `c`... if a checkpoint for that date already exists; if there are then more than 10 checkpoints, remove the oldest until 10 remain — never touch `## Implementation Notes` or anything after it; mark only the listed items done — nothing else
+- Tell it to report back what it changed
 
-Append a new CHECKPOINT block at the bottom of the file (before `## Implementation Notes` if that section exists, otherwise at the very end):
+If the Agent tool is unavailable, do the same steps inline instead.
 
-```markdown
-## ── CHECKPOINT: Session {YYYY-MM-DD} ──────────────────────────────────────
+## Step 6: Confirm
 
-**What was completed this session:**
-{bullet list — specific, file-level where useful}
-
-**State of the project:**
-{2–4 sentences: what works, test status, anything notably broken}
-
-**Immediate next priorities:**
-{numbered list of next 3–5 items}
-
-─────────────────────────────────────────────────────────────────────────────
-```
-
-Get the date by running `date +%Y-%m-%d`.
-
-## Step 7: Trim old checkpoints
-
-Count the CHECKPOINT blocks in the file. If there are more than 10, remove the oldest ones (earliest dates) until only 10 remain. The `## Implementation Notes` section and anything after it must never be removed.
-
-## Step 8: Write the file and confirm
-
-Write the updated plan file. Then confirm to the user:
-- What TODOs were marked done
-- What the new WHAT'S NEXT pointer points to
+When the update is applied (relay the agent's report if delegated), confirm to the user:
+- What TODOs were marked done (and their Summary table rows updated)
+- What the new What's Next section points to
 - That the checkpoint was appended
+- Whether the plan was migrated to the current format
