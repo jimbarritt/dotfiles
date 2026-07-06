@@ -60,6 +60,14 @@ The Copilot link is created by `./do.sh link-copilot` (also included in `./do.sh
 
 **Caveat:** `home/claude/CLAUDE.md` contains some Claude-Code-specific instructions (built-in task tools, compaction guidance, skill invocation). Copilot will read these but can't act on all of them — harmless, but if the file grows more Claude-specific machinery, consider splitting the shared parts out.
 
+## Global command allowlist
+
+Copilot CLI has no global permissions allowlist — its `~/.copilot/permissions-config.json` stores approvals **per directory** (keys must match the working directory exactly; no wildcards — [open feature request](https://github.com/github/copilot-cli/issues/2398)). Claude's global `permissions.allow` has no direct equivalent.
+
+The workaround: `--allow-tool` flags apply session-wide regardless of directory, so a `copilot()` function in `home/zshrc` expands `~/.copilot/allowed-commands` (symlinked from `home/copilot/allowed-commands` by `./do.sh link-copilot`) into `--allow-tool "shell(...)"` flags at launch, plus `--allow-tool write`. One tracked list, applied globally on every machine.
+
+`permissions-config.json` itself stays untracked and machine-local — it accumulates directory-specific "always allow" answers on top of the baseline, and on a work machine it contains employer-specific paths that must not be committed to this public repo.
+
 ## Per-repo instructions
 
 The per-repo equivalents differ:

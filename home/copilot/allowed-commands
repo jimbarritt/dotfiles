@@ -1,0 +1,107 @@
+# Global Copilot CLI shell-command allowlist.
+# One command pattern per line; expanded to --allow-tool "shell(...)" flags
+# by the copilot() wrapper in zshrc. Lines starting with # are ignored.
+./gradlew
+ack
+ag
+awk
+basename
+brew
+bundle
+cargo
+cat
+chmod
+column
+comm
+cp
+curl
+cut
+date
+df
+diff
+dirname
+docker
+du
+echo
+env
+fd
+file
+find
+gh:*
+git blame:*
+git branch:*
+git checkout:*
+git cherry-pick:*
+git clone:*
+git commit:*
+git config:*
+git describe:*
+git diff:*
+git fetch:*
+git init
+git log:*
+git ls-files:*
+git merge:*
+git pull:*
+git push
+git rebase:*
+git reflog:*
+git remote:*
+git reset:*
+git restore:*
+git rev-parse:*
+git show:*
+git stash list
+git stash show
+git status
+git switch:*
+git tag:*
+git worktree:*
+go
+gradle
+grep
+head
+hostname
+jq
+just
+kubectl
+ln
+ls
+make
+mkdir
+mv
+node
+npm
+open
+paste
+perl
+pip
+pip3
+pnpm
+printf
+pwd
+python
+python3
+qlmanage
+realpath
+rg
+ruby
+rustc
+sed
+sort
+sqlite3
+stat
+tail
+tee
+touch
+tr
+tree
+type
+uniq
+wc
+wget
+which
+whoami
+xargs
+yarn
+yq

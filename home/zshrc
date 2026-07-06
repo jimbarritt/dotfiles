@@ -305,6 +305,23 @@ alias claude-yolo='claude --dangerously-skip-permissions'
 alias glow='glow -p'
 alias dc="docker-compose"
 
+# Copilot CLI has no global permissions allowlist (approvals are per-directory),
+# so apply one at launch: expand ~/.copilot/allowed-commands into --allow-tool
+# flags. See doc/claude-copilot-compatibility.md in the dotfiles repo.
+copilot() {
+  local allowlist="$HOME/.copilot/allowed-commands"
+  local -a flags
+  flags=(--allow-tool 'write')
+  if [[ -f "$allowlist" ]]; then
+    local line
+    while IFS= read -r line; do
+      [[ -z "$line" || "$line" == \#* ]] && continue
+      flags+=(--allow-tool "shell($line)")
+    done < "$allowlist"
+  fi
+  command copilot "${flags[@]}" "$@"
+}
+
 export CLAUDE_CODE_MAX_OUTPUT_TOKENS=8192
 
 if [ -n "$INSIDE_EMACS" ]; then
