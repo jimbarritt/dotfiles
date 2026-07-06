@@ -1,0 +1,24 @@
+#!/bin/bash
+# am-dotfiles-base.sh
+#
+# Answers: is this clone the base (upstream-editable) copy of the dotfiles?
+#
+# The canonical copy of this repo is edited as the GitHub user "jimbarritt".
+# On any machine authenticated as someone else (e.g. a work account), local
+# changes must not be made here — make them upstream and pull instead.
+#
+# Exit 0 = yes, local changes allowed. Exit 1 = no, read-only clone.
+
+set -euo pipefail
+
+expected_user="jimbarritt"
+actual_user="$(gh api user --jq .login 2>/dev/null || true)"
+
+if [ "$actual_user" = "$expected_user" ]; then
+  echo "yes: authenticated as ${expected_user} — local changes allowed"
+  exit 0
+fi
+
+echo "no: authenticated GitHub user is '${actual_user:-unknown}', not ${expected_user}."
+echo "Do not make local changes to this clone — make them upstream and pull."
+exit 1
