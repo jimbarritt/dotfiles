@@ -38,7 +38,7 @@
       "Bash(git stash *)"
     ]
   },
-  "model": "claude-fable-5[1m]",
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -86,7 +86,7 @@
     "padding": 2
   },
   "enabledPlugins": {},
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "autoUpdatesChannel": "latest",
   "minimumVersion": "2.1.81",
   "tui": "fullscreen",
