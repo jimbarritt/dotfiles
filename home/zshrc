@@ -319,6 +319,7 @@ copilot() {
       flags+=(--allow-tool "shell($line)")
     done < "$allowlist"
   fi
+  echo "starting copilot with allow-list"
   command copilot "${flags[@]}" "$@"
 }
 
