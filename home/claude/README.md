@@ -23,12 +23,14 @@ ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/statusline-command.sh ~/.c
 ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/CLAUDE.md ~/.claude/CLAUDE.md
 ```
 
-### Copilot CLI global instructions
+### Copilot CLI global instructions and skills
 
-Same file as the global `CLAUDE.md`, linked where Copilot CLI looks for it:
+Same file as the global `CLAUDE.md`, linked where Copilot CLI looks for it, plus each
+skill directory linked into `~/.copilot/skills/` (Copilot's personal-skills location):
 
 ```sh
 ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/CLAUDE.md ~/.copilot/copilot-instructions.md
+ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/<skill-name> ~/.copilot/skills/<skill-name>   # per skill
 ```
 
 ### Skills
@@ -44,6 +46,7 @@ ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/update-plan ~/.clau
 ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/proofread ~/.claude/skills/proofread
 ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/publish-crate ~/.claude/skills/publish-crate
 ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/save-session ~/.claude/skills/save-session
+ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/copilot-repo-init ~/.claude/skills/copilot-repo-init
 ln -shf ~/Code/github/jimbarritt/dotfiles/home/claude/skills/restore-session ~/.claude/skills/restore-session
 ```
 

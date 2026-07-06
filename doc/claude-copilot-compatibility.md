@@ -39,6 +39,12 @@ description: What the skill does and when to use it.
 
 Claude Code accepts the same frontmatter, so adding it costs nothing on the Claude side. All skills in `home/claude/skills/` now carry it — **any new skill must include it too**, or it will work in Claude Code but silently fail to load in Copilot.
 
+### Where Copilot finds skills
+
+Copilot looks for personal (cross-project) skills in `~/.copilot/skills/` or `~/.agents/skills/`, and per-repo skills in `.github/skills/`, `.claude/skills/`, or `.agents/skills/`.
+
+`./do.sh link-copilot` symlinks every skill directory from `home/claude/skills/` into `~/.copilot/skills/` — the same loop that `link-claude` runs for `~/.claude/skills/`, so both tools see the identical set. Some skills are Claude-specific (the plan skills, save/restore-session); Copilot will list them but they reference Claude Code machinery — harmless.
+
 ## Global instructions: one file, two symlinks
 
 Copilot CLI's equivalent of the global `~/.claude/CLAUDE.md` is `~/.copilot/copilot-instructions.md` — a personal instructions file applied to every session in every project.
@@ -64,6 +70,8 @@ The per-repo equivalents differ:
 
 Copilot CLI also reads `AGENTS.md` from directories listed in the `COPILOT_CUSTOM_INSTRUCTIONS_DIRS` environment variable, and scoped `.github/instructions/*.instructions.md` files.
 
+**In this repo:** `.github/copilot-instructions.md` is a symlink to `../CLAUDE.md`, so Copilot sessions in the dotfiles repo pick up the same per-repo instructions as Claude Code (and stop nagging about missing instructions).
+
 ### Recommended pattern: AGENTS.md canonical, CLAUDE.md imports it
 
 For repos that need cross-agent compatibility, make `AGENTS.md` the source of truth and reduce `CLAUDE.md` to an import plus any Claude-only extras:
@@ -73,6 +81,8 @@ For repos that need cross-agent compatibility, make `AGENTS.md` the source of tr
 
 <!-- Claude-specific instructions below, invisible to other tools -->
 ```
+
+The `/copilot-repo-init` skill (`home/claude/skills/copilot-repo-init/`) automates this conversion for any repo — it references this doc and applies the steps below.
 
 Why this direction and not the reverse (canonical `CLAUDE.md`, with `AGENTS.md` pointing at it):
 

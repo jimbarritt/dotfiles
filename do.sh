@@ -170,18 +170,28 @@ unlink_claude() {
 }
 
 link_copilot() {
-  echo "Linking global CLAUDE.md as Copilot CLI global instructions"
+  echo "Linking global CLAUDE.md and skills into ~/.copilot/"
 
-  ensure_dir "${HOME}/.copilot"
+  ensure_dir "${HOME}/.copilot/skills"
 
   backup_existing_file "${HOME}/.copilot/copilot-instructions.md"
   create_symlink "${DOTFILES_DIR}/home/claude/CLAUDE.md" "${HOME}/.copilot/copilot-instructions.md"
+
+  for _skill_dir in "${DOTFILES_DIR}/home/claude/skills"/*/; do
+    _skill_name=$(basename "${_skill_dir%/}")
+    create_symlink "${_skill_dir%/}" "${HOME}/.copilot/skills/${_skill_name}"
+  done
 }
 
 unlink_copilot() {
-  echo "Removing Copilot instructions symlink from ~/.copilot/"
+  echo "Removing Copilot symlinks from ~/.copilot/"
 
   remove_symlink "${HOME}/.copilot/copilot-instructions.md"
+
+  for _skill_dir in "${DOTFILES_DIR}/home/claude/skills"/*/; do
+    _skill_name=$(basename "${_skill_dir%/}")
+    remove_symlink "${HOME}/.copilot/skills/${_skill_name}"
+  done
 }
 
 link_all() {
