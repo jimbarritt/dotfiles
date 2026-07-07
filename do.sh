@@ -12,7 +12,7 @@ slurp_arguments() {
         DRY_RUN=true
         shift
         ;;
-      install|link|unlink|link-claude|unlink-claude)
+      install|link|unlink|link-claude|unlink-claude|link-copilot|unlink-copilot)
 	CMD_TO_RUN=$1
 	shift
 	;;

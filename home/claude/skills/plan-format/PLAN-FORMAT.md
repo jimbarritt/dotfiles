@@ -1,6 +1,6 @@
 # Plan Format
 
-Canonical structure for `doc/planning/plan.md`. The `init-plan`, `update-plan`, and `load-plan` skills must all follow this exactly — it is the single source of truth for the format, so fix drift here rather than in an individual skill.
+Canonical structure for `doc/planning/plan.md`. The `init-plan`, `update-plan`, `load-plan`, and `prune-plan` skills must all follow this exactly — it is the single source of truth for the format, so fix drift here rather than in an individual skill.
 
 ## Terminology
 
@@ -66,3 +66,12 @@ Canonical structure for `doc/planning/plan.md`. The `init-plan`, `update-plan`, 
 - The Status column must exactly track the body: `TODO` (no bullet done yet), `IN PROGRESS` (some bullets done, some not), or `✓ DONE` (every bullet under the Task is done).
 - Whenever a Task's TODO/DONE state changes in the body, the matching Summary table row must be updated in the same edit — the table and the body must never drift apart.
 - Checkpoints stack newest-last, each as its own `## Checkpoint: Session {YYYY-MM-DD}` heading, placed before `## Implementation Notes`.
+
+## Archiving
+
+Fully completed Deltas (every Task `✓ DONE`) can be pruned from the live plan by the `prune-plan` skill:
+
+- Pruned `## Delta N` sections move verbatim to `doc/planning/archive/{YYYY-MM-DD-HHMM}-archive.md` — never reworded or renumbered.
+- Remaining Deltas/Tasks keep their original numbers — checkpoints and commits reference them.
+- `doc/planning/archive/index.md` is the archive index: one line per prune run — `- {YYYY-MM-DD}: Deltas {N, M} → [{file}]({file})` — with each Delta's name listed.
+- Archived Deltas' rows are removed from the Summary table, and a single link line sits directly under the table: `Archived Deltas: see the [archive index](archive/index.md)`.
