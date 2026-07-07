@@ -4,8 +4,8 @@ Canonical structure for `doc/planning/plan.md`. The `init-plan`, `update-plan`, 
 
 ## Terminology
 
-- Top-level groups are called **Deltas** (not "Phases") — `Delta 1`, `Delta 2`, ...
-- Items within a Delta are called **Tasks** (not "Actions") — numbered `{delta}.{n}`, e.g. `1.1`, `1.2`.
+- Top-level groups are called **Deltas** (not "Phases") and are identified by title, not number: `## Delta: {Name}`. Titles are the stable identifier — checkpoints and commits reference them, so avoid renaming.
+- Items within a Delta are called **Tasks** (not "Actions"), numbered within their Delta only: `### Task 1: {Title}`, `### Task 2: {Title}` — restarting at 1 in each Delta. Reference a task as "{Delta name} / Task {n}" or just by its title.
 
 ## Structure
 
@@ -14,7 +14,7 @@ Canonical structure for `doc/planning/plan.md`. The `init-plan`, `update-plan`, 
 
 ## What's Next
 
-**Next:** Task {X.Y} — {task title}
+**Next:** Task {n} — {task title} (Delta: {delta name})
 **Sub-doc:** {relative path, or "(none)"}
 **Blockers:** {list, or "None"}
 
@@ -22,21 +22,23 @@ Canonical structure for `doc/planning/plan.md`. The `init-plan`, `update-plan`, 
 
 | Delta | Task | Status |
 |-------|------|--------|
-| [Delta 1: {Name}](#delta-1-name) | [1.1 {Task title}](#task-11-task-title) | ✓ DONE |
-| | [1.2 {Task title}](#task-12-task-title) | TODO |
-| [Delta 2: {Name}](#delta-2-name) | [2.1 {Task title}](#task-21-task-title) | TODO |
+| [Delta: {Name}](#delta-name) | [1. {Task title}](#task-1-task-title) | ✓ DONE |
+| | [2. {Task title}](#task-2-task-title) | TODO |
+| [Delta: {Other Name}](#delta-other-name) | [1. {Task title}](#task-1-task-title-1) | TODO |
 
-## Delta 1: {Name}
+Archived Deltas: see the [archive index](archive/index.md)
 
-### Task 1.1: {Task Title}
+## Delta: {Name}
+
+### Task 1: {Task Title}
 - TODO — {description}
 
-### Task 1.2: {Task Title}
+### Task 2: {Task Title}
 - TODO — {description}
 
-## Delta 2: {Name}
+## Delta: {Other Name}
 
-### Task 2.1: {Task Title}
+### Task 1: {Task Title}
 - TODO — {description}
 
 ## Checkpoint: Session {YYYY-MM-DD}
@@ -62,16 +64,16 @@ Canonical structure for `doc/planning/plan.md`. The `init-plan`, `update-plan`, 
 
 - **No box-drawing / ASCII separator lines** anywhere in the plan (no `──────`, no `═════`). `What's Next` and `Checkpoint` blocks are plain `##` headings like any other section.
 - The **Summary table** sits directly under `## What's Next`, before the Delta sections. One row per Task. Only fill the Delta cell on that Delta's first row (leave it blank on subsequent rows for the same Delta) so the table reads as visually grouped.
-- Both table columns link to the matching heading using GitHub's anchor-slugify rules: lowercase, spaces → hyphens, strip punctuation other than hyphens. E.g. `## Delta 1: Foo Bar` → `#delta-1-foo-bar`; `### Task 1.1: Foo Bar` → `#task-11-foo-bar`.
+- Both table columns link to the matching heading using GitHub's anchor-slugify rules: lowercase, spaces → hyphens, strip punctuation other than hyphens. E.g. `## Delta: Foo Bar` → `#delta-foo-bar`; `### Task 1: Foo Bar` → `#task-1-foo-bar`. If two headings produce the same slug (e.g. `Task 1` in two Deltas with identical titles), GitHub suffixes the later ones `-1`, `-2`... — link accordingly.
 - The Status column must exactly track the body: `TODO` (no bullet done yet), `IN PROGRESS` (some bullets done, some not), or `✓ DONE` (every bullet under the Task is done).
 - Whenever a Task's TODO/DONE state changes in the body, the matching Summary table row must be updated in the same edit — the table and the body must never drift apart.
 - Checkpoints stack newest-last, each as its own `## Checkpoint: Session {YYYY-MM-DD}` heading, placed before `## Implementation Notes`.
+- **Old formats to migrate on sight**: "Phase"/"Action" terminology, boxed `WHAT'S NEXT`/`CHECKPOINT` separators, numbered Deltas (`## Delta 1: ...`) and delta-prefixed Task numbers (`### Task 1.1: ...`). Numbered Deltas became unmanageable once pruning archived completed ones — the survivors' numbers had permanent gaps.
 
 ## Archiving
 
 Fully completed Deltas (every Task `✓ DONE`) can be pruned from the live plan by the `prune-plan` skill:
 
-- Pruned `## Delta N` sections move verbatim to `doc/planning/archive/{YYYY-MM-DD-HHMM}-archive.md` — never reworded or renumbered.
-- Remaining Deltas/Tasks keep their original numbers — checkpoints and commits reference them.
-- `doc/planning/archive/index.md` is the archive index: one line per prune run — `- {YYYY-MM-DD}: Deltas {N, M} → [{file}]({file})` — with each Delta's name listed.
+- Pruned `## Delta: ...` sections move verbatim to `doc/planning/archive/{YYYY-MM-DD-HHMM}-archive.md` — never reworded.
+- `doc/planning/archive/index.md` is the archive index: one line per prune run — `- {YYYY-MM-DD}: {Delta names} → [{file}]({file})`.
 - Archived Deltas' rows are removed from the Summary table, and a single link line sits directly under the table: `Archived Deltas: see the [archive index](archive/index.md)`.

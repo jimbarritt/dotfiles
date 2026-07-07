@@ -27,7 +27,7 @@ The plan file should begin (after the title line) with a `## What's Next` sectio
 - Whether there is a linked sub-document
 - The overall shape of progress from the Summary table's Status column
 
-If the plan still uses old terminology ("Phase"/"Action") or the old boxed separators, mention to the user that it's due a migration — `/update-plan` will do it automatically on the next run.
+If the plan uses an old format (per `../plan-format/PLAN-FORMAT.md`: "Phase"/"Action" terminology, boxed separators, or numbered Deltas like `## Delta 1:`), mention to the user that it's due a migration — `/update-plan` will do it automatically on the next run.
 
 ## Step 3: Read the full plan
 
@@ -41,7 +41,7 @@ If the What's Next section references a sub-document (not "(none)"), read that f
 
 Give a concise briefing — 3 sections, no waffle:
 
-**Progress:** One sentence on overall state (e.g. "Deltas 1–4 complete, Delta 5 in progress — 3 TODOs remaining").
+**Progress:** One sentence on overall state (e.g. "Two Deltas archived, 'Statusline Refinement' in progress — 3 TODOs remaining").
 
 **Last session:** 2–3 bullets from the most recent Checkpoint summarising what was done.
 

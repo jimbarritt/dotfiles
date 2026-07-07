@@ -16,7 +16,7 @@ Read `doc/planning/plan.md`. If it doesn't exist, tell the user and stop.
 
 ## Step 2: Read the shared plan format
 
-Read `../plan-format/PLAN-FORMAT.md` (relative to this skill's own directory) — the archive convention is defined there. If the plan is still in the old format ("Phase"/"Action", boxed separators), tell the user to run `/update-plan` first to migrate it, and stop.
+Read `../plan-format/PLAN-FORMAT.md` (relative to this skill's own directory) — the archive convention is defined there. If the plan is in an old format ("Phase"/"Action", boxed separators, or numbered Deltas like `## Delta 1:`), tell the user to run `/update-plan` first to migrate it, and stop.
 
 ## Step 3: Identify prunable Deltas
 
@@ -36,12 +36,12 @@ Create `doc/planning/archive/{timestamp}-archive.md` containing:
 ```markdown
 # {Project Name} — Archived Deltas ({YYYY-MM-DD})
 
-Archived from `doc/planning/plan.md`. Delta numbers are preserved; remaining Deltas in the live plan keep their original numbers.
+Archived from `doc/planning/plan.md`.
 
-{the pruned `## Delta N: ...` sections, moved verbatim}
+{the pruned `## Delta: ...` sections, moved verbatim}
 ```
 
-Move the sections verbatim — do not reword, summarise, or renumber.
+Move the sections verbatim — do not reword or summarise.
 
 ## Step 5: Update the archive index
 
@@ -50,16 +50,15 @@ Create or update `doc/planning/archive/index.md`:
 ```markdown
 # {Project Name} — Archive Index
 
-- {YYYY-MM-DD}: Deltas {list with names, e.g. 1 (Claude Tooling), 4 (Copilot Compatibility)} → [{timestamp}-archive.md]({timestamp}-archive.md)
+- {YYYY-MM-DD}: {Delta names, e.g. Claude Tooling, Copilot Compatibility} → [{timestamp}-archive.md]({timestamp}-archive.md)
 ```
 
 Append one line per prune run, newest last.
 
 ## Step 6: Update the live plan
 
-- Remove the pruned `## Delta N` sections from the body
+- Remove the pruned `## Delta: ...` sections from the body
 - Remove their rows from the Summary table
-- Do **not** renumber the remaining Deltas or Tasks — history (checkpoints, commits) references the original numbers
 - Ensure a single link line sits directly under the Summary table:
 
 ```markdown

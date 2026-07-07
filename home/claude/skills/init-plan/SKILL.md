@@ -37,7 +37,7 @@ mkdir -p doc/planning
 
 ## Step 5: Write the plan file
 
-Follow the structure in `../plan-format/PLAN-FORMAT.md` verbatim: `## What's Next`, the `## Summary` table, then one `## Delta N: {Name}` section per delta with `### Task N.n: {Title}` items underneath, then `## Implementation Notes`.
+Follow the structure in `../plan-format/PLAN-FORMAT.md` verbatim: `## What's Next`, the `## Summary` table, then one `## Delta: {Name}` section per delta (titled, not numbered) with `### Task n: {Title}` items underneath (numbered within the delta), then `## Implementation Notes`.
 
 Populate the Deltas and Tasks based on what you learned about the project. If you cannot infer a meaningful breakdown, write 2–3 placeholder Deltas with clearly labelled `TODO` Tasks and tell the user to fill them in. Make sure the Summary table's links and statuses match the body exactly.
 

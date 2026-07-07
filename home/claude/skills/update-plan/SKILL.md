@@ -33,14 +33,14 @@ Read `../plan-format/PLAN-FORMAT.md` (relative to this skill's own directory). I
 
 Read the full plan file. Also read any sub-documents linked from Tasks that are being marked complete (look for lines like `Sub-doc: \`path/to/file.md\``).
 
-Decide: does the plan need **migrating**? It does if it still uses old terminology ("Phase"/"Action"), the old boxed `WHAT'S NEXT`/`CHECKPOINT` separators, or lacks the Summary table.
+Decide: does the plan need **migrating**? It does if it uses any of the old formats listed in `PLAN-FORMAT.md`'s rules: "Phase"/"Action" terminology, boxed `WHAT'S NEXT`/`CHECKPOINT` separators, a missing Summary table, or numbered Deltas/delta-prefixed Task numbers (`## Delta 1:`, `### Task 1.1:`).
 
 ## Step 4: Compose the session summary (current model — do not delegate)
 
 From the main conversation, work out:
-- Which plan TODOs were genuinely completed this session (Delta/Task numbers + which bullets). Do not invent completions.
+- Which plan TODOs were genuinely completed this session (Delta name + Task + which bullets). Do not invent completions.
 - The checkpoint content: what was completed (specific, file-level where useful), state of the project (2–4 sentences), immediate next priorities (3–5 items)
-- The next step: the first remaining `TODO` across all Deltas — its Task number and title, any linked sub-document, any blockers
+- The next step: the first remaining `TODO` across all Deltas — its Task title (and Delta name), any linked sub-document, any blockers
 - Today's date (`date +%Y-%m-%d`)
 
 If `$ARGUMENTS` was provided, incorporate it.

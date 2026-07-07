@@ -2,7 +2,7 @@
 
 ## What's Next
 
-**Next:** Task 3.1 — Verify extra usage detection
+**Next:** Task 1 — Verify extra usage detection (Delta: Statusline Refinement)
 **Sub-doc:** (none)
 **Blockers:** None
 
@@ -10,19 +10,19 @@
 
 | Delta | Task | Status |
 |-------|------|--------|
-| [Delta 3: Statusline Refinement](#delta-3-statusline-refinement) | [3.1 Verify extra usage detection](#task-31-verify-extra-usage-detection) | TODO |
-| | [3.2 Plan skill refinement](#task-32-plan-skill-refinement) | ✓ DONE |
+| [Delta: Statusline Refinement](#delta-statusline-refinement) | [1. Verify extra usage detection](#task-1-verify-extra-usage-detection) | TODO |
+| | [2. Plan skill refinement](#task-2-plan-skill-refinement) | ✓ DONE |
 
 Archived Deltas: see the [archive index](archive/index.md)
 
-## Delta 3: Statusline Refinement
+## Delta: Statusline Refinement
 
-### Task 3.1: Verify extra usage detection
+### Task 1: Verify extra usage detection
 - TODO — Confirm whether `rate_limits.five_hour.used_percentage` can exceed 100 in the JSON, or is capped
 - TODO — If capped at 100, find alternative signal for "in extra usage" (e.g. a dedicated field)
 - TODO — Adjust threshold logic in `statusline-command.sh` if needed
 
-### Task 3.2: Plan skill refinement
+### Task 2: Plan skill refinement
 - ✓ DONE — Review `update-plan` / `load-plan` / `init-plan` skill behaviour after real use — user found old format hard to read
 - ✓ DONE — Create shared `home/claude/skills/plan-format/PLAN-FORMAT.md` — single canonical spec all three skills reference (avoids drift)
 - ✓ DONE — New format: "Deltas" replace "Phases", "Tasks" replace "Actions", plain `##` headings for What's Next and Checkpoints (no box-drawing separators), Summary table (Delta | Task | Status) with anchor links at the top
