@@ -2,7 +2,7 @@
 
 ## Session start
 
-**Before responding to the user's first message:** check whether `doc/planning/plan.md` exists in the current project. If it does, read it immediately and briefly orient on current state and next step. Do this before saying anything else — it is your first action, not an optional one.
+**Before responding to the user's first message, including greetings, small talk, or anything that seems too trivial to need context:** check whether `doc/planning/plan.md` exists in the current project. If it does, read it immediately and briefly orient on current state and next step. Do this before saying anything else — it is your first action, not an optional one.
 
 ## Finding files
 
