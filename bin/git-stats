@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# git-stats — summarise the git history of the whole repository.
+# Run from anywhere inside the repo. No arguments needed.
+#
+# Options:
+#   -l | --list   also list top 10 human contributors (default: off)
+#
+# Contributions matching "renovate" or "[bot]" are counted as bots.
+
+set -euo pipefail
+
+BOTS='\[bot\]|renovate'
+LIST_CONTRIBUTORS=false
+
+for arg in "$@"; do
+  case "$arg" in
+    -l|--list) LIST_CONTRIBUTORS=true ;;
+    *) echo "Usage: $0 [-l|--list]" >&2; exit 1 ;;
+  esac
+done
+
+ROOT=$(git rev-parse --show-toplevel)
+cd "$ROOT"
+
+# Draws a star bar scaled so the larger of the two values gets MAX stars.
+bar() { # bar <value> <max_value>
+  local v=$1 m=$2 width=40 n
+  if [ "$m" -eq 0 ]; then n=0; else n=$(( v * width / m )); fi
+  [ "$v" -gt 0 ] && [ "$n" -eq 0 ] && n=1
+  printf '%*s' "$n" '' | tr ' ' '*'
+}
+
+echo ""
+echo "=== Git stats: $ROOT ==="
+echo ""
+
+# --- Age ---
+FIRST=$(git log --format="%ad|%h|%s" --date=short | tail -1)
+LAST_DATE=$(git log -1 --format="%ad" --date=short)
+
+echo "AGE"
+echo "  First commit:       $FIRST"
+echo "  Most recent commit: $LAST_DATE"
+echo ""
+
+# --- Volume ---
+HUMAN_COMMITS=$(git log --format="%an" | grep -icvE "$BOTS" || true)
+BOT_COMMITS=$(git log --format="%an" | grep -icE "$BOTS" || true)
+
+echo "VOLUME"
+echo "  Human commits: $HUMAN_COMMITS"
+echo "  Bot commits:   $BOT_COMMITS"
+echo ""
+
+# --- Contributors ---
+ALL_CONTRIB=$(git shortlog -sn HEAD)
+HUMANS=$(echo "$ALL_CONTRIB" | grep -ivE "$BOTS" || true)
+HUMAN_COUNT=$(echo "$HUMANS" | grep -c . || true)
+BOT_COUNT=$(echo "$ALL_CONTRIB" | grep -icE "$BOTS" || true)
+MAX=$(( HUMAN_COUNT > BOT_COUNT ? HUMAN_COUNT : BOT_COUNT ))
+
+echo "CONTRIBUTORS"
+printf "  Human: %4d  %s\n" "$HUMAN_COUNT" "$(bar "$HUMAN_COUNT" "$MAX")"
+printf "  Bot:   %4d  %s\n" "$BOT_COUNT" "$(bar "$BOT_COUNT" "$MAX")"
+
+if [ "$LIST_CONTRIBUTORS" = true ]; then
+  echo "  Top 10 (human):"
+  echo "$HUMANS" | sed -n '1,10p' | sed 's/^/    /'
+fi
+echo ""
+
+# --- Fix-related commits (human only) ---
+FIX_PATTERN='fix|bug|hotfix|patch|regression|incident|defect'
+FIXES=$(git log --format="%an|%s" -i --extended-regexp --grep="$FIX_PATTERN" \
+  | awk -F'|' -v bots="$BOTS" 'tolower($1) !~ bots' | wc -l | tr -d ' ')
+
+echo "FIX-RELATED COMMITS (human)"
+echo "  Matching ($FIX_PATTERN): $FIXES"
+echo ""
+
+# --- Size (current state) ---
+echo "SIZE"
+git ls-files | xargs wc -l 2>/dev/null | tail -1 | sed 's/^/  /'
+echo ""
+
+# --- Churn (human only) ---
+echo "CHURN (human)"
+git log --numstat --format="@%an" \
+  | awk -v bots="$BOTS" '
+      /^@/ { skip = (tolower($0) ~ bots); next }
+      !skip { a += $1; r += $2 }
+      END { printf "  Lines added over life:   %d\n  Lines removed over life: %d\n", a, r }'
+echo ""

@@ -37,6 +37,7 @@
 
 ## Claude Code
 
+- [claude-advisor-tool.md](claude-advisor-tool.md) — The `advisor` tool: escalating to a stronger reviewer model, config and cost
 - [claude-workflow.md](claude-workflow.md) — Claude workflow notes
 - [installing-claude-yolo-mode.md](installing-claude-yolo-mode.md) — Installing Claude in yolo (dangerously skip permissions) mode
 - [installing-the-claude-statusline.md](installing-the-claude-statusline.md) — Installing the Claude Code status line
