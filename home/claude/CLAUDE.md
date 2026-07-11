@@ -30,6 +30,16 @@ Use **British English** throughout code and documentation (e.g., "initialise", "
   - Whenever the user asks to "show", "preview", "view", or "open" a markdown file — or a doc/README/plan/ADR/research file that happens to be markdown — run `open -a Marq path/to/file.md` rather than printing the contents or describing it in chat.
   - After writing or substantially updating a markdown file the user is likely to want to read in full (a new plan, ADR, research doc, README), proactively offer to open it in Marq rather than waiting to be asked.
 
+## Destructive commands
+
+`rm` is blocked in this environment. When something genuinely needs
+deleting, don't work around the block (e.g. `mv` to a temp/scratch
+location as a substitute) unless that's otherwise the right call —
+instead copy the exact `rm` command to the clipboard (`pbcopy`) so it
+can be run manually later. Batch these up rather than interrupting for
+each one; it's fine to mention what's pending and let them be run at
+the end of a session.
+
 ## Agents
 
 - Delegate self-contained doc updates to a general-purpose agent rather than doing them inline. "Read this file, make these edits based on X" is always a good agent candidate — it costs ~1% context vs 3-5% inline.
