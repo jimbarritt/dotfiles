@@ -43,6 +43,10 @@
 - [installing-the-claude-statusline.md](installing-the-claude-statusline.md) — Installing the Claude Code status line
 - [vim-mode-in-claude-code.md](vim-mode-in-claude-code.md) — Using Ctrl+G to exit insert mode in Claude Code
 
+## Rust
+
+- [claiming-a-crate-name.md](claiming-a-crate-name.md) — Publishing an early/placeholder crate purely to claim its name on crates.io
+
 ## Architecture Decision Records
 
 - [adr/decisions.md](adr/decisions.md) — Decision log

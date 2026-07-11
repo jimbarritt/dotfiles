@@ -26,7 +26,9 @@ Use **British English** throughout code and documentation (e.g., "initialise", "
 
 ## Tools
 
-- **Marq** — Native macOS markdown viewer. When asked to "show me the markdown", "preview this", or "open in Marq", run `open -a Marq path/to/file.md`. If Marq is already running, this switches to the new file in the same window. Installed via `brew install --cask jimbarritt/tap/marq`.
+- **Marq** — Native macOS markdown viewer. Installed via `brew install --cask jimbarritt/tap/marq`. If Marq is already running, opening a new file switches to it in the same window. **Do not forget this tool exists** — it should be the default way to show the user a markdown file, not just when they name it explicitly:
+  - Whenever the user asks to "show", "preview", "view", or "open" a markdown file — or a doc/README/plan/ADR/research file that happens to be markdown — run `open -a Marq path/to/file.md` rather than printing the contents or describing it in chat.
+  - After writing or substantially updating a markdown file the user is likely to want to read in full (a new plan, ADR, research doc, README), proactively offer to open it in Marq rather than waiting to be asked.
 
 ## Agents
 

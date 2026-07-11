@@ -87,6 +87,7 @@
   },
   "enabledPlugins": {},
   "effortLevel": "medium",
+  "advisorModel": "fable",
   "autoUpdatesChannel": "latest",
   "minimumVersion": "2.1.81",
   "tui": "fullscreen",
@@ -98,6 +99,5 @@
   "theme": "dark-ansi",
   "editorMode": "vim",
   "agentPushNotifEnabled": true,
-  "voiceEnabled": true,
-  "advisorModel": "fable"
+  "voiceEnabled": true
 }
