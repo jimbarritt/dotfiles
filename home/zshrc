@@ -212,6 +212,8 @@ tmux-named() {
 
 tmux-new() { tmux new -s "${1:-$(basename $PWD)}"; }
 
+scratch() { mkdir -p ~/tmp && nvim ~/tmp/scratch.md; }
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
