@@ -40,3 +40,14 @@ SCROLL / COPY MODE  (enter: [ , exit: q)
 OTHER
  b       Toggle status bar
  [       Enter scroll/copy mode
+
+EDITING  (emacs/readline — works in most shell prompts)
+ Ctrl-a     Start of line
+ Ctrl-e     End of line
+ Ctrl-u     Kill to start of line
+ Ctrl-k     Kill to end of line
+ Ctrl-w     Kill word back
+ Alt-b      Word back
+ Alt-f      Word forward
+ Alt-d      Kill word forward
+ Ctrl-y     Yank last kill

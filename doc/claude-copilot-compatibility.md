@@ -60,6 +60,10 @@ The Copilot link is created by `./do.sh link-copilot` (also included in `./do.sh
 
 **Caveat:** `home/claude/CLAUDE.md` contains some Claude-Code-specific instructions (built-in task tools, compaction guidance, skill invocation). Copilot will read these but can't act on all of them — harmless, but if the file grows more Claude-specific machinery, consider splitting the shared parts out.
 
+**Caveat — this symlink is the exact shape that trips a known Claude Code bug:** `~/.claude/CLAUDE.md` here is a symlink, and Claude Code has an open bug where it **refuses to write through a symlinked `CLAUDE.md`** (`Refusing to write through symlink` — [#66559](https://github.com/anthropics/claude-code/issues/66559)). Anything that writes to `CLAUDE.md` — auto-memory, `/init` — can fail silently against this setup. If either stops working, check whether it's hitting this bug before assuming the feature itself is broken.
+
+**Mitigation, why this repo accepts the tradeoff anyway:** the two conditions that make the symlink genuinely risky don't apply here. The Windows data-loss failure mode needs a Windows git clone with `core.symlinks=false` — this setup is macOS-only and always will be. The symlink itself is also never committed: `./do.sh link` / `link-copilot` recreate it fresh on each machine, so there's nothing for a bad clone to lose in the first place. On the write-refusal bug specifically: in practice, Claude Code has resolved the symlink and edited the real target file (`home/claude/CLAUDE.md`) without complaint — it seems to detect the symlink and follow it through to the real file rather than refusing, so #66559 hasn't actually manifested here. Worth re-checking if a future Claude Code version changes this behaviour.
+
 ## Global permissions: allow everything, deny the dangerous
 
 Copilot CLI has no global permissions config — its `~/.copilot/permissions-config.json` stores approvals **per directory** (keys must match the working directory exactly; no wildcards — [open feature request](https://github.com/github/copilot-cli/issues/2398)). Claude's global `permissions` block has no direct equivalent.
@@ -110,7 +114,19 @@ Why this direction and not the reverse (canonical `CLAUDE.md`, with `AGENTS.md` 
 - **Everything else reads `AGENTS.md` natively** — Copilot CLI, Codex, Cursor, Gemini CLI all treat it as the emerging cross-vendor standard, so they need no pointer at all.
 - **The import beats a symlink** because `CLAUDE.md` stays a real file: genuinely Claude-specific instructions (task-tool rules, skill invocation notes) can sit under the import line without polluting what other tools see. Imports resolve relative to the importing file and can nest up to four hops deep.
 
-Sources for this section: [official @AGENTS.md import confirmation](https://gist.github.com/yurukusa/d36197848911f025add142abefcde685), [travis.media — CLAUDE.md follows AGENTS.md without a symlink](https://travis.media/blog/claude-md-import-agents-md/), [codex.danielvaughan.com — cross-tool portability](https://codex.danielvaughan.com/2026/05/27/agent-instruction-files-agents-md-claude-md-cross-tool-portability-codex-cli/).
+**Concrete failure modes of `ln -s AGENTS.md CLAUDE.md`** (this is why "just symlink it" keeps coming up and keeps being wrong):
+
+| Failure mode | Evidence | Status (Jul 2026) |
+|---|---|---|
+| Claude Code **refuses to write** through a symlinked `CLAUDE.md` (`Refusing to write through symlink`) — breaks auto-memory, `/init`, any "edit CLAUDE.md" | [#66559](https://github.com/anthropics/claude-code/issues/66559) | Open |
+| **Silent data loss on Windows git clones** — `core.symlinks=false` (Git-for-Windows default) turns `CLAUDE.md` into a 9-byte text file containing the literal string `AGENTS.md`; all instructions lost, no error | [#66559 comment](https://github.com/anthropics/claude-code/issues/66559#issuecomment-4699814394) | Git behaviour, unresolved |
+| Windows symlink creation needs Admin / Developer Mode | Official docs — "use `@AGENTS.md` import instead" | Documented limitation |
+| Double / re-injection of `CLAUDE.md` when `~/.claude` is a symlink (wastes tokens) | [#73335](https://github.com/anthropics/claude-code/issues/73335), [#75931](https://github.com/anthropics/claude-code/issues/75931) | Open |
+| Older versions silently **replaced the symlink with a regular file** on write | [#40857](https://github.com/anthropics/claude-code/issues/40857) | Closed "not planned" |
+
+**Does symlinking at least save tokens over `@AGENTS.md`? No.** Both approaches load the *same* AGENTS.md content into context — a symlink means Claude reads the target file (full AGENTS.md bytes), `@AGENTS.md` expands the import (full AGENTS.md bytes plus ~1 line for the import statement itself). The saving is effectively zero, and some symlink bugs (#73335) cause double-injection, which *wastes* tokens instead.
+
+Sources for this section: [official @AGENTS.md import confirmation](https://gist.github.com/yurukusa/d36197848911f025add142abefcde685), [travis.media — CLAUDE.md follows AGENTS.md without a symlink](https://travis.media/blog/claude-md-import-agents-md/), [codex.danielvaughan.com — cross-tool portability](https://codex.danielvaughan.com/2026/05/27/agent-instruction-files-agents-md-claude-md-cross-tool-portability-codex-cli/), [native AGENTS.md support request](https://github.com/anthropics/claude-code/issues/6235).
 
 ## Sources
 
@@ -120,3 +136,5 @@ Sources for this section: [official @AGENTS.md import confirmation](https://gist
 - [GitHub Docs — Installing GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli) — install methods and auto-update behaviour for the standalone CLI
 - [GitHub Changelog — Copilot CLI via the GitHub CLI (Jan 2026)](https://github.blog/changelog/2026-01-21-install-and-use-github-copilot-cli-directly-from-the-github-cli/) — `gh copilot` now delegates to the standalone CLI; old extension retired
 - [GitHub Docs — Allowing and denying tool use](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/allowing-tools) — `--allow-all`, `--allow-tool`/`--deny-tool` flags and per-directory `permissions-config.json` behaviour
+- [Claude Code symlinked CLAUDE.md write-refusal bug](https://github.com/anthropics/claude-code/issues/66559) — also affects this repo's `~/.claude/CLAUDE.md` symlink
+- [Native AGENTS.md support request](https://github.com/anthropics/claude-code/issues/6235) — not supported as of Jul 2026

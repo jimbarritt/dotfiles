@@ -192,6 +192,15 @@ function zle-line-init {
 }
 zle -N zle-line-init
 bindkey -M viins '^G' vi-cmd-mode
+# vi-mode plugin leaves ^K bound to self-insert; restore kill-to-end-of-line
+bindkey -M viins '^K' vi-kill-eol
+# In vi-mode, a bare Escape switches to normal mode. macos-option-as-alt sends
+# Option-b/f/d as Escape+letter, so without an explicit binding for the full
+# two-key sequence, Escape switches mode before the letter is read. Binding
+# the sequence directly keeps Option-b/f/d working while staying in insert mode.
+bindkey -M viins '^[b' vi-backward-word
+bindkey -M viins '^[f' vi-forward-word
+bindkey -M viins '^[d' kill-word
 # clicolors
 
 tmux-named() {
