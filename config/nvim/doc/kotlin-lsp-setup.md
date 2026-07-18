@@ -58,8 +58,9 @@ Auto-write to ~/.zshrc_machine if detected and not already saved.
 
 ### Error detection
 
-30 seconds after the plugin loads, it checks whether a `kotlin_ls` client is
-running. If not, it runs a full diagnostic and shows a popup with:
+30 seconds after the plugin loads, it checks whether a `kotlin_lsp` client is
+running (client name as of kotlin.nvim v2 — see "kotlin.nvim v2 breaking
+changes" below). If not, it runs a full diagnostic and shows a popup with:
 - The resolved directory and binary status
 - A path to a detailed diagnostic log file at `~/.local/state/nvim/kotlin-lsp-diag.log`
 - A pointer to `:LspLog` for LSP-specific errors
@@ -178,6 +179,56 @@ unset KOTLIN_LSP_DIR && source ~/.zshrc
 - Both create `/opt/homebrew/bin/kotlin-lsp` — they conflict, so uninstall one first
 
 The plugin handles both layouts automatically.
+
+## kotlin.nvim v2 breaking changes (2026-07)
+
+Updating plugins (`:Lazy` → `U`) pulled in kotlin.nvim's `refactor!: drop
+legacy kotlin-lsp.sh launcher and jre_path` (commit `56d3545`) at the same
+time the `kotlin-lsp` cask was upgraded to `262.8190.0`. Combined, these broke
+Kotlin LSP startup in three independent ways, all now fixed in
+`lua/plugins/kotlin.lua`:
+
+1. **Cask layout gained a nested directory.** Older cask versions had
+   `lib/`, `bin/`, `jre/` directly under `<caskroom>/<version>/`. As of
+   `262.8190.0`, everything moved one level deeper, into
+   `<caskroom>/<version>/kotlin-server-<version>/`, and the JRE directory was
+   renamed from `jre/` to `jbr/`. The cask-detection glob only checked the
+   old flat layout, so auto-detection silently failed. Fixed: detection now
+   falls back to globbing for a nested `kotlin-server-*` directory when
+   `lib/` isn't found directly under the version dir.
+
+2. **`jre_path` setup option removed.** kotlin.nvim v2 no longer accepts
+   `jre_path` in `require("kotlin").setup({...})` — it always invokes
+   `bin/intellij-server` directly and resolves its own JRE (the bundled
+   `jbr/`), so there's nothing to configure. `kotlin-lsp.sh` is deprecated
+   too (still present, prints a deprecation warning if run directly, but
+   kotlin.nvim never calls it). Fixed: removed the dead JRE-detection code
+   and the `jre_path` option from the `setup()` call; diagnostic binary
+   checks now look for `bin/intellij-server` instead of `kotlin-lsp.sh`.
+
+3. **LSP client renamed from `kotlin_ls` to `kotlin_lsp`.** This config's
+   own 30-second startup check and its `VimLeavePre` shutdown handler both
+   filtered `vim.lsp.get_clients()` by the old name, so they reported "LSP
+   failed to start" even when the server was actually running fine (visible
+   via `lsp-doctor` showing a live process). Fixed: both checks now use
+   `kotlin_lsp`.
+
+There was also a **stale `KOTLIN_LSP_DIR` env var** issue on top of these:
+the plugin's fallback detection correctly found the new nested path for its
+own diagnostics, but only wrote the corrected value to the *session* env var
+if `KOTLIN_LSP_DIR` wasn't already set — so a value inherited from the shell
+(exported from `~/.zshrc_machine` before it was corrected, or before a shell
+reload) silently took precedence, and kotlin.nvim (which reads the env var
+directly) kept resolving the old, now-deleted version directory. Fixed: the
+session env var is now always overridden with the freshly-validated path,
+not just set when absent. If you still hit a stale-path issue, the immediate
+workaround is `unset KOTLIN_LSP_DIR && source ~/.zshrc` before opening nvim.
+
+**Lesson for future cask/plugin upgrades:** if `:Lazy` reports a `!` /
+"Breaking Changes" commit for kotlin.nvim, check that commit's diff before
+assuming the existing detection code in `kotlin.lua` still matches the
+plugin's current API and the cask's current directory layout — both have
+changed independently before.
 
 ## Troubleshooting
 

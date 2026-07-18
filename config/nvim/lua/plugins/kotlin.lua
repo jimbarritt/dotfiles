@@ -116,9 +116,14 @@ return {
           local versions = vim.fn.glob(caskroom .. "/*", false, true)
           for _, vdir in ipairs(versions) do
             add("  Version dir: " .. vdir)
-            add("    lib/ exists:   " .. (vim.fn.isdirectory(vdir .. "/lib") == 1 and "YES" or "NO"))
-            add("    jre/ exists:   " .. (vim.fn.isdirectory(vdir .. "/jre") == 1 and "YES" or "NO"))
-            add("    kotlin-lsp.sh: " .. (vim.fn.filereadable(vdir .. "/kotlin-lsp.sh") == 1 and "YES" or "NO"))
+            add("    lib/ exists:              " .. (vim.fn.isdirectory(vdir .. "/lib") == 1 and "YES" or "NO"))
+            add("    bin/intellij-server:       " .. (vim.fn.filereadable(vdir .. "/bin/intellij-server") == 1 and "YES" or "NO"))
+            local nested = vim.fn.glob(vdir .. "/kotlin-server-*", false, true)
+            if nested[1] then
+              add("    nested kotlin-server dir: " .. nested[1])
+              add("      lib/ exists:             " .. (vim.fn.isdirectory(nested[1] .. "/lib") == 1 and "YES" or "NO"))
+              add("      bin/intellij-server:     " .. (vim.fn.filereadable(nested[1] .. "/bin/intellij-server") == 1 and "YES" or "NO"))
+            end
           end
         end
       else
@@ -248,8 +253,17 @@ return {
         -- Use the latest version directory
         table.sort(versions)
         local latest = versions[#versions]
-        if latest and vim.fn.isdirectory(latest .. "/lib") == 1 then
-          lsp_dir = latest
+        if latest then
+          if vim.fn.isdirectory(latest .. "/lib") == 1 then
+            -- Old flat layout: <version>/lib
+            lsp_dir = latest
+          else
+            -- Current layout nests everything under <version>/kotlin-server-<version>/
+            local nested = vim.fn.glob(latest .. "/kotlin-server-*", false, true)
+            if nested[1] and vim.fn.isdirectory(nested[1] .. "/lib") == 1 then
+              lsp_dir = nested[1]
+            end
+          end
         end
       end
 
@@ -320,8 +334,12 @@ return {
       end
     end
 
-    -- Set the env var for this nvim session so kotlin.nvim can find it
-    if lsp_dir and not os.getenv("KOTLIN_LSP_DIR") then
+    -- Set the env var for this nvim session so kotlin.nvim can find it.
+    -- Always override rather than only-if-unset: kotlin.nvim reads this env
+    -- var directly, and a stale value inherited from the shell (e.g. before
+    -- ~/.zshrc_machine is reloaded after a cask upgrade) would otherwise
+    -- take precedence over the path we just validated above.
+    if lsp_dir then
       vim.fn.setenv("KOTLIN_LSP_DIR", lsp_dir)
     end
 
@@ -375,23 +393,11 @@ return {
       return
     end
 
-    -- Resolve bundled JRE from the detected lsp_dir
-    -- Cask layout:  <caskroom>/<ver>/jre/...
-    -- Formula layout: libexec/jre/...
-    -- Either way, jre lives alongside lib/ under lsp_dir.
-    local jre_base = lsp_dir .. "/jre"
-    local bundled_jre = nil
-    if vim.fn.isdirectory(jre_base) == 1 then
-      local candidate = jre_base .. "/Contents/Home"  -- macOS layout
-      if vim.fn.isdirectory(candidate) == 1 then
-        bundled_jre = candidate
-      elseif vim.fn.isdirectory(jre_base .. "/bin") == 1 then
-        bundled_jre = jre_base  -- Linux layout
-      end
-    end
-
+    -- kotlin.nvim v2+ dropped the jre_path option and legacy kotlin-lsp.sh
+    -- launcher entirely (refactor!: drop legacy kotlin-lsp.sh launcher and
+    -- jre_path). It now always invokes bin/intellij-server directly and
+    -- resolves its own JRE, so there is nothing to configure here.
     require("kotlin").setup({
-      jre_path = bundled_jre,  -- use brew-bundled JRE if available
       lsp = {
         on_attach = function(client, bufnr)
           -- Re-use the shared on_attach from lsp.lua
@@ -408,7 +414,8 @@ return {
     -- Check that the LSP actually starts — run diagnostics if it fails
     -- 30s timeout: the Kotlin LSP is a full IntelliJ platform and can be slow to initialise
     vim.defer_fn(function()
-      local clients = vim.lsp.get_clients({ name = "kotlin_ls" })
+      -- kotlin.nvim v2+ renamed its LSP client from "kotlin_ls" to "kotlin_lsp"
+      local clients = vim.lsp.get_clients({ name = "kotlin_lsp" })
       if #clients == 0 then
         -- Check if this is a workspace lock conflict (another nvim has the same project open)
         local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
@@ -474,15 +481,12 @@ return {
           "",
           "Resolved dir: " .. lsp_dir,
         }
-        -- Show binary status
-        local sh = lsp_dir .. "/kotlin-lsp.sh"
-        local bin = lsp_dir .. "/bin/kotlin-lsp"
-        if vim.fn.filereadable(sh) == 1 then
-          table.insert(popup_lines, "Binary:      " .. sh .. " (found)")
-        elseif vim.fn.filereadable(bin) == 1 then
+        -- Show binary status (kotlin.nvim v2+ requires bin/intellij-server directly)
+        local bin = lsp_dir .. "/bin/intellij-server"
+        if vim.fn.filereadable(bin) == 1 then
           table.insert(popup_lines, "Binary:      " .. bin .. " (found)")
         else
-          table.insert(popup_lines, "Binary:      NOT FOUND")
+          table.insert(popup_lines, "Binary:      NOT FOUND (expected " .. bin .. ")")
         end
         table.insert(popup_lines, "")
         table.insert(popup_lines, "If macOS is blocking native libraries, run:")
@@ -505,7 +509,8 @@ return {
     vim.api.nvim_create_autocmd("VimLeavePre", {
       group = vim.api.nvim_create_augroup("KotlinLspShutdown", { clear = true }),
       callback = function()
-        local clients = vim.lsp.get_clients({ name = "kotlin_ls" })
+        -- kotlin.nvim v2+ renamed its LSP client from "kotlin_ls" to "kotlin_lsp"
+      local clients = vim.lsp.get_clients({ name = "kotlin_lsp" })
         for _, client in ipairs(clients) do
           -- Force stop so kotlin-lsp at least receives an exit signal.
           pcall(function() client:stop(true) end)

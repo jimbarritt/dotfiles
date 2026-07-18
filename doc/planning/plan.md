@@ -184,6 +184,30 @@ Plan skills and format are now consistent and centrally specified. The `plan-for
 3. Task 4.1 — Optionally convert this repo to the AGENTS.md pattern
 4. Task 3.1 — Verify extra usage detection in statusline
 
+## Checkpoint: Session 2026-07-18
+
+**What was completed this session:**
+- Kotlin LSP for nvim: fixed three compounding breaking changes in `config/nvim/lua/plugins/kotlin.lua`
+  - Cask directory layout changed to nest everything under `<version>/kotlin-server-<version>/` — fixed detection to fall back to the nested path
+  - kotlin.nvim v2 dropped the `jre_path` setup option and legacy `kotlin-lsp.sh` launcher entirely, now always invokes `bin/intellij-server` directly — removed the dead JRE-detection code and updated diagnostic binary checks accordingly
+  - kotlin.nvim v2 renamed its LSP client from `kotlin_ls` to `kotlin_lsp` — updated both the 30s startup-diagnostic check and the `VimLeavePre` shutdown handler
+  - Also fixed a stale `KOTLIN_LSP_DIR` env var: corrected the machine-local `~/.zshrc_machine` value, and changed the plugin to always override the session env var with the freshly-validated path rather than only setting it when unset
+- Documented the incident in a new "kotlin.nvim v2 breaking changes (2026-07)" section in `config/nvim/doc/kotlin-lsp-setup.md`; corrected a stale `kotlin_language_server` reference in `config/nvim/doc/CLAUDE.md`; expanded `config/nvim/README.md`'s "Maintenance" section into full update instructions covering Lazy plugins, Mason LSPs, and the Kotlin cask
+- New `doc/claude-lsp-integration.md`: documents Claude Code's own LSP plugin system, including a custom `home/claude/skills/rust-analyzer-lsp/` plugin with explicit `shutdownTimeout`/`restartOnCrash` to avoid a known orphaned-rust-analyzer-process bug (upstream anthropics/claude-code#26752)
+- `doc/claude-copilot-compatibility.md`: added a concrete symlink-vs-`@AGENTS.md`-import failure-mode table and a mitigation note explaining why this repo's own `~/.claude/CLAUDE.md` symlink is an accepted risk
+- Ghostty: `macos-option-as-alt = true` in `config/ghostty/config`, so Option acts as real Alt/Meta
+- zsh: fixed gaps in the oh-my-zsh vi-mode plugin's `viins` keymap in `home/zshrc` — `bindkey -M viins '^K' vi-kill-eol`, plus `'^[b'`/`'^[f'`/`'^[d'` bindings for Option-word-movement (needed because Option-as-Alt sends legacy Escape-prefixed sequences, which vi-mode's bare-Escape-to-normal-mode binding would otherwise swallow first)
+- tmux: new `EDITING` section in `config/key-help/tmux` documenting the emacs/readline shortcuts
+- New `scratch()` shell function in `home/zshrc` (opens `~/tmp/scratch.md`, creating the directory if needed)
+
+**State of the project:**
+This session's work — Kotlin LSP debugging, Claude Code LSP integration research, and several terminal/shell ergonomics fixes — fell entirely outside the plan's tracked Deltas; no existing plan.md Tasks were touched. Delta: Statusline Refinement's Task 1 (Verify extra usage detection) remains the only open TODO in the plan. All changes are committed directly to tracked dotfiles; nothing is queued for the user to run except the normal upstream-only commit/push.
+
+**Immediate next priorities:**
+1. Task 1 — Verify extra usage detection (Delta: Statusline Refinement)
+2. Consider adding a recurring monthly nvim/plugin-maintenance task (Lazy update, Mason update, Kotlin cask upgrade + breaking-change review) once the user's "tsk" task system is running — not yet a plan Task, noted in memory only
+3. Commit and push this session's dotfiles changes upstream (kotlin.lua fixes, new docs, Ghostty/zsh/tmux config)
+
 ---
 
 ## Implementation Notes

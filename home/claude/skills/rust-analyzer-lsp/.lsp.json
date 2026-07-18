@@ -1,0 +1,11 @@
+{
+  "rust": {
+    "command": "rust-analyzer",
+    "extensionToLanguage": {
+      ".rs": "rust"
+    },
+    "shutdownTimeout": 5000,
+    "restartOnCrash": true,
+    "maxRestarts": 3
+  }
+}

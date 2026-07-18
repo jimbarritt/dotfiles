@@ -14,9 +14,10 @@ Canonical structure for `doc/planning/plan.md`. The `init-plan`, `update-plan`, 
 
 ## What's Next
 
-**Next:** Task {n} — {task title} (Delta: {delta name})
-**Sub-doc:** {relative path, or "(none)"}
-**Blockers:** {list, or "None"}
+- **Next:** Task {n} — {task title} (Delta: {delta name})
+- **Sub-doc:** {relative path, or "(none)"}
+- **Blockers:** {list, or "None"}
+- **Context:** {optional — link to the latest Checkpoint, or omit the field entirely}
 
 ## Summary
 
@@ -62,8 +63,26 @@ Archived Deltas: see the [archive index](archive/index.md)
 
 ## Rules
 
+- **Each `What's Next` field is its own top-level bullet** (`- **Next:** ...`, `- **Sub-doc:** ...`, etc.), never a bare `**Label:** ...` line. Consecutive non-blank lines with no bullet marker collapse into a single run-on paragraph under CommonMark — bullets are what keep each field on its own visual line regardless of renderer.
+- **`What's Next` is a pointer, not a summary.** No rationale, no session narrative, no stacking multiple ideas into one run-on sentence. If reasoning matters, it belongs in the Task body or a `## Checkpoint` entry, linked via `**Context:**` — never inlined into `What's Next` itself.
+  - `**Next:**` is normally a single line: `Task {n} — {task title} (Delta: {delta name})`.
+  - If there are multiple undecided candidates, nest them as sub-bullets under the `**Next:**` bullet instead of cramming them into one sentence — each sub-bullet is a name + link, not a reason:
+    ```markdown
+    - **Next:** Undecided — see Checkpoint for context.
+      - Reconciliation / Task 1
+      - Credit Card Transaction Import / Task 3
+      - The Gap / Task 1
+    ```
+  - Bad: `**Next:** Not yet decided. Delta X is done — every task in its table is complete. Candidates, not yet prioritised: Task A (because...), Task B (because...), or resuming Task C.`
+- Don't invent extra top-level fields beyond `Next`/`Sub-doc`/`Blockers`/`Context`. If something else feels worth recording every session, it's checkpoint material, not a `What's Next` field.
+- **Prefer sub-bullets over one dense paragraph.** A Task or Checkpoint entry that's accreting multiple facts (what was built, what was found, what's still open) should split them into separate indented sub-bullets under the main `- TODO —`/`- ✓ DONE —` line, one fact per sub-bullet, rather than one long comma/em-dash-stitched paragraph. The top-level bullet stays a short headline; detail hangs underneath it:
+  ```markdown
+  - ✓ DONE — {one-line headline of what shipped}
+    - {supporting detail, one idea}
+    - {another supporting detail, one idea}
+  ```
 - **No box-drawing / ASCII separator lines** anywhere in the plan (no `──────`, no `═════`). `What's Next` and `Checkpoint` blocks are plain `##` headings like any other section.
-- The **Summary table** sits directly under `## What's Next`'s `**Next:**`/`**Sub-doc:**`/`**Blockers:**` lines, before the Delta sections. **Nothing else goes in between** — no dated history, no session narrative, no extra detail. `What's Next` is a short pointer, not a log; session detail belongs in a `## Checkpoint` entry or in the relevant Task's body, never appended under `What's Next` itself. One row per Task in the Summary table. Only fill the Delta cell on that Delta's first row (leave it blank on subsequent rows for the same Delta) so the table reads as visually grouped.
+- The **Summary table** sits directly under `## What's Next`'s bullets, before the Delta sections. **Nothing else goes in between** — no dated history, no session narrative, no extra detail. `What's Next` is a short pointer, not a log; session detail belongs in a `## Checkpoint` entry or in the relevant Task's body, never appended under `What's Next` itself. One row per Task in the Summary table. Only fill the Delta cell on that Delta's first row (leave it blank on subsequent rows for the same Delta) so the table reads as visually grouped.
 - Both table columns link to the matching heading using GitHub's anchor-slugify rules: lowercase, spaces → hyphens, strip punctuation other than hyphens. E.g. `## Delta: Foo Bar` → `#delta-foo-bar`; `### Task 1: Foo Bar` → `#task-1-foo-bar`. If two headings produce the same slug (e.g. `Task 1` in two Deltas with identical titles), GitHub suffixes the later ones `-1`, `-2`... — link accordingly.
 - The Status column must exactly track the body: `TODO` (no bullet done yet), `IN PROGRESS` (some bullets done, some not), or `✓ DONE` (every bullet under the Task is done).
 - Whenever a Task's TODO/DONE state changes in the body, the matching Summary table row must be updated in the same edit — the table and the body must never drift apart.

@@ -40,7 +40,7 @@ Decide: does the plan need **migrating**? It does if it uses any of the old form
 From the main conversation, work out:
 - Which plan TODOs were genuinely completed this session (Delta name + Task + which bullets). Do not invent completions.
 - The checkpoint content: what was completed (specific, file-level where useful), state of the project (2–4 sentences), immediate next priorities (3–5 items)
-- The next step: the first remaining `TODO` across all Deltas — its Task title (and Delta name), any linked sub-document, any blockers
+- The next step: the first remaining `TODO` across all Deltas — its Task title (and Delta name), any linked sub-document, any blockers. Keep each `What's Next` field to one line, one sentence — a pointer, not a summary (per `PLAN-FORMAT.md`'s rules). If the next step is genuinely undecided between several candidates, list them as sub-bullets under `**Next:**` (name + link only, no reasoning) and put the reasoning in the checkpoint instead.
 - Today's date (`date +%Y-%m-%d`)
 
 If `$ARGUMENTS` was provided, incorporate it.
@@ -51,7 +51,7 @@ If `$ARGUMENTS` was provided, incorporate it.
 
 **Otherwise, delegate the mechanical edit** to a background subagent with `model: haiku` (general-purpose). The prompt must contain everything the agent needs, since it starts cold:
 - Absolute paths to the plan file and to `PLAN-FORMAT.md` (tell it to read both first and follow the format exactly)
-- The full Step 4 summary: exact bullets to flip `- TODO` → `- ✓ DONE` (and any sub-doc items), the complete checkpoint text to append, and the new What's Next values
+- The full Step 4 summary: exact bullets to flip `- TODO` → `- ✓ DONE` (and any sub-doc items), the complete checkpoint text to append, and the new What's Next values (each field one line — tell the agent to reject/shorten anything longer, per `PLAN-FORMAT.md`)
 - The standing rules: update every Summary table row whose status changed (statuses per PLAN-FORMAT.md: `TODO` / `IN PROGRESS` / `✓ DONE` — the table must never drift from the body); append the checkpoint as `## Checkpoint: Session {date}` before `## Implementation Notes` (or at the end if that section doesn't exist), suffixing `b`, `c`... if a checkpoint for that date already exists; if there are then more than 10 checkpoints, remove the oldest until 10 remain — never touch `## Implementation Notes` or anything after it; mark only the listed items done — nothing else
 - Tell it to report back what it changed
 

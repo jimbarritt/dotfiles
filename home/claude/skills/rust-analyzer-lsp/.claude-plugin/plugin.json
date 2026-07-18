@@ -1,0 +1,8 @@
+{
+  "name": "rust-analyzer-lsp",
+  "description": "rust-analyzer LSP integration with an explicit shutdown timeout, so the server process is reliably killed rather than left hanging alongside nvim's own Mason-managed rust-analyzer.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Jim Barritt"
+  }
+}

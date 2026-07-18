@@ -209,16 +209,24 @@ Works alongside:
 
 ## Maintenance
 
-### Updating Plugins
-```
-:Lazy sync
-```
+### Updating everything
 
-Then commit the updated `lazy-lock.json`:
-```bash
-git add lazy-lock.json
-git commit -m "chore: update plugin versions"
-```
+Three independent things to update — plugins, Mason-managed LSP servers, and Kotlin's LSP (which isn't Mason-managed):
+
+1. **Plugins** (lazy.nvim): open nvim, `:Lazy`, press `U` to update all (or `:Lazy sync` to also install/clean). Commit the resulting `lazy-lock.json` afterward so the pin travels with the repo:
+   ```bash
+   git add lazy-lock.json
+   git commit -m "chore: update plugin versions"
+   ```
+
+2. **Mason-managed LSP servers** (`ts_ls`, `rust_analyzer`, `clangd`, `pyright`, `jdtls`, `bashls`, `lua_ls`, `marksman` — everything in `lua/plugins/mason.lua` except Kotlin): `:Mason`, press `U` to update all, or `:MasonUpdate` from the command line.
+
+3. **Kotlin LSP** (`kotlin-lsp`, JetBrains' official server — installed via Homebrew cask, not Mason, because JetBrains' CDN blocks Mason downloads):
+   ```bash
+   brew upgrade --cask kotlin-lsp
+   xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp
+   ```
+   Then restart nvim — `lua/plugins/kotlin.lua` auto-detects the new cask version. The `xattr` step is required after every upgrade: macOS re-quarantines the freshly-downloaded cask contents, which blocks the LSP's unsigned native libraries (`libfilewatcher_jni.dylib`) from loading. See `doc/kotlin-lsp-setup.md` for full detail.
 
 ### Checking LSP Status
 ```

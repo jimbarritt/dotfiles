@@ -123,9 +123,11 @@ lua/
 | C/C++ | clangd | Yes |
 | Python | pyright | Yes |
 | Java | jdtls | Yes |
-| Kotlin | kotlin_language_server | Yes |
+| Kotlin | kotlin_lsp (JetBrains, via kotlin.nvim) | No — Homebrew cask, not Mason |
 | Bash/Zsh | bashls | Yes |
 | Lua | lua_ls | Yes |
+
+Kotlin is the one exception to "managed by Mason" — JetBrains' CDN blocks Mason downloads, so it's installed via `brew install --cask kotlin-lsp` instead and auto-detected by `lua/plugins/kotlin.lua`. See `doc/kotlin-lsp-setup.md`.
 
 ### Kotlin-Specific Configuration
 
