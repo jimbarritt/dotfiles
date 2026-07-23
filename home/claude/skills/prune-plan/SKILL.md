@@ -12,7 +12,14 @@ Move fully completed Deltas out of the live plan into a timestamped archive file
 
 ## Step 1: Find the plan file
 
-Read `doc/planning/plan.md`. If it doesn't exist, tell the user and stop.
+Check in order (per `../plan-format/PLAN-FORMAT.md`'s "Storage Location" section):
+1. `doc/planning/plan.md` — local, preferred
+2. `doc/plan.md` — legacy local
+3. `~/.planning/{project-name}/plan.md` — home, where `{project-name}` is `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`
+
+If none exist, tell the user and stop.
+
+Whichever is found sets **the plan root** for the rest of this run (`doc/planning/` or `~/.planning/{project-name}/`) — use it in place of `doc/planning/` in every step below.
 
 ## Step 2: Read the shared plan format
 
@@ -27,16 +34,16 @@ If nothing is prunable, tell the user and stop.
 ## Step 4: Write the archive file
 
 ```bash
-mkdir -p doc/planning/archive
+mkdir -p {plan root}/archive
 date +%Y-%m-%d-%H%M
 ```
 
-Create `doc/planning/archive/{timestamp}-archive.md` containing:
+Create `{plan root}/archive/{timestamp}-archive.md` containing:
 
 ```markdown
 # {Project Name} — Archived Deltas ({YYYY-MM-DD})
 
-Archived from `doc/planning/plan.md`.
+Archived from `{plan root}/plan.md`.
 
 {the pruned `## Delta: ...` sections, moved verbatim}
 ```
@@ -45,7 +52,7 @@ Move the sections verbatim — do not reword or summarise.
 
 ## Step 5: Update the archive index
 
-Create or update `doc/planning/archive/index.md`:
+Create or update `{plan root}/archive/index.md`:
 
 ```markdown
 # {Project Name} — Archive Index

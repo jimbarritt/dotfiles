@@ -2,7 +2,7 @@
 
 ## Session start
 
-**Before responding to the user's first message, including greetings, small talk, or anything that seems too trivial to need context:** check whether `doc/planning/plan.md` exists in the current project. If it does, read it immediately and briefly orient on current state and next step. Do this before saying anything else — it is your first action, not an optional one.
+**Before responding to the user's first message, including greetings, small talk, or anything that seems too trivial to need context:** check whether a plan file exists for the current project — `doc/planning/plan.md` first, then `~/.planning/{project-name}/plan.md` (where `{project-name}` is `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`), used for repos you don't own. If either is found, read it immediately and briefly orient on current state and next step. Do this before saying anything else — it is your first action, not an optional one.
 
 ## Finding files
 
@@ -10,7 +10,7 @@ Never use `find` rooted at `~`, `/`, `/Users/`, or cache directories (`~/.gradle
 
 ## Task tracking
 
-`doc/planning/plan.md` is the source of truth for task tracking. Do not use the built-in task tools (TaskCreate, TaskUpdate, TaskList, etc.) — they duplicate the plan and add unnecessary context overhead.
+The project plan (`doc/planning/plan.md`, or `~/.planning/{project-name}/plan.md` for repos stored at the home location) is the source of truth for task tracking. Do not use the built-in task tools (TaskCreate, TaskUpdate, TaskList, etc.) — they duplicate the plan and add unnecessary context overhead.
 
 ## Projects
 

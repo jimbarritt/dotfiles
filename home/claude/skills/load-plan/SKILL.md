@@ -12,13 +12,16 @@ Read the project plan, orient on current state, and brief the user so work can c
 
 ## Step 1: Find the plan file
 
-Check in order:
-1. `doc/planning/plan.md` — preferred location
-2. `doc/plan.md` — legacy location
+Check in order (per `../plan-format/PLAN-FORMAT.md`'s "Storage Location" section):
+1. `doc/planning/plan.md` — local, preferred
+2. `doc/plan.md` — legacy local
+3. `~/.planning/{project-name}/plan.md` — home, where `{project-name}` is `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`
 
 If found at `doc/plan.md`: note it and mention the user may want to run `/update-plan` to migrate it to `doc/planning/`.
 
-If neither exists: tell the user no plan file was found and stop.
+If found at the home location: note that this plan is stored in the home directory, not the repo.
+
+If none of the three exist: tell the user no plan file was found (mention both locations checked) and stop.
 
 ## Step 2: Read the What's Next section
 

@@ -7,6 +7,22 @@ Canonical structure for `doc/planning/plan.md`. The `init-plan`, `update-plan`, 
 - Top-level groups are called **Deltas** (not "Phases") and are identified by title, not number: `## Delta: {Name}`. Titles are the stable identifier — checkpoints and commits reference them, so avoid renaming.
 - Items within a Delta are called **Tasks** (not "Actions"), numbered within their Delta only: `### Task 1: {Title}`, `### Task 2: {Title}` — restarting at 1 in each Delta. Reference a task as "{Delta name} / Task {n}" or just by its title.
 
+## Storage Location
+
+A plan lives in one of two places:
+
+- **Local (default):** `doc/planning/plan.md` in the project repo — tracked in the repo's own history.
+- **Home directory:** `~/.planning/{project-name}/plan.md`, where `{project-name}` is `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`. Use this when working in a repo you don't own and don't want to add a `doc/planning/` directory to (no "ignore this dir" commit needed upstream).
+
+Every skill's "find the plan file" step checks, in order:
+1. `doc/planning/plan.md` — local, preferred
+2. `doc/plan.md` — legacy local (migrate to `doc/planning/plan.md` on sight, per `update-plan`)
+3. `~/.planning/{project-name}/plan.md` — home
+
+Whichever is found first fixes **the plan root** for the rest of that skill's run: `doc/planning/` for either local case, or `~/.planning/{project-name}/` for the home case. Archive files (`archive/`, `archive/index.md`) always live under the plan root, the same way in both cases.
+
+`init-plan` asks the user which location to use before creating anything (see its Step 1) — it does not infer this.
+
 ## Structure
 
 ```markdown
@@ -93,6 +109,6 @@ Archived Deltas: see the [archive index](archive/index.md)
 
 Fully completed Deltas (every Task `✓ DONE`) can be pruned from the live plan by the `prune-plan` skill:
 
-- Pruned `## Delta: ...` sections move verbatim to `doc/planning/archive/{YYYY-MM-DD-HHMM}-archive.md` — never reworded.
-- `doc/planning/archive/index.md` is the archive index: one line per prune run — `- {YYYY-MM-DD}: {Delta names} → [{file}]({file})`.
+- Pruned `## Delta: ...` sections move verbatim to `{plan root}/archive/{YYYY-MM-DD-HHMM}-archive.md` — never reworded.
+- `{plan root}/archive/index.md` is the archive index: one line per prune run — `- {YYYY-MM-DD}: {Delta names} → [{file}]({file})`.
 - Archived Deltas' rows are removed from the Summary table, and a single link line sits directly under the table: `Archived Deltas: see the [archive index](archive/index.md)`.

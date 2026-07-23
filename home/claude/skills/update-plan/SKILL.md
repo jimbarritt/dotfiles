@@ -14,16 +14,21 @@ Deciding *what happened this session* requires the main conversation's context a
 
 ## Step 1: Find the plan file
 
-Check in order:
-1. `doc/planning/plan.md` — preferred location
-2. `doc/plan.md` — legacy location
+Check in order (per `../plan-format/PLAN-FORMAT.md`'s "Storage Location" section):
+1. `doc/planning/plan.md` — local, preferred
+2. `doc/plan.md` — legacy local
+3. `~/.planning/{project-name}/plan.md` — home, where `{project-name}` is `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`
 
 If found at `doc/plan.md` (and `doc/planning/` does not already have a plan.md):
 - Create `doc/planning/` if it doesn't exist
 - Move the file: `git mv doc/plan.md doc/planning/plan.md`
 - Tell the user it was migrated
 
-If neither exists: tell the user no plan file was found and stop.
+If found at the home location, use it as-is — no migration, home storage is a deliberate choice made at `init-plan` time.
+
+Whichever is found sets **the plan root** for the rest of this run (`doc/planning/` or `~/.planning/{project-name}/`).
+
+If none of the three exist: tell the user no plan file was found and stop.
 
 ## Step 2: Read the shared plan format
 
