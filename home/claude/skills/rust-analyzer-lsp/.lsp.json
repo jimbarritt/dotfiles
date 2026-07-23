@@ -1,6 +1,6 @@
 {
   "rust": {
-    "command": "rust-analyzer",
+    "command": "/Users/jmdb/.local/share/mise/installs/rust-analyzer/latest/rust-analyzer",
     "extensionToLanguage": {
       ".rs": "rust"
     },

@@ -46,7 +46,7 @@ Custom plugin: `home/claude/skills/rust-analyzer-lsp/` — not the official `rus
 // home/claude/skills/rust-analyzer-lsp/.lsp.json
 {
   "rust": {
-    "command": "rust-analyzer",
+    "command": "/Users/jmdb/.local/share/mise/installs/rust-analyzer/latest/rust-analyzer",
     "extensionToLanguage": { ".rs": "rust" },
     "shutdownTimeout": 5000,
     "restartOnCrash": true,
@@ -55,7 +55,11 @@ Custom plugin: `home/claude/skills/rust-analyzer-lsp/` — not the official `rus
 }
 ```
 
-No `brew install` needed — `rust-analyzer` is already on `PATH` at `~/.cargo/bin/rust-analyzer` (installed via rustup/cargo). This is a *different* binary from the one nvim uses (nvim's is Mason-managed, at `~/.local/share/nvim/mason/bin/rust-analyzer`) — the two run as independent processes against the same workspace, which is expected and not a conflict.
+Installed via mise (`rust-analyzer = "latest"` in `config/mise/config.toml`, alongside the `rust` tool itself) rather than a bare rustup component — run `mise install rust-analyzer` after pulling the config change. The `command` is pinned to mise's stable `latest` symlink rather than the bare `rust-analyzer` name because `~/.cargo/bin/rust-analyzer` — a rustup shim that errors unless `rustup component add rust-analyzer` has been run — sits earlier in `PATH` than mise's install dir, and mise's own shim for `rust-analyzer` gets shadowed by the `rust` tool's rustup-backed shim generation too. Both routes resolve to a bare-PATH lookup that silently fails, so pointing the plugin straight at mise's versioned binary sidesteps the ambiguity entirely.
+
+**Use an absolute path, not `~`** — `command` is passed straight through to process spawning, which does not expand `~`. A tilde path in `.lsp.json` looks correct, resolves fine when tested from a shell, and then fails silently ("binary doesn't exist") when Claude Code actually tries to spawn it.
+
+This is a *different* binary from the one nvim uses (nvim's is Mason-managed, at `~/.local/share/nvim/mason/bin/rust-analyzer`) — the two run as independent processes against the same workspace, which is expected and not a conflict.
 
 To activate: run `./do.sh link-claude` (or `./do.sh link`) to symlink the plugin into `~/.claude/skills/`, then start a new Claude Code session in a Rust project.
 
@@ -89,6 +93,33 @@ xattr -r -d com.apple.quarantine /opt/homebrew/Caskroom/kotlin-lsp
 Then restart nvim — `config/nvim/lua/plugins/kotlin.lua` auto-detects the new cask version on startup, no config changes needed. The `xattr` step is required after every upgrade: macOS re-quarantines the newly-downloaded cask contents, which blocks the LSP's unsigned native libraries (`libfilewatcher_jni.dylib`) from loading.
 
 Full setup/troubleshooting detail: `config/nvim/doc/kotlin-lsp-setup.md`.
+
+## Diagnosing dangling processes (lsp-doctor)
+
+`bin/lsp-doctor` lists running kotlin-lsp and rust-analyzer processes as a tree (alongside their nvim/claude parents), flags any that are dangling, and can kill them with `--clean`:
+
+```
+lsp-doctor                  # list processes and kotlin-lsp workspace locks
+lsp-doctor --clean          # kill dangling processes, remove stale kotlin-lsp locks
+lsp-doctor --check-version  # also check kotlin-lsp cask version
+```
+
+A process is "dangling" if its parent isn't a live process that's expected to own it:
+
+- **kotlin-lsp**: dangling unless parented by `nvim`.
+- **rust-analyzer**: dangling unless parented by `nvim` *or* `claude` — Claude Code runs its own rust-analyzer instance (see above), so both are valid owners.
+
+The workspace-lock section (`~/.cache/kotlin-lsp-workspaces/*.app.lock`) is kotlin-only — rust-analyzer has no equivalent lock-file mechanism, so for it `lsp-doctor` only ever has the process tree to go on.
+
+## Setting up Claude Code LSPs on a new machine
+
+This doc is the durable, cross-machine source of truth for Claude Code's LSP setup — it syncs via the dotfiles repo, but (unlike CLAUDE.md) is only pulled into context when actually relevant, so it doesn't cost anything on unrelated sessions.
+
+If this is the first time you (Claude) are touching LSP setup on a given machine: after reading this doc, write the durable lessons below into your own local auto-memory (`type: feedback`) so future sessions on this machine recall them without re-reading this doc each time. Currently that's:
+
+- **Always pass absolute paths to LSP-backed tool calls** (go-to-definition, find-references, diagnostics, etc), same convention as Read/Edit/Write. Relative paths cause the LSP tool call to fail and need retrying — confirmed while testing the rust-analyzer plugin on 2026-07-18.
+
+As more of these get discovered, add them to the list above and mirror them into memory the same way — this doc stays the canonical copy; memory is just the cheap per-machine cache of it.
 
 ## Sources
 

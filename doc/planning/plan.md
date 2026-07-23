@@ -2,9 +2,9 @@
 
 ## What's Next
 
-**Next:** Task 1 — Verify extra usage detection (Delta: Statusline Refinement)
+**Next:** Task 1 — Tweak plan skill based on continued use (Delta: Plan Skill Iteration)
 **Sub-doc:** (none)
-**Blockers:** None
+**Blockers:** Waiting on user's specific list of desired tweaks
 
 ## Summary
 
@@ -12,6 +12,7 @@
 |-------|------|--------|
 | [Delta: Statusline Refinement](#delta-statusline-refinement) | [1. Verify extra usage detection](#task-1-verify-extra-usage-detection) | TODO |
 | | [2. Plan skill refinement](#task-2-plan-skill-refinement) | ✓ DONE |
+| [Delta: Plan Skill Iteration](#delta-plan-skill-iteration) | [1. Tweak plan skill based on continued use](#task-1-tweak-plan-skill-based-on-continued-use) | TODO |
 
 Archived Deltas: see the [archive index](archive/index.md)
 
@@ -30,7 +31,12 @@ Archived Deltas: see the [archive index](archive/index.md)
 - ✓ DONE — Review fixes: "Delta {X.Y}" → "Task {X.Y}" label, checkpoint placement contradiction in skeleton, `IN PROGRESS` status defined (some bullets done, some not)
 - ✓ DONE — This plan migrated to the new format
 
-## Checkpoint: Session 2026-06-14
+## Delta: Plan Skill Iteration
+
+### Task 1: Tweak plan skill based on continued use
+- TODO — Gather user's specific desired tweaks to the plan skill (update-plan / init-plan / load-plan / plan-format) and apply them
+
+## Checkpoint: Session 2026-06-18
 
 **What was completed this session:**
 - Discovered Task 1.3 was already done in a previous session (proofread and publish-crate are in `home/claude/skills/` and symlinked) — plan updated to reflect this
@@ -207,6 +213,26 @@ This session's work — Kotlin LSP debugging, Claude Code LSP integration resear
 1. Task 1 — Verify extra usage detection (Delta: Statusline Refinement)
 2. Consider adding a recurring monthly nvim/plugin-maintenance task (Lazy update, Mason update, Kotlin cask upgrade + breaking-change review) once the user's "tsk" task system is running — not yet a plan Task, noted in memory only
 3. Commit and push this session's dotfiles changes upstream (kotlin.lua fixes, new docs, Ghostty/zsh/tmux config)
+
+## Checkpoint: Session 2026-07-23
+
+**What was completed this session:**
+- Fixed dead permission rules in `home/claude/settings.json`: `Write(**)`, `Write(~/**)`, `Write(//tmp/**)`, `Write(//private/tmp/**)` were never matched by permission checks (only `Edit(...)` rules cover file-editing tools) — replaced with `Edit(//tmp/**)` and `Edit(//private/tmp/**)` (`Edit(**)` and `Edit(~/**)` already existed)
+- Diagnosed and fixed the rust-analyzer Claude Code LSP plugin hang: the binary wasn't actually installed (`~/.cargo/bin/rust-analyzer` was an erroring rustup shim); installed via mise instead (`rust-analyzer = "latest"` added to `config/mise/config.toml`) per user preference for mise-managed tooling
+- Found and fixed a second bug: `.lsp.json`'s `command` field used a `~`-prefixed path, which Claude Code's process spawner does not expand (only shells do) — changed to an absolute path in `home/claude/skills/rust-analyzer-lsp/.lsp.json`
+- Extended `bin/lsp-doctor` (previously kotlin-lsp-only) to also detect rust-analyzer in its process tree: dangling if parented by neither `nvim` nor `claude`; included in `--clean`. Workspace-lock detection stays kotlin-only (rust-analyzer has no equivalent lock file)
+- Updated `doc/claude-lsp-integration.md`: mise-based install instructions, the `~`-non-expansion gotcha, a new "Diagnosing dangling processes (lsp-doctor)" section, and a new "Setting up Claude Code LSPs on a new machine" section describing a doc-then-memory bootstrap pattern (read the doc once per machine, mirror durable lessons into local auto-memory so later sessions on that machine don't need to re-read the doc)
+- Saved memory `feedback_lsp_absolute_paths.md`: always pass absolute paths to LSP-backed tool calls (go-to-def, find-references, etc), same convention as Read/Edit/Write
+- Created `doc/lsp-perf-obs.md`: an observation log to compare token/context cost of Rust sessions before/after the rust-analyzer fix, with a 2026-07-18 14:37 BST baseline marker and a note on why naive total-token comparisons will be noisy
+- Investigated a separate hypothesis (that Claude leans on throwaway Python scripts and heavy `sed` usage for edits, and that working LSP would reduce this) by analyzing session transcript history of an unrelated, actively-worked repo — found no throwaway Python editing scripts at all, and `sed` usage at ~3.5% of edit-equivalent calls, always for two genuinely mechanical cases (repo-wide literal renames, confirmed-line-range deletions), never as an Edit-tool-failure fallback. Recorded as resolved/ruled-out in `doc/lsp-perf-obs.md` (anonymised — no project-identifying details)
+
+**State of the project:**
+This session's work (settings.json permission fix, rust-analyzer LSP setup and lsp-doctor extension, LSP integration doc updates, the new perf-observation log) fell entirely outside the plan's tracked Deltas, same as the previous session — no existing plan.md Tasks were touched. Delta: Statusline Refinement's Task 1 (Verify extra usage detection) remains open. A new Delta ("Plan Skill Iteration") has been added to track the user's stated intent to further tweak the plan skill, but the specific tweaks are not yet known.
+
+**Immediate next priorities:**
+1. Task 1 (Delta: Plan Skill Iteration) — get the user's specific list of desired plan-skill tweaks, then apply them
+2. Task 1 (Delta: Statusline Refinement) — Verify extra usage detection
+3. Commit and push this session's dotfiles changes upstream (settings.json, rust-analyzer-lsp plugin, claude-lsp-integration.md, lsp-perf-obs.md, plan.md)
 
 ---
 

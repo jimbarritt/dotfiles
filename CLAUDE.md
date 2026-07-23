@@ -11,6 +11,7 @@ Build commands are in `justfile`. `just test` runs on every commit via pre-commi
 - Never run `do.sh` — always let the user run it manually.
 - Never run `bin/` scripts autonomously — tell the user to run them. Exception: `am-dotfiles-base`, which exists for Claude to run.
 - When adding a new terminal to the shell guard, add a clause to `_is_known_terminal` in `home/zshrc`.
+- Never run `git commit` in this repo — the user does all committing themselves. Only draft a PR when the user explicitly asks for one.
 
 ## Machine-local overrides
 

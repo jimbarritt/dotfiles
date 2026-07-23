@@ -6,6 +6,7 @@ pnpm = "latest"
 "npm:wrangler" = "latest"
 awscli = { version = "latest", symlink_bins = "true" }
 rust = "latest"
+rust-analyzer = "latest"
 uv = "latest"
 python = "latest"
 

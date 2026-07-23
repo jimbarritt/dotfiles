@@ -1,10 +1,14 @@
 #!/bin/sh
-# Diagnose kotlin-lsp state: running processes and workspace lock files.
-# Useful for spotting dangling LSP processes and stale locks.
+# Diagnose kotlin-lsp and rust-analyzer state: running processes, plus
+# kotlin-lsp's workspace lock files (rust-analyzer has no equivalent lock
+# mechanism, so it's process-tree detection only).
 #
-# A kotlin-lsp is "dangling" if its parent is no longer a live nvim —
-# typically the result of nvim crashing or being killed without a clean
-# shutdown, leaving the LSP process running with no editor attached.
+# A kotlin-lsp is "dangling" if its parent is no longer a live nvim.
+# A rust-analyzer is "dangling" if its parent is neither a live nvim nor a
+# live claude (Claude Code also runs its own rust-analyzer instance, see
+# doc/claude-lsp-integration.md). Either way, dangling typically means the
+# editor/session crashed or was killed without a clean LSP shutdown, leaving
+# the LSP process running with nothing attached.
 #
 # Usage:
 #   lsp-doctor                  # list processes and lock files
@@ -59,6 +63,19 @@ dangling_kotlin_pids() {
       done
 }
 
+# List dangling rust-analyzer processes: parent is neither nvim nor claude.
+dangling_rust_pids() {
+  ps -eo pid,ppid,comm \
+    | awk '$3 == "rust-analyzer" {print $1, $2}' \
+    | while read -r pid ppid; do
+        parent_comm=$(ps -o comm= -p "$ppid" 2>/dev/null)
+        parent_base="${parent_comm##*/}"
+        if [ -z "$parent_comm" ] || { [ "$parent_base" != "nvim" ] && [ "$parent_base" != "claude" ]; }; then
+          printf '%s\n' "$pid"
+        fi
+      done
+}
+
 # Look up the working directory of a process.
 proc_cwd() {
   lsof -a -d cwd -p "$1" 2>/dev/null | awk 'NR>1 {for (i=9;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":""); print ""}'
@@ -107,11 +124,11 @@ if [ "$CHECK_VERSION" -eq 1 ]; then
   printf '\n'
 fi
 
-printf '== process tree (nvim + kotlin-lsp) ==\n\n'
+printf '== process tree (nvim + claude + kotlin-lsp + rust-analyzer) ==\n\n'
 # Gather matching processes with their cwd into a tab-separated table.
 proc_table=$(
   ps -eo pid,ppid,etime,comm \
-    | awk 'tolower($0) ~ /kotlin/ || $4 == "nvim" || $4 ~ /\/nvim$/' \
+    | awk 'tolower($0) ~ /kotlin/ || $4 == "nvim" || $4 ~ /\/nvim$/ || $4 == "rust-analyzer" || $4 == "claude"' \
     | while read -r pid ppid etime comm; do
         cwd=$(proc_cwd "$pid")
         [ -z "$cwd" ] && cwd="(unknown)"
@@ -186,6 +203,11 @@ else
         tag = " [dangling]"
       } else if (labels[pid] == "kotlin-lsp" && parent[pid] == 1) {
         tag = " [dangling]"
+      } else if (labels[pid] == "rust-analyzer" && is_root) {
+        # A rust-analyzer at the root of the tree has no nvim/claude parent — dangling.
+        tag = " [dangling]"
+      } else if (labels[pid] == "rust-analyzer" && parent[pid] == 1) {
+        tag = " [dangling]"
       }
 
       if (is_root) {
@@ -217,7 +239,9 @@ else
   '
 fi
 
-printf '\n== workspace locks (%s) ==\n\n' "$LOCK_DIR"
+printf '\n== kotlin-lsp workspace locks (%s) ==\n\n' "$LOCK_DIR"
+# rust-analyzer has no equivalent lock-file mechanism, so this section stays
+# kotlin-only — see the process tree above for rust-analyzer state instead.
 locks=""
 if [ -d "$LOCK_DIR" ]; then
   locks=$(find "$LOCK_DIR" -maxdepth 2 -name '.app.lock' 2>/dev/null)
@@ -271,7 +295,7 @@ fi
 if [ "$CLEAN" -eq 1 ]; then
   printf '\n== cleaning ==\n\n'
 
-  dangling=$(dangling_kotlin_pids)
+  dangling=$(dangling_kotlin_pids; dangling_rust_pids)
   if [ -z "$dangling" ]; then
     printf 'no dangling processes\n'
   else
