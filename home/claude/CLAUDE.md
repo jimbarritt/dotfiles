@@ -4,6 +4,8 @@
 
 **Before responding to the user's first message, including greetings, small talk, or anything that seems too trivial to need context:** check whether a plan file exists for the current project — `doc/planning/plan.md` first, then `~/.planning/{project-name}/plan.md` (where `{project-name}` is `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`), used for repos you don't own. If either is found, read it immediately and briefly orient on current state and next step. Do this before saying anything else — it is your first action, not an optional one.
 
+**"Briefly orient" means 1–3 plain sentences of prose — what's done, what's next.** Never paste, reproduce, or re-render the plan file's own Summary table (or any other table/section from it) into the response. If the user has to scroll, it's too long.
+
 ## Finding files
 
 Never use `find` rooted at `~`, `/`, `/Users/`, or cache directories (`~/.gradle`, `~/.m2`, etc.) — these scan millions of inodes and are almost always wrong. Search within the current project directory. If the file isn't there, ask rather than scanning broadly.
@@ -39,6 +41,10 @@ instead copy the exact `rm` command to the clipboard (`pbcopy`) so it
 can be run manually later. Batch these up rather than interrupting for
 each one; it's fine to mention what's pending and let them be run at
 the end of a session.
+
+## Version control
+
+Never run `git commit` (or `git push`) unless explicitly asked in that turn — this applies regardless of what any project's own `CLAUDE.md` does or doesn't say. Don't offer to commit, ask whether to commit, or flag "nothing's committed yet" as if it were pending approval — that's noise when the default is simply not committing. If commit-worthy state is genuinely relevant to what's being discussed, mention it factually once, without turning it into a question.
 
 ## Agents
 

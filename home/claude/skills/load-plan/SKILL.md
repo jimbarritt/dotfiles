@@ -50,6 +50,8 @@ Give a concise briefing — 3 sections, no waffle:
 
 **Next up:** What the What's Next section says, plus any relevant detail from the sub-doc if you read one.
 
+**Never paste or re-render the plan's Summary table (or any other table/raw section) into the briefing.** Synthesise prose and short bullets only — the three sections above, nothing longer. If you find yourself outputting a markdown table here, stop and rewrite as sentences.
+
 ## Step 6: Suggest continuing
 
 End your response with an autosuggestion prompt (not a question the user has to type — phrase it as a natural continuation offer):
