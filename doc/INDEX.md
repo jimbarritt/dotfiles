@@ -26,6 +26,7 @@
 - [green-tinted-light-theme.md](green-tinted-light-theme.md) — Green Tinted Light theme
 - [colorscheme-slot-system-design.md](colorscheme-slot-system-design.md) — Colorscheme slot system design
 - [additional-customisation-of-nvim-treesitter.md](additional-customisation-of-nvim-treesitter.md) — Additional customisation of nvim treesitter
+- [nvim-lsp-filetype-race.md](nvim-lsp-filetype-race.md) — Intermittent LSP attach caused by a FileType startup race, and how to diagnose it
 
 ## Keybindings & Navigation
 

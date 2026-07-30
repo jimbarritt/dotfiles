@@ -143,6 +143,23 @@ return {
       vim.lsp.config(server, config)
     end
 
+    -- Enable explicitly, after every config is registered.
+    -- mason-lspconfig also calls vim.lsp.enable(), but as a lazy.nvim *dependency*
+    -- it loads first — enabling servers before vim.lsp.config() has run for them.
+    -- That race produces "<server> does not have a configuration" warnings in
+    -- :LspLog and intermittent failures to attach. Enabling here is deterministic.
+    vim.lsp.enable(vim.tbl_keys(servers))
+
+    -- Attach to buffers that were already loaded before this ran.
+    -- Servers start off FileType. If a file is opened on the command line and this
+    -- config finishes afterwards, that event has already fired and nothing retries,
+    -- so the buffer silently gets no client. Re-firing FileType covers that case.
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype ~= "" then
+        vim.api.nvim_exec_autocmds("FileType", { buffer = buf })
+      end
+    end
+
     -- Go: organise imports, then format, on save.
     -- Every other language here formats manually via <leader>f. Go is the exception
     -- because unused and missing imports are compile errors, not style nits — so

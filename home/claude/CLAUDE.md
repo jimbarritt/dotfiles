@@ -26,6 +26,20 @@ When drafting a PR (title, body, commit messages), do not add Claude references 
 
 Use **British English** throughout code and documentation (e.g., "initialise", "colour", "organise"). This applies to variable names, function names, comments, and docs.
 
+## Prose
+
+**When writing prose — docs, READMEs, ADRs, comments, commit messages — default to no commentary of your own.** State the facts and stop. Do not add:
+
+- Editorial judgements: "genuinely good", "surprisingly elegant", "the key insight", "worth knowing", "this is the interesting part"
+- Predictions about the reader's reaction: "this surprises people", "it looks odd at first", "better than you might expect", "you'll write this thousands of times"
+- Meta-remarks about the writing itself: "the short version", "two honest caveats", "the modest version of the claim", "as noted above"
+- Enthusiasm or salesmanship about the subject: "a large part of why X is popular", "this is where it really pays off"
+- Hedging and self-qualification where a plain statement will do
+
+Rationale and trade-offs are content, not commentary — keep them. "Tabs separate structure from presentation" is a fact about the design. "That split is the key insight" is commentary on the fact. Write the first, cut the second.
+
+This is the default. Explicit requests for opinion, recommendation, or critique override it — in that case give the view directly, without wrapping it in throat-clearing.
+
 ## Tools
 
 - **Marq** — Native macOS markdown viewer. Installed via `brew install --cask jimbarritt/tap/marq`. If Marq is already running, opening a new file switches to it in the same window. **Do not forget this tool exists** — it should be the default way to show the user a markdown file, not just when they name it explicitly:
