@@ -10,6 +10,18 @@ disable-model-invocation: false
 
 Read the project plan, orient on current state, and brief the user so work can continue.
 
+## Step 0: Mark session start
+
+Compute `{project-name}` as `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`. Run:
+
+```
+mkdir -p ~/.claude/plan-session-timers
+f=~/.claude/plan-session-timers/{project-name}.start
+[ -f "$f" ] || date +%s > "$f"
+```
+
+This stamps the start of the session for `update-plan` to compute elapsed time from later. If the marker file already exists (a session was started but never closed out via `update-plan`), leave it as-is — the earlier start time is more accurate than a new one.
+
 ## Step 1: Find the plan file
 
 Check in order (per `../plan-format/PLAN-FORMAT.md`'s "Storage Location" section):

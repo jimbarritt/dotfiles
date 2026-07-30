@@ -40,6 +40,24 @@ Read the full plan file. Also read any sub-documents linked from Tasks that are 
 
 Decide: does the plan need **migrating**? It does if it uses any of the old formats listed in `PLAN-FORMAT.md`'s rules: "Phase"/"Action" terminology, boxed `WHAT'S NEXT`/`CHECKPOINT` separators, a missing Summary table, or numbered Deltas/delta-prefixed Task numbers (`## Delta 1:`, `### Task 1.1:`).
 
+## Step 3a: Compute session elapsed time
+
+Compute `{project-name}` as `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`. Check for a marker file left by `load-plan`:
+
+```
+f=~/.claude/plan-session-timers/{project-name}.start
+if [ -f "$f" ]; then
+  start=$(cat "$f")
+  now=$(date +%s)
+  secs=$((now - start))
+  printf '%dh %dm\n' $((secs/3600)) $(((secs%3600)/60))
+fi
+```
+
+If the marker exists, this gives the elapsed wall-clock time since the session started (via `load-plan`) — use it as the `Time spent` figure in the checkpoint (Step 4/5). It's a wall-clock estimate, not verified active-work time — if the gap is implausible (e.g. spans multiple days, or is under a minute), say so to the user rather than silently writing a bogus figure, and ask whether to note it as "not tracked this session" instead.
+
+If no marker file exists (session wasn't started via `load-plan`, or was already consumed by an earlier `update-plan` run this session), omit the `Time spent` line from the checkpoint entirely — don't guess.
+
 ## Step 4: Compose the session summary (current model — do not delegate)
 
 From the main conversation, work out:
@@ -47,6 +65,7 @@ From the main conversation, work out:
 - The checkpoint content: what was completed (specific, file-level where useful), state of the project (2–4 sentences), immediate next priorities (3–5 items)
 - The next step: the first remaining `TODO` across all Deltas — its Task title (and Delta name), any linked sub-document, any blockers. Keep each `What's Next` field to one line, one sentence — a pointer, not a summary (per `PLAN-FORMAT.md`'s rules). If the next step is genuinely undecided between several candidates, list them as sub-bullets under `**Next:**` (name + link only, no reasoning) and put the reasoning in the checkpoint instead.
 - Today's date (`date +%Y-%m-%d`)
+- Session elapsed time — see Step 3a below
 
 If `$ARGUMENTS` was provided, incorporate it.
 
@@ -57,10 +76,13 @@ If `$ARGUMENTS` was provided, incorporate it.
 **Otherwise, delegate the mechanical edit** to a background subagent with `model: haiku` (general-purpose). The prompt must contain everything the agent needs, since it starts cold:
 - Absolute paths to the plan file and to `PLAN-FORMAT.md` (tell it to read both first and follow the format exactly)
 - The full Step 4 summary: exact bullets to flip `- TODO` → `- ✓ DONE` (and any sub-doc items), the complete checkpoint text to append, and the new What's Next values (each field one line — tell the agent to reject/shorten anything longer, per `PLAN-FORMAT.md`)
+- If Step 3a produced an elapsed time, tell the agent to add a `**Time spent:** ~{Xh Ym}` line to the checkpoint, directly under the `## Checkpoint: Session {date}` heading, before `**What was completed this session:**`
 - The standing rules: update every Summary table row whose status changed (statuses per PLAN-FORMAT.md: `TODO` / `IN PROGRESS` / `✓ DONE` — the table must never drift from the body); append the checkpoint as `## Checkpoint: Session {date}` before `## Implementation Notes` (or at the end if that section doesn't exist), suffixing `b`, `c`... if a checkpoint for that date already exists; if there are then more than 10 checkpoints, remove the oldest until 10 remain — never touch `## Implementation Notes` or anything after it; mark only the listed items done — nothing else
 - Tell it to report back what it changed
 
 If the Agent tool is unavailable, do the same steps inline instead.
+
+After the update is applied (whether delegated or inline), clear the session marker so the next `load-plan` starts a fresh timer: `rm -f ~/.claude/plan-session-timers/{project-name}.start`.
 
 ## Step 6: Confirm
 
@@ -69,3 +91,4 @@ When the update is applied (relay the agent's report if delegated), confirm to t
 - What the new What's Next section points to
 - That the checkpoint was appended
 - Whether the plan was migrated to the current format
+- The session's elapsed time, if Step 3a produced one

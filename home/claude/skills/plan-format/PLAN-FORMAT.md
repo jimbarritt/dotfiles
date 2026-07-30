@@ -60,6 +60,8 @@ Archived Deltas: see the [archive index](archive/index.md)
 
 ## Checkpoint: Session {YYYY-MM-DD}
 
+**Time spent:** {optional — ~Xh Ym, filled in by `update-plan` when a `load-plan`-started session timer is found; omitted otherwise}
+
 **What was completed this session:**
 {bullet list — specific, file-level where useful}
 
