@@ -8,7 +8,8 @@ return {
   opts = {
     ensure_installed = {
       'kotlin', 'java', 'lua', 'vim', 'vimdoc',
-      'markdown', 'markdown_inline', 'json', 'cpp', 'c', 'bash', 'python', 'git_config'
+      'markdown', 'markdown_inline', 'json', 'cpp', 'c', 'bash', 'python', 'git_config',
+      'go', 'gomod', 'gosum', 'gowork'
     },
     sync_install = false,
     auto_install = true,

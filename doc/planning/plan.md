@@ -2,9 +2,9 @@
 
 ## What's Next
 
-**Next:** Task 1 — Tweak plan skill based on continued use (Delta: Plan Skill Iteration)
+**Next:** Task 2 — Delve/DAP debugging (Delta: Go Development Environment)
 **Sub-doc:** (none)
-**Blockers:** Waiting on user's specific list of desired tweaks
+**Blockers:** None. Task 1 of Plan Skill Iteration still waits on the user's list of desired tweaks.
 
 ## Summary
 
@@ -13,6 +13,9 @@
 | [Delta: Statusline Refinement](#delta-statusline-refinement) | [1. Verify extra usage detection](#task-1-verify-extra-usage-detection) | TODO |
 | | [2. Plan skill refinement](#task-2-plan-skill-refinement) | ✓ DONE |
 | [Delta: Plan Skill Iteration](#delta-plan-skill-iteration) | [1. Tweak plan skill based on continued use](#task-1-tweak-plan-skill-based-on-continued-use) | TODO |
+| [Delta: Go Development Environment](#delta-go-development-environment) | [1. Go toolchain and nvim LSP](#task-1-go-toolchain-and-nvim-lsp) | ✓ DONE |
+| | [2. Delve/DAP debugging](#task-2-delvedap-debugging) | TODO |
+| [Delta: Permission Config Fixes](#delta-permission-config-fixes) | [1. Carve am-dotfiles-base out of the bin/ deny rule](#task-1-carve-am-dotfiles-base-out-of-the-bin-deny-rule) | TODO |
 
 Archived Deltas: see the [archive index](archive/index.md)
 
@@ -35,6 +38,32 @@ Archived Deltas: see the [archive index](archive/index.md)
 
 ### Task 1: Tweak plan skill based on continued use
 - TODO — Gather user's specific desired tweaks to the plan skill (update-plan / init-plan / load-plan / plan-format) and apply them
+
+## Delta: Go Development Environment
+
+### Task 1: Go toolchain and nvim LSP
+- ✓ DONE — `go = "latest"` added to `config/mise/config.toml` (installed go 1.26.5)
+- ✓ DONE — `$GOPATH/bin` added to PATH in `home/zshrc` (mise provides the toolchain; `go install` binaries land in GOBIN and were otherwise unreachable)
+- ✓ DONE — `gopls` added to `config/nvim/lua/plugins/mason.lua` `ensure_installed` (installed v0.23.0)
+- ✓ DONE — `gopls` server entry in `config/nvim/lua/plugins/lsp.lua` — gofumpt, staticcheck, inlay hints, `unusedparams`/`unusedwrite`/`nilness`/`shadow` analyses
+- ✓ DONE — `go`/`gomod`/`gosum`/`gowork` treesitter parsers
+- ✓ DONE — Go-only `BufWritePre` autocmd: `source.organizeImports` code action then format. Deliberate exception to the repo's manual-`<leader>f` convention because unused/missing imports are compile errors in Go
+- ✓ DONE — Verified end-to-end headlessly: gopls attaches, unused import removed, missing import added, indentation reformatted
+
+### Task 2: Delve/DAP debugging
+- TODO — Install `delve` (`go install github.com/go-delve/delve/cmd/dlv@latest`, or via mise if a backend exists)
+- TODO — Add `nvim-dap` — no DAP setup exists in this config at all, so this is new plumbing rather than an entry in an existing table
+- TODO — Add `leoluz/nvim-dap-go` for Go-specific adapter config and test-debugging helpers
+- TODO — Add `rcarriga/nvim-dap-ui` + decide keymaps (breakpoint toggle, step over/into/out, REPL) and where they live relative to the shared `on_attach` in `lsp.lua`
+- TODO — Consider whether DAP should be generalised for other languages (rust, python) or kept Go-only for now
+
+## Delta: Permission Config Fixes
+
+### Task 1: Carve am-dotfiles-base out of the bin/ deny rule
+- TODO — `home/claude/settings.json` denies `Bash(./bin/*)` and `Bash(bin/*)`, but repo `CLAUDE.md` says `am-dotfiles-base` "exists for Claude to run". Deny rules are absolute and cannot be overridden by an `allow` entry, so the documented exception does not work
+- TODO — Preferred fix: move the script out of `bin/` (e.g. `tools/am-dotfiles-base`) and symlink `bin/am-dotfiles-base` to it, so the blanket deny stays intact for genuinely-destructive scripts while Claude invokes the non-denied path
+- TODO — Alternative considered and rejected: enumerating denies per-script (30+ scripts, and new ones would default to allowed)
+- TODO — Update repo `CLAUDE.md` to point at whichever path Claude should invoke
 
 ## Checkpoint: Session 2026-06-18
 

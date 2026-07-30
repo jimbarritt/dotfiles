@@ -7,6 +7,7 @@ pnpm = "latest"
 awscli = { version = "latest", symlink_bins = "true" }
 rust = "latest"
 rust-analyzer = "latest"
+go = "latest"
 uv = "latest"
 python = "latest"
 

@@ -512,6 +512,11 @@ esac
 
 [[ -d "/opt/homebrew/opt/libpq/bin" ]] && export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 
+# Go: mise provides the toolchain itself, but `go install` drops binaries
+# (dlv, mockgen, etc) into GOBIN, which is not on PATH by default.
+export GOPATH="${GOPATH:-$HOME/go}"
+export PATH="$GOPATH/bin:$PATH"
+
 [[ -f "$HOME/.zshrc_machine" ]] && source "$HOME/.zshrc_machine"
 [[ -f "$HOME/.zshrc_work" ]] && source "$HOME/.zshrc_work"
 export CLAUDE_CODE_MAX_OUTPUT_TOKENS=32000

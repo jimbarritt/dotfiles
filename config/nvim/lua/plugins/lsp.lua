@@ -107,6 +107,29 @@ return {
       rust_analyzer = {},
       clangd = {},
       pyright = {},
+      gopls = {
+        settings = {
+          gopls = {
+            gofumpt = true,
+            staticcheck = true,
+            usePlaceholders = true,
+            analyses = {
+              unusedparams = true,
+              unusedwrite = true,
+              nilness = true,
+              shadow = true,
+            },
+            hints = {
+              assignVariableTypes = true,
+              compositeLiteralFields = true,
+              constantValues = true,
+              functionTypeParameters = true,
+              parameterNames = true,
+              rangeVariableTypes = true,
+            },
+          },
+        },
+      },
       jdtls = {},
       -- Kotlin LSP is managed by kotlin.nvim plugin (JetBrains official LSP)
       bashls = {},
@@ -119,6 +142,28 @@ return {
       config.on_attach = on_attach
       vim.lsp.config(server, config)
     end
+
+    -- Go: organise imports, then format, on save.
+    -- Every other language here formats manually via <leader>f. Go is the exception
+    -- because unused and missing imports are compile errors, not style nits — so
+    -- import management has to happen on write or the buffer won't build.
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      pattern = "*.go",
+      callback = function()
+        local params = vim.lsp.util.make_range_params(0, "utf-8")
+        params.context = { only = { "source.organizeImports" } }
+        local results = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 1000)
+        for client_id, res in pairs(results or {}) do
+          for _, action in pairs(res.result or {}) do
+            if action.edit then
+              local client = vim.lsp.get_client_by_id(client_id)
+              vim.lsp.util.apply_workspace_edit(action.edit, client and client.offset_encoding or "utf-16")
+            end
+          end
+        end
+        vim.lsp.buf.format({ async = false })
+      end,
+    })
 
     -- Close quickfix window when selecting an entry (e.g. from gr references)
     vim.api.nvim_create_autocmd("FileType", {

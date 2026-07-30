@@ -21,6 +21,7 @@ return {
           "rust_analyzer",  -- Rust
           "clangd",         -- C/C++
           "pyright",        -- Python
+          "gopls",          -- Go
           "jdtls",          -- Java
           -- kotlin_lsp installed via Homebrew cask, not Mason (JetBrains CDN blocks Mason downloads)
           -- brew install --cask kotlin-lsp  →  auto-detected on nvim startup
