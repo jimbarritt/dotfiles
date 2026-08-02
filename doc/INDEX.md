@@ -18,6 +18,7 @@
 - [gitconfig.md](gitconfig.md) — Git configuration
 - [git-prompt-async-fix.md](git-prompt-async-fix.md) — Oh-My-Zsh async git prompt fix
 - [git-rewrite-author.md](git-rewrite-author.md) — Rewriting git commit authors
+- [git-lol-column-padding.md](git-lol-column-padding.md) — Why `git lol` printed blank lines, and the `%<()` padding rules
 
 ## Neovim & Themes
 
