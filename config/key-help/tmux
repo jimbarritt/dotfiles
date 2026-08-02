@@ -21,6 +21,14 @@ SESSIONS
  k       Kill current session
  d       Detach session
 
+SESSION BROWSER  (enter: s , exit: q — keys below need no leader)
+ O       Change sort field: index / name / time*
+ r       Reverse sort order
+ f       Filter by format
+ C-s     Search by name
+ v       Toggle preview
+ x       Kill selected session
+
 WINDOWS
  c       New window
  ,       Rename window
