@@ -107,6 +107,22 @@ Archived Deltas: see the [archive index](archive/index.md)
 - Checkpoints stack newest-last, each as its own `## Checkpoint: Session {YYYY-MM-DD}` heading, placed before `## Implementation Notes`.
 - **Old formats to migrate on sight**: "Phase"/"Action" terminology, boxed `WHAT'S NEXT`/`CHECKPOINT` separators, numbered Deltas (`## Delta 1: ...`) and delta-prefixed Task numbers (`### Task 1.1: ...`). Numbered Deltas became unmanageable once pruning archived completed ones — the survivors' numbers had permanent gaps.
 
+## Session Timer
+
+The `Time spent` figure in a checkpoint comes from a wall-clock timer shared by the plan skills. State lives in `~/.claude/plan-session-timers/`, one set of files per project, and is manipulated only through `plan-timer.sh` (alongside this file) — no skill should read or write those files directly.
+
+| Command | Used by | Effect |
+|---------|---------|--------|
+| `start` | `load-plan` | Starts the clock. Idempotent — an existing timer's start time is kept. |
+| `pause [note]` | `pause-plan` | Banks time so far and stops the clock. Optional free-text note. |
+| `resume` | `resume-plan` | Restarts the clock. Time between `pause` and `resume` is never counted. |
+| `status` | `update-plan` | Prints `state=` (`running`/`paused`/`none`), `elapsed=`, and any pause note. |
+| `clear` | `update-plan` | Discards all timer state once the checkpoint is written. |
+
+A paused timer stays paused until `resume-plan` runs, including across sessions — `load-plan`'s `start` will not silently restart it. `home/claude/hooks/plan-timer-resume.sh` would resume it automatically on the next prompt, but is not registered in `settings.json`; see the comment at the top of that script.
+
+`update-plan` is pause-agnostic: it writes whatever `elapsed=` reports and then clears the state, whether or not the timer was paused at the time.
+
 ## Archiving
 
 Fully completed Deltas (every Task `✓ DONE`) can be pruned from the live plan by the `prune-plan` skill:

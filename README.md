@@ -45,7 +45,7 @@ All commands accept `--dry-run`.
 
 `home/claude/` is the single source of truth, symlinked into `~/.claude/` by `link-claude`:
 
-- **Skills** — directory symlinks into `~/.claude/skills/`, including the plan workflow (`init-plan`, `load-plan`, `update-plan`, `prune-plan`) whose shared format spec lives in `skills/plan-format/PLAN-FORMAT.md`
+- **Skills** — directory symlinks into `~/.claude/skills/`, including the plan workflow (`init-plan`, `load-plan`, `pause-plan`, `resume-plan`, `update-plan`, `prune-plan`) whose shared format spec and session-timer helper live in `skills/plan-format/`
 - **Hooks** — `canary-inject.sh` (context-rot canary) and `pre-tool-use-filter.sh` (blocks destructive commands); wired via `settings.json`
 - **Statusline** — `statusline-command.sh`: context-token warning bands, subscription/API cost display
 - **Permissions** — global allow/deny lists in `settings.json`; see `doc/claude-permissions.md` for the `//` absolute-path anchoring gotcha

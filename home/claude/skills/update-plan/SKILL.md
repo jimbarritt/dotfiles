@@ -42,21 +42,17 @@ Decide: does the plan need **migrating**? It does if it uses any of the old form
 
 ## Step 3a: Compute session elapsed time
 
-Compute `{project-name}` as `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`. Check for a marker file left by `load-plan`:
+Ask the shared timer helper for the elapsed time:
 
 ```
-f=~/.claude/plan-session-timers/{project-name}.start
-if [ -f "$f" ]; then
-  start=$(cat "$f")
-  now=$(date +%s)
-  secs=$((now - start))
-  printf '%dh %dm\n' $((secs/3600)) $(((secs%3600)/60))
-fi
+sh ~/.claude/skills/plan-format/plan-timer.sh status
 ```
 
-If the marker exists, this gives the elapsed wall-clock time since the session started (via `load-plan`) — use it as the `Time spent` figure in the checkpoint (Step 4/5). It's a wall-clock estimate, not verified active-work time — if the gap is implausible (e.g. spans multiple days, or is under a minute), say so to the user rather than silently writing a bogus figure, and ask whether to note it as "not tracked this session" instead.
+If it reports `state=running` or `state=paused`, use the printed `elapsed=` as the `Time spent` figure in the checkpoint (Step 4/5). This excludes any time spent under `/pause-plan`, but is otherwise wall-clock, not verified active-work time — if the figure is implausible (e.g. spans multiple days, or is under a minute), say so to the user rather than silently writing a bogus figure, and ask whether to note it as "not tracked this session" instead.
 
-If no marker file exists (session wasn't started via `load-plan`, or was already consumed by an earlier `update-plan` run this session), omit the `Time spent` line from the checkpoint entirely — don't guess.
+A paused timer needs no special handling here: the banked time is what gets written, and the pause state is discarded when the timer is cleared at the end of Step 5.
+
+If it reports `state=none` (session wasn't started via `load-plan`, or the timer was already consumed by an earlier `update-plan` run this session), omit the `Time spent` line from the checkpoint entirely — don't guess.
 
 ## Step 4: Compose the session summary (current model — do not delegate)
 
@@ -82,7 +78,7 @@ If `$ARGUMENTS` was provided, incorporate it.
 
 If the Agent tool is unavailable, do the same steps inline instead.
 
-After the update is applied (whether delegated or inline), clear the session marker so the next `load-plan` starts a fresh timer: `rm -f ~/.claude/plan-session-timers/{project-name}.start`.
+After the update is applied (whether delegated or inline), clear the session timer so the next `load-plan` starts a fresh one: `sh ~/.claude/skills/plan-format/plan-timer.sh clear`.
 
 ## Step 6: Confirm
 

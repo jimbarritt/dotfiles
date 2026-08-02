@@ -12,15 +12,15 @@ Read the project plan, orient on current state, and brief the user so work can c
 
 ## Step 0: Mark session start
 
-Compute `{project-name}` as `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`. Run:
+Run the shared timer helper:
 
 ```
-mkdir -p ~/.claude/plan-session-timers
-f=~/.claude/plan-session-timers/{project-name}.start
-[ -f "$f" ] || date +%s > "$f"
+sh ~/.claude/skills/plan-format/plan-timer.sh start
 ```
 
-This stamps the start of the session for `update-plan` to compute elapsed time from later. If the marker file already exists (a session was started but never closed out via `update-plan`), leave it as-is — the earlier start time is more accurate than a new one.
+This stamps the start of the session for `update-plan` to compute elapsed time from later. It is idempotent: if a timer is already running (a session was started but never closed out via `update-plan`), the earlier start time is kept — it is more accurate than a new one.
+
+The helper prints `state=`. If it reports `state=paused`, work was paused via `/pause-plan` and never resumed — `start` deliberately leaves it that way. Mention this in the briefing along with the reported `elapsed=` and any `note=`, and tell the user the clock stays stopped until they run `/resume-plan`.
 
 ## Step 1: Find the plan file
 
