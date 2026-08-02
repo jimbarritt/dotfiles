@@ -2,7 +2,9 @@
 
 ## Session start
 
-**Before responding to the user's first message, including greetings, small talk, or anything that seems too trivial to need context:** check whether a plan file exists for the current project — `doc/planning/plan.md` first, then `~/.planning/{project-name}/plan.md` (where `{project-name}` is `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`), used for repos you don't own. If either is found, read it immediately and briefly orient on current state and next step. Do this before saying anything else — it is your first action, not an optional one.
+**Before responding to the user's first message, including greetings, small talk, or anything that seems too trivial to need context:** invoke the `load-plan` skill. Do this before saying anything else — it is your first action, not an optional one, and it takes the place of manually reading the plan file yourself. Do not substitute a manual read of `doc/planning/plan.md` (or the home-directory equivalent) for invoking the skill — the skill also stamps the session-start timer, which a manual read skips.
+
+If the `load-plan` skill is unavailable for some reason, fall back to checking whether a plan file exists for the current project — `doc/planning/plan.md` first, then `~/.planning/{project-name}/plan.md` (where `{project-name}` is `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`), used for repos you don't own. If either is found, read it immediately and briefly orient on current state and next step.
 
 **"Briefly orient" means 1–3 plain sentences of prose — what's done, what's next.** Never paste, reproduce, or re-render the plan file's own Summary table (or any other table/section from it) into the response. If the user has to scroll, it's too long.
 

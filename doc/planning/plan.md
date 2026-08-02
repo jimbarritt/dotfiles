@@ -2,9 +2,10 @@
 
 ## What's Next
 
-**Next:** Task 2 — Delve/DAP debugging (Delta: Go Development Environment)
-**Sub-doc:** (none)
-**Blockers:** None. Task 1 of Plan Skill Iteration still waits on the user's list of desired tweaks.
+- **Next:** Task 2 — Delve/DAP debugging (Delta: Go Development Environment)
+- **Sub-doc:** (none)
+- **Blockers:** None
+- **Context:** [Checkpoint: Session 2026-08-02](#checkpoint-session-2026-08-02)
 
 ## Summary
 
@@ -16,6 +17,8 @@
 | [Delta: Go Development Environment](#delta-go-development-environment) | [1. Go toolchain and nvim LSP](#task-1-go-toolchain-and-nvim-lsp) | ✓ DONE |
 | | [2. Delve/DAP debugging](#task-2-delvedap-debugging) | TODO |
 | [Delta: Permission Config Fixes](#delta-permission-config-fixes) | [1. Carve am-dotfiles-base out of the bin/ deny rule](#task-1-carve-am-dotfiles-base-out-of-the-bin-deny-rule) | TODO |
+| [Delta: Neovim LSP Reliability](#delta-neovim-lsp-reliability) | [1. Fix intermittent LSP attach](#task-1-fix-intermittent-lsp-attach) | ✓ DONE |
+| [Delta: Claude Instruction Refinements](#delta-claude-instruction-refinements) | [1. Prose commentary rule](#task-1-prose-commentary-rule) | ✓ DONE |
 
 Archived Deltas: see the [archive index](archive/index.md)
 
@@ -65,38 +68,25 @@ Archived Deltas: see the [archive index](archive/index.md)
 - TODO — Alternative considered and rejected: enumerating denies per-script (30+ scripts, and new ones would default to allowed)
 - TODO — Update repo `CLAUDE.md` to point at whichever path Claude should invoke
 
-## Checkpoint: Session 2026-06-18
+## Delta: Neovim LSP Reliability
 
-**What was completed this session:**
-- Discovered Task 1.3 was already done in a previous session (proofread and publish-crate are in `home/claude/skills/` and symlinked) — plan updated to reflect this
-- Updated stale Implementation Notes line about proofread/publish-crate
+### Task 1: Fix intermittent LSP attach
+- ✓ DONE — Diagnosed intermittent "no active clients" affecting every server, not just gopls
+  - Timing measurement was the discriminator: attach completed in 0.1s or never within 45s, with no intermediate values, ruling out slow server startup or indexing
+  - Cause: LSP clients start off `FileType`; when a file is passed on the command line that event can fire before the plugin config finishes, and nothing retries
+  - Baseline failure rate ~40%; a restart appeared to fix it only by winning the race
+- ✓ DONE — `vim.lsp.enable(vim.tbl_keys(servers))` added to `config/nvim/lua/plugins/lsp.lua` — the config previously never called `enable()`, relying on mason-lspconfig, which as a lazy.nvim dependency loads first and produced the `"<server> does not have a configuration"` warnings in `:LspLog`. Measured separately: did not fix the flakiness
+- ✓ DONE — Re-fire `FileType` for already-loaded buffers at the end of setup — this is the fix; 8/8 clean runs against a ~40% baseline
+- ✓ DONE — Written up in `doc/nvim-lsp-filetype-race.md`, indexed in `doc/INDEX.md`, including a general diagnostic table for this class of problem
 
-**State of the project:**
-Delta 1 is complete except for the extra-usage branch verification (deferred to Delta 3). All skills are tracked in dotfiles. Delta 2 (do.sh wiring and README rewrite) is next.
+## Delta: Claude Instruction Refinements
 
-**Immediate next priorities:**
-1. Task 2.1 — Add `link_claude` function to `do.sh` covering all Claude config
-2. Task 2.1 — Call `link_claude` from `link_all`; add `unlink_claude` entries
-3. Task 2.2 — Rewrite `README.md` to reflect current setup
-
-## Checkpoint: Session 2026-06-18
-
-**What was completed this session:**
-- Task 2.1 confirmed already done — `link_claude` / `unlink_claude` were in `do.sh`; plan updated
-- `settings.json` drift resolved: live file was a plain file diverged from dotfiles; replaced with symlink; ctx-trakr hooks and OTEL env vars removed from dotfiles version
-- Global `CLAUDE.md` hardened: session-start instruction sharpened; task tracking, projects dir, and filesystem search rules added
-- `pre-tool-use-filter.sh` copied into dotfiles, wired into settings.json, broad `find` blocking added, jq `set -e` parse error fixed
-- `canary-inject.sh` jq parse error fixed (`2>/dev/null`)
-- Statusline: context bands adjusted (100k/120k), session cost switched to USD no decimals, trakr display also no decimals
-- `mcp__linear__*` added to allow list; `Read(/tmp/**)` added to address `/tmp` permission prompts
-
-**State of the project:**
-Delta 1 and Task 2.1 are complete. Config is now clean and symlinked on both machines. Task 2.2 (README rewrite) is the immediate next item.
-
-**Immediate next priorities:**
-1. Task 2.2 — Rewrite `README.md` to reflect current setup
-2. Task 3.1 — Verify extra usage detection in statusline
-3. Task 3.2 — Review plan skill behaviour after sustained use
+### Task 1: Prose commentary rule
+- ✓ DONE — New `## Prose` section in `home/claude/CLAUDE.md`: default to no editorial commentary when writing docs, READMEs, ADRs, comments and commit messages
+  - Lists the five patterns to drop (editorial judgements, predicted reader reactions, meta-remarks about the writing, enthusiasm, needless hedging)
+  - Draws the line explicitly: rationale and trade-offs are content and stay; commentary *on* the rationale goes
+  - Explicit requests for opinion or critique override the default
+- ✓ DONE — Applied retroactively to the go-tutorial docs written this session
 
 ## Checkpoint: Session 2026-06-18b
 
@@ -262,6 +252,27 @@ This session's work (settings.json permission fix, rust-analyzer LSP setup and l
 1. Task 1 (Delta: Plan Skill Iteration) — get the user's specific list of desired plan-skill tweaks, then apply them
 2. Task 1 (Delta: Statusline Refinement) — Verify extra usage detection
 3. Commit and push this session's dotfiles changes upstream (settings.json, rust-analyzer-lsp plugin, claude-lsp-integration.md, lsp-perf-obs.md, plan.md)
+
+## Checkpoint: Session 2026-08-02
+
+**What was completed this session:**
+- Go development environment set up end-to-end (new Delta, Task 1): `go = "latest"` in `config/mise/config.toml` (go 1.26.5), `$GOPATH/bin` on PATH in `home/zshrc`, `gopls` in `mason.lua` (v0.23.0), gopls server config in `lsp.lua` with gofumpt/staticcheck/inlay hints, `go`/`gomod`/`gosum`/`gowork` treesitter parsers, and a Go-only `BufWritePre` organise-imports-then-format autocmd
+- Verified the Go setup headlessly rather than by inspection: gopls attaches, unused import removed, missing import added, indentation reformatted
+- Diagnosed and fixed intermittent LSP attach affecting all servers (new Delta) — see that Delta for detail; written up in `doc/nvim-lsp-filetype-race.md`
+- Added the `## Prose` no-commentary rule to `home/claude/CLAUDE.md` (new Delta)
+- Discovered `home/claude/settings.json` blanket-denies `Bash(bin/*)`, which makes the repo `CLAUDE.md`'s "`am-dotfiles-base` exists for Claude to run" exception non-functional — deny rules cannot be overridden by allow entries. Logged as Delta: Permission Config Fixes. Worked around by running the script's logic directly (`gh api user --jq .login`)
+- Created the `go-tutorial` repo content (separate repo, not tracked here): `doc/simple-tutorial.md`, `doc/module-paths.md`, `doc/why-tabs.md`, `doc/go-run-performance.md`, a Go `.gitignore`, and a `justfile` with a `run-local` recipe
+- Git history incident resolved: a commit containing job-application company names was reset to unstaged, then purged via `git reflog expire --expire=now --all && git gc --prune=now`; verified unrecoverable via `cat-file`, `reflog` and `fsck`. The portfolio skill has been removed from dotfiles and will be added to the (private) portfolio repo by the user
+
+**State of the project:**
+Go development is fully working in nvim. The LSP FileType race that had been intermittently affecting every language server is fixed and documented. Two pre-existing Deltas remain untouched — statusline extra-usage detection and the plan-skill tweaks, the latter still waiting on the user's list. A new Permission Config Fixes Delta captures the `bin/` deny-rule contradiction found this session.
+
+**Immediate next priorities:**
+1. Task 2 (Delta: Go Development Environment) — delve/DAP debugging; no DAP plumbing exists in the config yet
+2. Task 1 (Delta: Permission Config Fixes) — carve `am-dotfiles-base` out of the `bin/` deny rule, preferred fix being to move the script and symlink it back
+3. Task 1 (Delta: Plan Skill Iteration) — still blocked on the user's specific list of tweaks
+4. Task 1 (Delta: Statusline Refinement) — verify extra usage detection
+5. Confirm the LSP fix holds interactively over several nvim restarts
 
 ---
 
