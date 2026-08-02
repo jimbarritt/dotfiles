@@ -1,5 +1,6 @@
-TMUX CHEATSHEET                     q to close
-Leader: Ctrl-b
+TMUX CHEATSHEET
+ q to close
+ Leader: Ctrl-b
 
 PANES
  %       Split vertical
@@ -21,7 +22,8 @@ SESSIONS
  k       Kill current session
  d       Detach session
 
-SESSION BROWSER  (enter: s , exit: q — keys below need no leader)
+SESSION BROWSER
+ enter: s , exit: q — keys below need no leader
  O       Change sort field: index / name / time*
  r       Reverse sort order
  f       Filter by format
@@ -36,7 +38,8 @@ WINDOWS
  0-9     Switch to window by number
  w       Browse & switch windows
 
-SCROLL / COPY MODE  (enter: [ , exit: q)
+SCROLL / COPY MODE
+ enter: [ , exit: q
  h j k l    Move
  v          Start selection
  V          Select line
@@ -49,7 +52,8 @@ OTHER
  b       Toggle status bar
  [       Enter scroll/copy mode
 
-EDITING  (emacs/readline — works in most shell prompts)
+EDITING
+ emacs/readline — works in most shell prompts
  Ctrl-a     Start of line
  Ctrl-e     End of line
  Ctrl-u     Kill to start of line
