@@ -214,6 +214,19 @@ tmux-new() { tmux new -s "${1:-$(basename $PWD)}"; }
 
 scratch() { mkdir -p ~/tmp && nvim ~/tmp/scratch.md; }
 
+# Copy the absolute path of a file or directory to the clipboard.
+# Defaults to the current directory.
+copypath() {
+  local target="${1:-.}" resolved
+  if [[ ! -e "$target" ]]; then
+    echo "copypath: no such file or directory: $target" >&2
+    return 1
+  fi
+  resolved="$(realpath "$target")" || return 1
+  printf '%s' "$resolved" | pbcopy
+  echo "$resolved"
+}
+
 # Open the current project's plan. Search order matches the load-plan skill's
 # spec in home/claude/skills/plan-format/PLAN-FORMAT.md: repo-local first, then
 # the legacy repo-local path, then the home location used for repos we don't own.
