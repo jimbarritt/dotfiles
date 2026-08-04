@@ -4,9 +4,11 @@
   Ctrl-w s        Split horizontal
   Ctrl-w v        Split vertical
   Ctrl-w h/j/k/l  Navigate between windows
-  Ctrl-w q        Close window
+  Ctrl-w c        Close window (refuses on the last one)
+  Ctrl-w q        Same — remapped to c, so it never quits nvim
   Ctrl-w o        Close all other windows
   Ctrl-w =        Equalise window sizes
+  :bd             Close the buffer, keep the window layout
 
  NAVIGATION
   h j k l        Left / down / up / right
@@ -67,3 +69,37 @@
   :q  :q!        Quit / force quit
   :wq            Save and quit
   :e <file>      Open file
+
+ FILE TREE (nvim-tree)
+  Space n        Toggle tree (from anywhere)
+  l              Open file, keep focus in tree
+  CR             Open file, close tree
+  o              Open (file or directory)
+  h              Close directory
+  Tab            Preview without leaving tree
+  Ctrl-v Ctrl-x  Open in vertical / horizontal split
+  Ctrl-t         Open in new tab
+  P              Jump to parent directory
+  -              Move tree root up one level
+  E  W           Expand all / collapse all
+  K  J           First / last sibling
+  R              Refresh
+  g?             Help (full mapping list)
+
+ FILE TREE — filters
+  Hidden by default: gitignored files, .git, .DS_Store
+  Dotfiles such as .gitignore are shown
+  H              Toggle dotfiles
+  I              Toggle gitignored files
+  C              Toggle git-clean files (show only changed)
+  f  F           Live filter: start / clear
+  S              Search
+
+ FILE TREE — file operations
+  a              Create file (trailing / creates a directory)
+  d              Delete
+  r              Rename
+  x  c  p        Cut / copy / paste
+  y  Y  gy       Copy name / relative path / absolute path
+  ]c  [c         Next / previous git-changed file
+  ]e  [e         Next / previous diagnostic

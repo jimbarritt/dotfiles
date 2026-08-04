@@ -161,6 +161,13 @@ Not yet implemented — could use `object_creation_expression` with
    combined query is cached and `:colorscheme` reload alone won't pick up
    new `.scm` files.
 
+5. **`;; extends` appends, its absence replaces** — every query in this doc
+   adds patterns on top of upstream and so carries the marker. Removing or
+   altering an upstream pattern requires omitting it and restating the whole
+   file. See [nvim-dockerfile-injection-bleed.md](nvim-dockerfile-injection-bleed.md)
+   for a case that needed the replacing form, and the maintenance cost that
+   comes with it.
+
 ## Verification
 
 For each case, use `:Inspect` on the token to confirm the correct capture

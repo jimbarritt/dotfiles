@@ -28,6 +28,14 @@ When drafting a PR (title, body, commit messages), do not add Claude references 
 
 Use **British English** throughout code and documentation (e.g., "initialise", "colour", "organise"). This applies to variable names, function names, comments, and docs.
 
+## Raising multiple points
+
+When there is more than one thing to raise — findings, divergences, review comments, decisions needed — **raise them one at a time and wait for a response before moving on.** Do not dump a list.
+
+Say how many there are, then give the first one and stop. Once it is settled, move to the second. Each point should be short enough to act on without scrolling back.
+
+This applies to anything requiring a response or a decision. A plain factual answer to a question asked is not affected.
+
 ## Prose
 
 **When writing prose — docs, READMEs, ADRs, comments, commit messages — default to no commentary of your own.** State the facts and stop. Do not add:

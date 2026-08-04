@@ -139,6 +139,11 @@ vim.keymap.set('n', '<Leader>O', 'O<Esc>', { noremap = true, silent = true })
 vim.keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR>', { noremap = true, silent = true, desc = "Clear search highlights" })
 vim.keymap.set('n', '<leader>/', ':nohlsearch<CR>', { noremap = true, silent = true, desc = "Clear search highlights" })
 
+-- Ctrl-w q is :quit scoped to a window, so on the last window it exits nvim.
+-- Redirect it to :close, which errors with E444 instead. Ctrl-w c already does
+-- this; the remap just makes both keys safe rather than only one of them.
+vim.keymap.set('n', '<C-w>q', '<C-w>c', { noremap = true, silent = true, desc = "Close window (never quits nvim)" })
+
 -- Toggle nvim-tree
 vim.keymap.set('n', '<leader>n', ':NvimTreeToggle<CR>', { noremap = true, silent = true, desc = "Toggle file tree" })
 

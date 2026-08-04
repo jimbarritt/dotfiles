@@ -214,6 +214,29 @@ tmux-new() { tmux new -s "${1:-$(basename $PWD)}"; }
 
 scratch() { mkdir -p ~/tmp && nvim ~/tmp/scratch.md; }
 
+# Open the current project's plan. Search order matches the load-plan skill's
+# spec in home/claude/skills/plan-format/PLAN-FORMAT.md: repo-local first, then
+# the legacy repo-local path, then the home location used for repos we don't own.
+plan() {
+  local root project candidate
+  root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+  project="$(basename "$root")"
+
+  for candidate in \
+    "$root/doc/planning/plan.md" \
+    "$root/doc/plan.md" \
+    "$HOME/.planning/$project/plan.md"
+  do
+    if [[ -f "$candidate" ]]; then
+      open -a Marq "$candidate" 2>/dev/null || open "$candidate"
+      return 0
+    fi
+  done
+
+  echo "No plan in this dir (checked doc/planning/plan.md, doc/plan.md, ~/.planning/$project/plan.md)"
+  return 1
+}
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"

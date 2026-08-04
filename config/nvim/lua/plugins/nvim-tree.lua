@@ -118,9 +118,16 @@ return {
         enable = true,
       },
       filters = {
-        dotfiles = true,
+        -- Show dotfiles (.gitignore, .github, .env): they are part of the
+        -- project and hiding them makes it impossible to see why something
+        -- else is being filtered out.
+        dotfiles = false,
+        -- Still hide anything git actually ignores. Untracked and staged
+        -- files are unaffected by this — only `!!` entries are filtered.
         git_ignored = true,
         custom = {
+          "^\\.git$",
+          "^\\.DS_Store$",
           "Library/Calendars",
         },
       },
