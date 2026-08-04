@@ -20,13 +20,6 @@ poll_timer:start(1000, 1000, vim.schedule_wrap(function()
   end
 end))
 
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "markdown",
-  callback = function()
-    vim.wo.wrap = true
-  end,
-})
-
 vim.api.nvim_create_autocmd("FocusLost", {
   pattern = "*",
   command = "silent! wa",

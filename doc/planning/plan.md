@@ -5,7 +5,7 @@
 - **Next:** Task 2 — Delve/DAP debugging (Delta: Go Development Environment)
 - **Sub-doc:** (none)
 - **Blockers:** None
-- **Context:** [Checkpoint: Session 2026-08-02](#checkpoint-session-2026-08-02)
+- **Context:** [Checkpoint: Session 2026-08-02b](#checkpoint-session-2026-08-02b)
 
 ## Summary
 
@@ -13,7 +13,8 @@
 |-------|------|--------|
 | [Delta: Statusline Refinement](#delta-statusline-refinement) | [1. Verify extra usage detection](#task-1-verify-extra-usage-detection) | TODO |
 | | [2. Plan skill refinement](#task-2-plan-skill-refinement) | ✓ DONE |
-| [Delta: Plan Skill Iteration](#delta-plan-skill-iteration) | [1. Tweak plan skill based on continued use](#task-1-tweak-plan-skill-based-on-continued-use) | TODO |
+| [Delta: Plan Skill Iteration](#delta-plan-skill-iteration) | [1. Tweak plan skill based on continued use](#task-1-tweak-plan-skill-based-on-continued-use) | ✓ DONE |
+| | [2. Session timer loose ends](#task-2-session-timer-loose-ends) | TODO |
 | [Delta: Go Development Environment](#delta-go-development-environment) | [1. Go toolchain and nvim LSP](#task-1-go-toolchain-and-nvim-lsp) | ✓ DONE |
 | | [2. Delve/DAP debugging](#task-2-delvedap-debugging) | TODO |
 | [Delta: Permission Config Fixes](#delta-permission-config-fixes) | [1. Carve am-dotfiles-base out of the bin/ deny rule](#task-1-carve-am-dotfiles-base-out-of-the-bin-deny-rule) | TODO |
@@ -40,7 +41,11 @@ Archived Deltas: see the [archive index](archive/index.md)
 ## Delta: Plan Skill Iteration
 
 ### Task 1: Tweak plan skill based on continued use
-- TODO — Gather user's specific desired tweaks to the plan skill (update-plan / init-plan / load-plan / plan-format) and apply them
+- ✓ DONE — Gather user's specific desired tweaks to the plan skill (update-plan / init-plan / load-plan / plan-format) and apply them
+
+### Task 2: Session timer loose ends
+- TODO — `home/claude/hooks/plan-timer-resume.sh` (auto-resume on the next prompt) is written and tested but deliberately unregistered in `settings.json` — enable it if manual `/resume-plan` proves annoying; snippet is in the script header
+- TODO — Work out why `~/.claude/skills/plan-format` was never symlinked, which broke every plan skill's helper call with exit 127. `do.sh`'s `link_claude` globs `skills/*/` and should have created it — run `./do.sh link-claude` and check the result is consistent
 
 ## Delta: Go Development Environment
 
@@ -87,20 +92,6 @@ Archived Deltas: see the [archive index](archive/index.md)
   - Draws the line explicitly: rationale and trade-offs are content and stay; commentary *on* the rationale goes
   - Explicit requests for opinion or critique override the default
 - ✓ DONE — Applied retroactively to the go-tutorial docs written this session
-
-## Checkpoint: Session 2026-06-18b
-
-**What was completed this session:**
-- Diagnosed why `Read(/tmp/**)` still prompted: macOS `/tmp` is a symlink to `/private/tmp`; the Read tool resolves the symlink before permission matching, so the real path never matched
-- Added `"Read(/private/tmp/**)"` to allow list in `home/claude/settings.json`
-
-**State of the project:**
-Delta 1 and Task 2.1 are complete. The `/tmp` permission fix is now applied at the real path level. Task 2.2 (README rewrite) remains the immediate next item.
-
-**Immediate next priorities:**
-1. Task 2.2 — Rewrite `README.md` to reflect current setup
-2. Task 3.1 — Verify extra usage detection in statusline
-3. Task 3.2 — Review plan skill behaviour after sustained use
 
 ## Checkpoint: Session 2026-06-18c
 
@@ -273,6 +264,23 @@ Go development is fully working in nvim. The LSP FileType race that had been int
 3. Task 1 (Delta: Plan Skill Iteration) — still blocked on the user's specific list of tweaks
 4. Task 1 (Delta: Statusline Refinement) — verify extra usage detection
 5. Confirm the LSP fix holds interactively over several nvim restarts
+
+## Checkpoint: Session 2026-08-02b
+
+**What was completed this session:**
+- Plan session timer gained pause/resume: shared `home/claude/skills/plan-format/plan-timer.sh` (`start`/`pause`/`resume`/`status`/`clear`) plus `pause-plan` and `resume-plan` skills, with `load-plan` and `update-plan` rewired onto it. Paused intervals are excluded from `Time spent`
+- `home/claude/hooks/plan-timer-resume.sh` written to auto-resume on the next prompt, then parked unregistered — running it on every prompt was judged excessive
+- `git lol` blank lines diagnosed and fixed: `%<(80,trunc)%s` padded every line to a fixed 117 columns against an 80-column terminal, so the padding wrapped onto an apparently blank second row. Fixed in `home/gitconfig` to `%<(12,trunc)%an %cd %s`; written up in `doc/git-lol-column-padding.md`
+- `~/.claude/skills/plan-format` was found never to have been symlinked, breaking every plan skill's helper call; linked manually
+
+**State of the project:**
+The timer supports pausing, and this session showed the failure mode — the pause was never resumed, so `Time spent` was omitted rather than guessed. The `git lol` fix and the missing symlink were unplanned work.
+
+**Immediate next priorities:**
+1. Task 2 (Delta: Go Development Environment) — delve/DAP debugging
+2. Task 2 (Delta: Plan Skill Iteration) — run `./do.sh link-claude` and resolve the `plan-format` symlink question
+3. Task 1 (Delta: Permission Config Fixes) — carve `am-dotfiles-base` out of the `bin/` deny rule
+4. Task 1 (Delta: Statusline Refinement) — verify extra usage detection
 
 ---
 

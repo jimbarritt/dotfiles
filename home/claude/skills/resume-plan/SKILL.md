@@ -27,8 +27,8 @@ Say so and continue.
 If it reports `state=none`, there is no timer at all. Tell the user the session
 was not started via `load-plan`, and that running `/load-plan` will start one.
 
-## Step 2: Confirm and continue
+## Step 2: Confirm and stand down
 
-One line: work resumed, the banked time, and the length of the break. Then pick
-up whatever the plan's What's Next section points to, or whatever the user was
-last working on.
+One line: work resumed, the banked time, and the length of the break. Then end
+the turn and wait for the user to say what to work on. Do not pick up the
+plan's What's Next task, inspect the repo, or begin any work.
