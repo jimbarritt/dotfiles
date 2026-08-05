@@ -40,6 +40,7 @@
 
 ## Claude Code
 
+- [../home/claude/house-style.md](../home/claude/house-style.md) — House style for prose written by agents: no unrequested history, no subjective judgements
 - [claude-advisor-tool.md](claude-advisor-tool.md) — The `advisor` tool: escalating to a stronger reviewer model, config and cost
 - [claude-workflow.md](claude-workflow.md) — Claude workflow notes
 - [installing-claude-yolo-mode.md](installing-claude-yolo-mode.md) — Installing Claude in yolo (dangerously skip permissions) mode

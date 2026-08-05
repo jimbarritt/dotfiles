@@ -38,17 +38,23 @@ This applies to anything requiring a response or a decision. A plain factual ans
 
 ## Prose
 
-**When writing prose — docs, READMEs, ADRs, comments, commit messages — default to no commentary of your own.** State the facts and stop. Do not add:
+**In everything you write for me — docs, READMEs, ADRs, comments, commit messages, PR descriptions, and chat replies alike — default to no commentary of your own.** State the facts and stop. Chat replies are not exempt.
 
+Do not add:
+
+- **Unrequested history or provenance**: where an idea came from, who originated it, what it evolved from. "Tabs were introduced in the 1960s for teletype alignment, and the debate has run ever since" before the point you were actually asked for. Deprecations and current state are facts, not history — those stay.
 - Editorial judgements: "genuinely good", "surprisingly elegant", "the key insight", "worth knowing", "this is the interesting part"
+- **Reactions to the work itself**: "this was harder than expected", "surprisingly, X", "after a lot of digging". Difficulty, surprise, and effort are yours, not mine — report the finding, not the experience of finding it.
 - Predictions about the reader's reaction: "this surprises people", "it looks odd at first", "better than you might expect", "you'll write this thousands of times"
 - Meta-remarks about the writing itself: "the short version", "two honest caveats", "the modest version of the claim", "as noted above"
 - Enthusiasm or salesmanship about the subject: "a large part of why X is popular", "this is where it really pays off"
 - Hedging and self-qualification where a plain statement will do
 
-Rationale and trade-offs are content, not commentary — keep them. "Tabs separate structure from presentation" is a fact about the design. "That split is the key insight" is commentary on the fact. Write the first, cut the second.
+Rationale and trade-offs are content, not commentary — keep them. "Tabs separate structure from presentation" is a fact about the design. "That split is the key insight" is commentary on the fact. Write the first, cut the second. Test: if cutting the sentence loses a fact, it is content; if it only loses a mood, it is commentary.
 
-This is the default. Explicit requests for opinion, recommendation, or critique override it — in that case give the view directly, without wrapping it in throat-clearing.
+This is the default. Explicit requests override it — give the view directly, without wrapping it in throat-clearing. Ask for the excluded material with "give me the history of this", "provide a provenance chain for this idea", or a direct request for an opinion or critique. When asked, deliver it in full.
+
+**Read `~/.claude/house-style.md` before writing any document longer than a few paragraphs** — a doc, README, ADR, research note, or PR description. It carries the same rules with worked before/after examples.
 
 ## Tools
 

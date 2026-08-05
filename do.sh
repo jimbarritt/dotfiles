@@ -120,6 +120,9 @@ link_claude() {
   backup_existing_file "${HOME}/.claude/CLAUDE.md"
   create_symlink "${DOTFILES_DIR}/home/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
 
+  backup_existing_file "${HOME}/.claude/house-style.md"
+  create_symlink "${DOTFILES_DIR}/home/claude/house-style.md" "${HOME}/.claude/house-style.md"
+
   backup_existing_file "${HOME}/.claude/settings.json"
   create_symlink "${DOTFILES_DIR}/home/claude/settings.json" "${HOME}/.claude/settings.json"
 
@@ -149,6 +152,7 @@ unlink_claude() {
   echo "Removing Claude config symlinks from ~/.claude/"
 
   remove_symlink "${HOME}/.claude/CLAUDE.md"
+  remove_symlink "${HOME}/.claude/house-style.md"
   remove_symlink "${HOME}/.claude/settings.json"
   remove_symlink "${HOME}/.claude/keybindings.json"
   remove_symlink "${HOME}/.claude/statusline-command.sh"
