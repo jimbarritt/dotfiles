@@ -85,7 +85,7 @@
   },
   "enabledPlugins": {},
   "effortLevel": "medium",
-  "advisorModel": "fable",
+  "advisorModel": "opus",
   "autoUpdatesChannel": "latest",
   "minimumVersion": "2.1.81",
   "tui": "fullscreen",

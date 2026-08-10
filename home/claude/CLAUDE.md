@@ -50,6 +50,14 @@ Rationale and trade-offs are content, not commentary — keep them. "Tabs separa
 
 This is the default. Explicit requests for opinion, recommendation, or critique override it — in that case give the view directly, without wrapping it in throat-clearing.
 
+## Code comments
+
+**Do not add comments to code.** No doc comments on functions, types or fields, no explanatory comments above blocks, no rationale comments, no section banners. Write the code and stop — comments are mine to add where I judge them needed.
+
+This applies to new code and to existing code you are editing: do not add a comment to a function you are touching for another reason, and do not restore a comment removed as part of a refactor unless asked.
+
+Exceptions: a comment the language or tooling requires to function (build tags, lint directives, generated-file markers), and an explicit request for a comment or for documentation.
+
 ## Tools
 
 - **Marq** — Native macOS markdown viewer. Installed via `brew install --cask jimbarritt/tap/marq`. If Marq is already running, opening a new file switches to it in the same window. **Do not forget this tool exists** — it should be the default way to show the user a markdown file, not just when they name it explicitly:

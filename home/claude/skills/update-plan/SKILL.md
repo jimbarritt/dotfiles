@@ -78,7 +78,15 @@ If `$ARGUMENTS` was provided, incorporate it.
 
 If the Agent tool is unavailable, do the same steps inline instead.
 
-After the update is applied (whether delegated or inline), clear the session timer so the next `load-plan` starts a fresh one: `sh ~/.claude/skills/plan-format/plan-timer.sh clear`.
+After the update is applied (whether delegated or inline), clear the session timer so the banked time is not counted twice: `sh ~/.claude/skills/plan-format/plan-timer.sh clear`.
+
+Then **start a fresh timer immediately** — `sh ~/.claude/skills/plan-format/plan-timer.sh start` — unless the user has said they are stopping. `update-plan` is most often run mid-session, and a cleared timer silently undercounts everything that follows it: work continues, nothing is being timed, and the loss is only noticed later when it has to be reconstructed from file mtimes.
+
+In Step 6, ask whether they are carrying on or breaking here, so the answer is theirs rather than assumed:
+
+> Fresh timer started. Say if you're stopping here and I'll pause it.
+
+If they are stopping, run `sh ~/.claude/skills/plan-format/plan-timer.sh pause "{reason}"` rather than leaving it running — a timer left running over a break inflates the next figure exactly as a cleared one deflates it.
 
 ## Step 6: Confirm
 
@@ -88,3 +96,4 @@ When the update is applied (relay the agent's report if delegated), confirm to t
 - That the checkpoint was appended
 - Whether the plan was migrated to the current format
 - The session's elapsed time, if Step 3a produced one
+- That a fresh timer is running, with the offer to pause it if they are stopping here
