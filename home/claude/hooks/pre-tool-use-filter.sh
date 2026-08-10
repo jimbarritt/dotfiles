@@ -70,6 +70,10 @@ if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+rebase(\s|$)'; then
   deny "git rebase is blocked — rewrites commit history"
 fi
 
+if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+checkout(\s|$)'; then
+  deny "git checkout is blocked — discards uncommitted changes and switches branches"
+fi
+
 if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+branch\s+-[a-zA-Z]*D'; then
   deny "git branch -D is blocked — force-deletes branches"
 fi
