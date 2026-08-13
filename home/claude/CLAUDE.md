@@ -12,6 +12,23 @@ If the `load-plan` skill is unavailable for some reason, fall back to checking w
 
 Never use `find` rooted at `~`, `/`, `/Users/`, or cache directories (`~/.gradle`, `~/.m2`, etc.) — these scan millions of inodes and are almost always wrong. Search within the current project directory. If the file isn't there, ask rather than scanning broadly.
 
+## STE
+
+When I write `ste` or say "in STE", write that response (or that
+document) in ASD-STE100 Simplified Technical English:
+
+- Instructions ≤20 words, descriptions ≤25 words. One instruction
+  per sentence. Condition before command.
+- Active voice. Simple tenses only — no present perfect, no -ing.
+- One word, one meaning. Do not vary synonyms for style.
+- Simple words: use, start, stop, do — not utilise, initiate, cease.
+- No hedging and no meta-commentary.
+
+Applies to the prose only. Do not change code, and do not
+constrain your reasoning.
+
+Stays on until I say `ste off`.
+
 ## Task tracking
 
 The project plan (`doc/planning/plan.md`, or `~/.planning/{project-name}/plan.md` for repos stored at the home location) is the source of truth for task tracking. Do not use the built-in task tools (TaskCreate, TaskUpdate, TaskList, etc.) — they duplicate the plan and add unnecessary context overhead.
