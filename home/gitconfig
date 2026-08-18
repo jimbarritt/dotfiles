@@ -27,6 +27,10 @@
 [core]
 	pager = delta
 	autocrlf = input
+	attributesFile = ~/.gitattributes
+
+[diff "nocontext"]
+	xfuncname = "$^"
 
 [delta]
   # Appearance
@@ -35,6 +39,8 @@
   side-by-side = false  # Set to true if you prefer side-by-side diffs
   line-numbers = true
     
+  hunk-header-style = syntax
+
   syntax-theme = Monokai Extended
   
   # Minimal visual noise

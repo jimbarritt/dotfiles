@@ -1,0 +1,5 @@
+*.md        diff=markdown
+*.markdown  diff=markdown
+
+*.txt       diff=nocontext
+*.text      diff=nocontext

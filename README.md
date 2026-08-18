@@ -31,7 +31,7 @@ All commands accept `--dry-run`.
 
 | Directory | Contents |
 |-----------|----------|
-| `home/` | Files symlinked into `$HOME` as dotfiles: `zshrc`, `gitconfig`, `tmux.conf`, `hammerspoon/` |
+| `home/` | Files symlinked into `$HOME` as dotfiles: `zshrc`, `gitconfig`, `gitattributes`, `tmux.conf`, `hammerspoon/` |
 | `home/claude/` | Claude Code config: `CLAUDE.md`, `settings.json`, skills, hooks, themes, statusline |
 | `home/copilot/` | Copilot CLI config: denied-commands list (mirrors Claude's deny list) |
 | `config/` | Files symlinked into `~/.config/`: nvim, ghostty, kitty, flashspace, mise |

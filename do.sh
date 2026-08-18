@@ -202,6 +202,7 @@ link_all() {
   echo "Linking dotfiles into your home dir @ [$HOME]"
   link_home zshrc
   link_home gitconfig
+  link_home gitattributes
   link_home tmux.conf
   link_home hammerspoon
 
@@ -224,6 +225,7 @@ unlink_all() {
   echo "Putting everything back the way it was"
   unlink_home zshrc
   unlink_home gitconfig
+  unlink_home gitattributes
   unlink_home hammerspoon
   unlink_claude
   unlink_copilot

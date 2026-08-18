@@ -50,6 +50,10 @@ Full reference: [git-config documentation](https://git-scm.com/docs/git-config)
 [core]
     pager = delta
     autocrlf = input
+    attributesFile = ~/.gitattributes
+
+[diff "nocontext"]
+    xfuncname = "$^"
 
 [delta]
     # Appearance
@@ -57,6 +61,7 @@ Full reference: [git-config documentation](https://git-scm.com/docs/git-config)
     light = false      # Dark mode; presentation-mode overrides via ~/.gitconfig-presentation
     side-by-side = false  # Set to true if you prefer side-by-side diffs
     line-numbers = true
+    hunk-header-style = syntax
     syntax-theme = Monokai Extended
 
     # Minimal visual noise
@@ -156,6 +161,7 @@ Other advice keys worth knowing about (set to `false` to silence):
 
 - `pager = delta` — replaces the default pager (`less`) with [delta](https://github.com/dandavison/delta) for syntax-highlighted diffs.
 - `autocrlf = input` — on input (commit), converts CRLF line endings to LF, but leaves files unchanged on checkout. Appropriate for macOS/Linux to avoid accidentally committing Windows line endings.
+- `attributesFile = ~/.gitattributes` — the path of the global attributes file. This key was unset before. See "Hunk context and gitattributes" below.
 
 ### `[delta]`
 
@@ -165,12 +171,45 @@ Configuration for the [delta](https://github.com/dandavison/delta) diff pager. D
 - `light = false` — use the dark terminal colour scheme
 - `side-by-side = false` — unified diff view (set to `true` for side-by-side)
 - `line-numbers = true` — show line numbers in the gutter
+- `hunk-header-style = syntax` — show the hunk context text, but not the line number (see below)
 - `syntax-theme = Monokai Extended` — syntax highlighting colour scheme
 - `minus-style`, `minus-emph-style`, `plus-style`, `plus-emph-style` — background colours for removed/added lines
 
-Both modes were retuned together. The previous dark backgrounds sat within 1–4
-luminance points of the green-tinted terminal background (`#0a1f0a`, luminance
-22): `plus-style` `#002800` at 23 and `minus-style` `#3f0001` at 18. Only the
+**Hunk headers.** The delta default is `hunk-header-style = "line-number
+syntax"`. This style shows a line number and a text:
+
+```
+• 14: Never use `find` rooted at `~`, `/`, `/Users/`, or cache directories
+```
+
+The number and the text come from different lines. The number is the first line
+of the hunk. The text is the git hunk context, which is the nearest matching
+line above the start of the hunk. A reader reads the number as the line of the
+text. This is not correct.
+
+The value `syntax` removes the number and keeps the context text. The gutter
+shows the true line numbers, because `line-numbers = true`. No data is lost.
+
+```
+line-number syntax          • 14: Never use `find` rooted at `~`, `/`, ...   (delta default)
+syntax                      •  Never use `find` rooted at `~`, `/`, ...      (now in use)
+file line-number syntax     • CLAUDE.md:14: Never use `find` rooted at ...
+```
+
+The key accepts two special attributes: `file` and `line-number`. A line range
+such as `14->21` is not possible. The value `omit` removes the hunk header from
+the output.
+
+The light-mode overlay does not set this key. Thus both modes show the same
+hunk headers.
+
+The diff driver for the file type controls the context text. See "Hunk context
+and gitattributes" below.
+
+**Diff colours.** Both modes were retuned together. The previous dark
+backgrounds sat within 1–4 luminance points of the green-tinted terminal
+background (`#0a1f0a`, luminance 22): `plus-style` `#002800` at 23 and
+`minus-style` `#3f0001` at 18. Only the
 emph styles (54 and 56) cleared the background, so word-level highlights showed
 but whole added and removed lines did not.
 
@@ -190,9 +229,10 @@ case that blends, so added rows need the larger gap.
 clear of Monokai Extended's dimmest foreground (`#f92672`, luminance 109), which
 would otherwise lose contrast on the highlighted word.
 
-**Light mode.** The values in `[delta]` are the dark-mode ones. `bin/presentation-mode` switches
-Ghostty, tmux and Neovim between dark and light; delta follows via an optional
-overlay file, the same pattern used for the Ghostty config.
+**Light mode.** The colours in `[delta]` are the dark-mode ones.
+`bin/presentation-mode` switches Ghostty, tmux and Neovim between dark and
+light; delta follows via an optional overlay file, the same pattern used for the
+Ghostty config.
 
 `home/gitconfig` includes `~/.gitconfig-presentation`. In light mode
 `presentation-mode` writes that file with `light = true`, `syntax-theme =
@@ -224,6 +264,55 @@ foregrounds at 51–109.
 `colorMoved = default` highlights lines that were moved (rather than added/deleted) in a different colour, making refactors easier to read.
 
 - [diff.colorMoved](https://git-scm.com/docs/git-config#Documentation/git-config.txt-diffcolorMoved)
+
+### `[diff "nocontext"]`
+
+A custom diff driver. `home/gitattributes` applies it to `*.txt` and `*.text`.
+
+`xfuncname = "$^"` is a POSIX extended regular expression. It never matches.
+Git thus finds no context line and writes a bare `@@ -7,6 +7,7 @@`. Delta then
+removes the full hunk header box.
+
+### Hunk context and gitattributes
+
+`hunk-header-style = syntax` shows only the context text of git (see `[delta]`
+above). The value of that text comes from the diff driver for the file type.
+
+`home/gitconfig` sets `core.attributesFile = ~/.gitattributes`. `do.sh` links
+`home/gitattributes` to that path. The file holds:
+
+```
+*.md        diff=markdown
+*.markdown  diff=markdown
+
+*.txt       diff=nocontext
+*.text      diff=nocontext
+```
+
+Git has no default driver for markdown. It thus takes the nearest line above
+the hunk that starts with a non-space character. That line is usually a
+sentence of the body, and it gives no useful context. The built-in `markdown`
+driver takes the parent heading instead.
+
+Plain text has no useful context. The `nocontext` driver removes the hunk
+header.
+
+Result through delta:
+
+```
+.md    •  ## Finding files        (was: •  Never use find rooted at home.)
+.txt   (no hunk header box at all)
+.go    •  package main            (unchanged; no driver set)
+```
+
+Git ships built-in drivers for many languages, such as golang, rust, python,
+java and cpp. None of them are on by default. A `.go` file thus still shows
+`package main` and not the name of the function.
+
+A `.gitattributes` file in a repository overrides the global file. This is the
+standard precedence of git.
+
+- [gitattributes](https://git-scm.com/docs/gitattributes)
 
 ### `[filter "lfs"]`
 
