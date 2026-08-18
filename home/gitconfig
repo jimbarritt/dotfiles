@@ -41,6 +41,10 @@
     
   hunk-header-style = syntax
 
+  line-numbers-zero-style = "#5a755a"
+  line-numbers-minus-style = "bold #ff7b81"
+  line-numbers-plus-style = "bold #7ee787"
+
   syntax-theme = Monokai Extended
   
   # Minimal visual noise
