@@ -214,6 +214,25 @@ tmux-new() { tmux new -s "${1:-$(basename $PWD)}"; }
 
 scratch() { mkdir -p ~/tmp && nvim ~/tmp/scratch.md; }
 
+readme() {
+  local dir name candidate
+  dir="$(realpath "${1:-.}")"
+  while true; do
+    for name in README.md readme.md Readme.md README README.markdown; do
+      candidate="$dir/$name"
+      if [[ -f "$candidate" ]]; then
+        open -a Marq "$candidate" 2>/dev/null || open "$candidate"
+        echo "$candidate"
+        return 0
+      fi
+    done
+    [[ "$dir" == "/" ]] && break
+    dir="$(dirname "$dir")"
+  done
+  echo "cannot find readme" >&2
+  return 1
+}
+
 # Copy the absolute path of a file or directory to the clipboard.
 # Defaults to the current directory.
 copypath() {
