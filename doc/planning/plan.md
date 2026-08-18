@@ -2,10 +2,10 @@
 
 ## What's Next
 
-- **Next:** Task 2 — Delve/DAP debugging (Delta: Go Development Environment)
-- **Sub-doc:** (none)
+- **Next:** Task 1 — evaluate `jscpd` for the duplication layer (Delta: Code Metrics for Agents)
+- **Sub-doc:** [doc/code-metrics-for-agents.md](../code-metrics-for-agents.md)
 - **Blockers:** None
-- **Context:** [Checkpoint: Session 2026-08-02b](#checkpoint-session-2026-08-02b)
+- **Context:** [Checkpoint: Session 2026-08-18](#checkpoint-session-2026-08-18)
 
 ## Summary
 
@@ -15,11 +15,24 @@
 | | [2. Plan skill refinement](#task-2-plan-skill-refinement) | ✓ DONE |
 | [Delta: Plan Skill Iteration](#delta-plan-skill-iteration) | [1. Tweak plan skill based on continued use](#task-1-tweak-plan-skill-based-on-continued-use) | ✓ DONE |
 | | [2. Session timer loose ends](#task-2-session-timer-loose-ends) | TODO |
+| [Delta: Code Metrics for Agents](#delta-code-metrics-for-agents) | [1. Survey the tooling](#task-1-survey-the-tooling) | IN PROGRESS |
+| | [2. Decide packaging](#task-2-decide-packaging) | ✓ DONE |
+| | [3. Build the skill](#task-3-build-the-skill) | IN PROGRESS |
 | [Delta: Go Development Environment](#delta-go-development-environment) | [1. Go toolchain and nvim LSP](#task-1-go-toolchain-and-nvim-lsp) | ✓ DONE |
 | | [2. Delve/DAP debugging](#task-2-delvedap-debugging) | TODO |
 | [Delta: Permission Config Fixes](#delta-permission-config-fixes) | [1. Carve am-dotfiles-base out of the bin/ deny rule](#task-1-carve-am-dotfiles-base-out-of-the-bin-deny-rule) | TODO |
+| | [2. Extend the blocked git command list](#task-2-extend-the-blocked-git-command-list) | IN PROGRESS |
 | [Delta: Neovim LSP Reliability](#delta-neovim-lsp-reliability) | [1. Fix intermittent LSP attach](#task-1-fix-intermittent-lsp-attach) | ✓ DONE |
 | [Delta: Claude Instruction Refinements](#delta-claude-instruction-refinements) | [1. Prose commentary rule](#task-1-prose-commentary-rule) | ✓ DONE |
+| [Delta: Neovim Ergonomics](#delta-neovim-ergonomics) | [1. Prose wrap for markdown and text](#task-1-prose-wrap-for-markdown-and-text) | ✓ DONE |
+| | [2. File tree filters and cheatsheet](#task-2-file-tree-filters-and-cheatsheet) | ✓ DONE |
+| | [3. Window close key behaviour](#task-3-window-close-key-behaviour) | ✓ DONE |
+| | [4. Dockerfile treesitter injection bleed](#task-4-dockerfile-treesitter-injection-bleed) | ✓ DONE |
+| | [5. Mason ENOTCONN error](#task-5-mason-enotconn-error) | TODO |
+| [Delta: Shell Helpers](#delta-shell-helpers) | [1. plan](#task-1-plan) | ✓ DONE |
+| | [2. copypath](#task-2-copypath) | ✓ DONE |
+| | [3. readme](#task-3-readme) | ✓ DONE |
+| [Delta: Git Config Refinements](#delta-git-config-refinements) | [1. Exclude bots from git lol](#task-1-exclude-bots-from-git-lol) | ✓ DONE |
 
 Archived Deltas: see the [archive index](archive/index.md)
 
@@ -47,6 +60,36 @@ Archived Deltas: see the [archive index](archive/index.md)
 - TODO — `home/claude/hooks/plan-timer-resume.sh` (auto-resume on the next prompt) is written and tested but deliberately unregistered in `settings.json` — enable it if manual `/resume-plan` proves annoying; snippet is in the script header
 - TODO — Work out why `~/.claude/skills/plan-format` was never symlinked, which broke every plan skill's helper call with exit 127. `do.sh`'s `link_claude` globs `skills/*/` and should have created it — run `./do.sh link-claude` and check the result is consistent
 
+## Delta: Code Metrics for Agents
+
+Command-line tooling that gives a coding agent structural feedback about an unfamiliar
+codebase — size per file, per-function complexity, duplication — as a ranked report the
+agent reads and acts on. Research: `doc/code-metrics-for-agents.md`.
+
+### Task 1: Survey the tooling
+- ✓ DONE — `scc` (brew) verified: per-file JSON with `Code`/`Complexity`/`Location`. Its complexity column is a per-file branch-keyword count, not McCabe
+- ✓ DONE — Homebrew's `lizard` formula identified as an unrelated LZ4 compression tool, not the complexity analyser
+- ✓ DONE — Real `lizard` installed via `uv tool install lizard`; verified per-function CCN, thresholded Warnings block, `--csv`, and non-zero exit on breach
+- ✓ DONE — `codelimit` (brew) rejected: unit length only, no CCN, no working Swift support
+- TODO — Evaluate `jscpd` for the duplication layer
+- ✓ DONE — `doc/code-metrics-for-agents.md` written and indexed
+
+### Task 2: Decide packaging
+- ✓ DONE — Decided: no own formula. The skill documents `brew install scc` and `uv tool install lizard` as prerequisites, and a wrapper script checks for them and prints install instructions when missing
+
+### Task 3: Build the skill
+- ✓ DONE — `home/claude/skills/code-metrics/` — `SKILL.md` plus `code-metrics.sh`. Picked up automatically by `do.sh link-claude`
+- ✓ DONE — Wrapper resolves `lizard` via `$HOME/.local/bin` fallback, because `uv tool install` puts it somewhere absent from a non-interactive PATH — without this the prerequisite check reports it missing immediately after a successful install
+- ✓ DONE — Wrapper distinguishes the real lizard from Homebrew's compression tool of the same name by grepping `--help` for `cyclomatic`. Version strings do not discriminate: the compression tool prints a longer banner and the analyser prints a bare semver
+- ✓ DONE — lizard's non-zero exit on threshold breach is a finding, not an error; `set -e` is deliberately not used
+- ✓ DONE — Sections: shape, largest files, functions over CCN, functions over length, most parameters. Each ranked worst-first, capped by `--top`, with the threshold stated and an "N of M" count
+- ✓ DONE — Report goes to stdout only. Never written into the target tree, which is usually not the repo being worked in
+- ✓ DONE — No `-l` language mapping. lizard defaults to every language it knows; the translation layer was dropped as unnecessary
+- ✓ DONE — Explicit `-x` excludes for `node_modules`, `target`, `vendor`, `.build`, `build`, `dist`, `Pods`, `.venv`, `__pycache__`. scc respects `.gitignore`, lizard does not
+- ✓ DONE — Pure awk/sort over `scc --format csv` and `lizard --csv`; no jq or python dependency
+- ✓ DONE — Verified on `~/projects/ledgr` (Rust) and `~/projects/tilr` (Swift), plus the degraded path with an empty PATH
+- TODO — User to run `do.sh link-claude` to symlink the skill into `~/.claude/skills/`
+
 ## Delta: Go Development Environment
 
 ### Task 1: Go toolchain and nvim LSP
@@ -73,6 +116,12 @@ Archived Deltas: see the [archive index](archive/index.md)
 - TODO — Alternative considered and rejected: enumerating denies per-script (30+ scripts, and new ones would default to allowed)
 - TODO — Update repo `CLAUDE.md` to point at whichever path Claude should invoke
 
+### Task 2: Extend the blocked git command list
+- ✓ DONE — `git checkout` added to `home/claude/hooks/pre-tool-use-filter.sh`, in the destructive-git section alongside `reset --hard`, `rebase` and `clean -f`
+  - Verified blocked: `git checkout main`, `git checkout -- file`, `git checkout -b`, `cd /tmp && git checkout .`, bare `git checkout`
+  - Verified still allowed: `git status`, `git log`, `git diff`
+- TODO — Decide whether to also block `git switch` and `git restore` — the modern split of `checkout`, currently an unguarded route to the same destructive behaviour
+
 ## Delta: Neovim LSP Reliability
 
 ### Task 1: Fix intermittent LSP attach
@@ -93,20 +142,66 @@ Archived Deltas: see the [archive index](archive/index.md)
   - Explicit requests for opinion or critique override the default
 - ✓ DONE — Applied retroactively to the go-tutorial docs written this session
 
-## Checkpoint: Session 2026-06-18c
+## Delta: Neovim Ergonomics
 
-**What was completed this session:**
-- Added `Read(/private/tmp/*)` (single `*`) to allow list in `home/claude/settings.json` alongside the existing `Read(/private/tmp/**)` entry
-- Hypothesis: Claude Code's glob engine may not match `**` against files directly in a directory (`dir/**` → only `dir/subdir/file`, not `dir/file`)
+### Task 1: Prose wrap for markdown and text
+- ✓ DONE — `wrap` never applied to markdown despite a `FileType` autocmd existing
+  - Cause: `init.lua` requires `config.autocmds` after `config.lazy`, so for a file named on the command line the event has already fired — the same race as `doc/nvim-lsp-filetype-race.md`
+  - `text` was never handled at all
+  - Fixed with `config/nvim/after/ftplugin/markdown.lua` and `after/ftplugin/text.lua`; the runtime's ftplugin mechanism is registered before `init.lua` runs, so it is immune to the ordering
+  - Dead autocmd removed from `config/nvim/lua/config/autocmds.lua`
+  - Verified headlessly: `.md`/`.txt` wrap, `.go` does not, no leak between buffers in one window
 
-**State of the project:**
-Delta 1 and Task 2.1 complete. The `/tmp` permission prompt is still being investigated — single-star entry added as a diagnostic step. Next session should re-test `Read(/tmp/test-read.txt)` immediately; if it no longer prompts, the `**` theory is confirmed and `Read(/tmp/*)` should be added for symmetry. If it still prompts, investigate Ghostty TCC permissions or consider switching scratch space to `~/tmp`.
+### Task 2: File tree filters and cheatsheet
+- ✓ DONE — nvim-tree `filters` changed to `dotfiles = false` with `^\.git$` and `^\.DS_Store$` added to `filters.custom`; `git_ignored` left on
+  - Originally raised as untracked Go files being hidden; testing showed nvim-tree was never hiding them, and the user confirmed the directory had been misread
+  - Kept anyway as the stated preference: see gitignored files' names but not their contents, see dotfiles, see untracked and staged files
+- ✓ DONE — Three FILE TREE sections added to `config/key-help/nvim`, taken from a dump of the live buffer keymaps so they reflect the `on_attach` overrides
 
-**Immediate next priorities:**
-1. Re-test `Read(/tmp/test-read.txt)` at session start — confirm whether single-star fix resolves the prompt
-2. If confirmed: add `Read(/tmp/*)` for symmetry; update Implementation Notes
-3. If still prompting: investigate Ghostty Full Disk Access or switch to `~/tmp`
-4. Task 2.2 — Rewrite `README.md` to reflect current setup
+### Task 3: Window close key behaviour
+- ✓ DONE — `<C-w>q` remapped to `<C-w>c` in `config/nvim/lua/config/keymaps.lua`
+  - `<C-w>q` is `:quit` scoped to a window, so on the last window it exits nvim; `:close` raises `E444` instead
+  - Cheatsheet WINDOWS section updated, plus `:bd`
+
+### Task 4: Dockerfile treesitter injection bleed
+- ✓ DONE — Dockerfile instructions rendering as plain text from partway down the file
+  - Cause: nvim-treesitter's dockerfile `injections.scm` sets `injection.combined`, merging every `RUN` body into one bash tree parsed as a contiguous span, so bash `@variable.parameter` captures cover the `COPY`/`FROM`/`RUN` keywords in between and outrank `@keyword`
+  - Fixed with `config/nvim/after/queries/dockerfile/injections.scm` — a full replacement (no `;; extends`, since appending cannot remove a directive) with `injection.combined` dropped
+  - `dockerfile` added to `ensure_installed` in `treesitter.lua`
+  - Written up in `doc/nvim-dockerfile-injection-bleed.md`, indexed, and cross-linked from `doc/additional-customisation-of-nvim-treesitter.md`
+
+### Task 5: Mason ENOTCONN error
+- TODO — `Error executing callback: ENOTCONN` from `mason-core/async/init.lua:121` seen interactively; not reproduced
+  - Ruled out: registry is current (downloaded same day), network fine, all 11 `ensure_installed` servers present, `mason.log` has no entry, forced `mason-registry.update()` succeeds
+  - Line 121 is `error(err, 0)` in `exports.scope`; `ENOTCONN` is libuv for writing to an unconnected stream, consistent with a spawn race rather than a network failure
+  - Offered but not applied: `log_level = vim.log.levels.DEBUG` in `mason.setup()` to capture the next occurrence
+
+## Delta: Shell Helpers
+
+### Task 1: plan
+- ✓ DONE — `plan()` in `home/zshrc` opens the current project's plan in Marq
+  - Search order matches the `load-plan` skill: `doc/planning/plan.md`, `doc/plan.md`, `~/.planning/{project}/plan.md`
+  - Root from `git rev-parse --show-toplevel` falling back to `$PWD`, so it works from any subdirectory
+  - Implemented repo-local-first, diverging from the user's "global dir first" phrasing; flagged, not corrected
+
+### Task 2: copypath
+- ✓ DONE — `copypath()` in `home/zshrc` copies an absolute path to the clipboard
+  - Defaults to `.`; uses `printf '%s'` so no trailing newline reaches the clipboard; echoes the path
+  - `realpath` resolves symlinks, so paths under `~/.config` report their dotfiles location
+
+### Task 3: readme
+- ✓ DONE — `readme()` in `home/zshrc` opens the nearest README, walking upwards
+  - Stops at a git root and reports `could not find readme in this git repo`; with no repo anywhere it walks to `/` and reports `cannot find readme`
+  - Detects `.git` as a file as well as a directory, covering worktrees and submodules
+  - Chosen as a zshrc function rather than a `bin/` script, alongside `plan` and `copypath`
+
+## Delta: Git Config Refinements
+
+### Task 1: Exclude bots from git lol
+- ✓ DONE — `lol` alias in `home/gitconfig` now filters bot authors via `--perl-regexp` and a negative lookahead
+  - `\\[` is required in the config file — git rejects `\[` as a bad escape
+  - Excludes any `*[bot]` plus `dependabot`, `renovate`, `github-actions`, `semantic-release`; `Bob Botham` and `Abbot Smith` still show
+  - Confirmed the alias contains nothing work-specific, in response to a public-repo scrub question
 
 ## Checkpoint: Session 2026-06-18d
 
@@ -281,6 +376,28 @@ The timer supports pausing, and this session showed the failure mode — the pau
 2. Task 2 (Delta: Plan Skill Iteration) — run `./do.sh link-claude` and resolve the `plan-format` symlink question
 3. Task 1 (Delta: Permission Config Fixes) — carve `am-dotfiles-base` out of the `bin/` deny rule
 4. Task 1 (Delta: Statusline Refinement) — verify extra usage detection
+
+## Checkpoint: Session 2026-08-18
+
+**What was completed this session:**
+- Three new Deltas, all from unplanned work: Neovim Ergonomics, Shell Helpers, Git Config Refinements
+- Two Neovim startup-ordering bugs of the same family fixed — markdown/text `wrap` never applying (FileType fires before `config.autocmds` is required), and the Dockerfile keyword highlighting lost to a combined bash injection. Both fixed in `after/`, which the runtime loads independently of `init.lua` ordering
+- `doc/nvim-dockerfile-injection-bleed.md` written, indexed, and cross-linked from the treesitter customisation doc, which gained a fifth key lesson on `;; extends` appending versus its absence replacing
+- Three zsh functions added: `plan`, `copypath`, `readme`
+- `git checkout` added to the pre-tool-use filter's blocked list; `git switch`/`git restore` raised as the remaining gap and left open
+- `git lol` now excludes bot authors; confirmed the alias holds nothing work-specific
+- nvim-tree filters switched to showing dotfiles while still hiding gitignored files, and the cheatsheet gained three FILE TREE sections plus a corrected WINDOWS section
+- Mason `ENOTCONN` investigated and not reproduced — logged as an open Task rather than closed
+
+**State of the project:**
+No pre-existing plan TODO was completed this session — the fourth session running where the work fell outside the tracked Deltas. The four older Deltas are untouched: Delve/DAP, the `bin/` deny-rule contradiction, the plan-skill timer loose ends, and statusline extra-usage detection. Everything built this session was verified empirically rather than by inspection, following the pattern established during the LSP race work. Two items are deliberately left open: the Mason error and the `git switch`/`git restore` decision.
+
+**Immediate next priorities:**
+1. Task 2 (Delta: Go Development Environment) — Delve/DAP debugging; still no DAP plumbing in the config
+2. Task 2 (Delta: Permission Config Fixes) — decide on `git switch` and `git restore`
+3. Task 5 (Delta: Neovim Ergonomics) — Mason ENOTCONN, if it recurs
+4. Task 1 (Delta: Permission Config Fixes) — carve `am-dotfiles-base` out of the `bin/` deny rule
+5. Task 2 (Delta: Plan Skill Iteration) — session timer loose ends, now more pressing given the timer overrun below
 
 ---
 
