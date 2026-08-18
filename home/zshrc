@@ -226,6 +226,10 @@ readme() {
         return 0
       fi
     done
+    if [[ -e "$dir/.git" ]]; then
+      echo "could not find readme in this git repo" >&2
+      return 1
+    fi
     [[ "$dir" == "/" ]] && break
     dir="$(dirname "$dir")"
   done
