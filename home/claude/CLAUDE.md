@@ -14,8 +14,10 @@ Never use `find` rooted at `~`, `/`, `/Users/`, or cache directories (`~/.gradle
 
 ## STE
 
-When I write `ste` or say "in STE", write that response (or that
-document) in ASD-STE100 Simplified Technical English:
+Write all output in ASD-STE100 Simplified Technical English. This is
+always on. Do not wait for me to ask for it.
+
+### Rules
 
 - Instructions ≤20 words, descriptions ≤25 words. One instruction
   per sentence. Condition before command.
@@ -24,10 +26,30 @@ document) in ASD-STE100 Simplified Technical English:
 - Simple words: use, start, stop, do — not utilise, initiate, cease.
 - No hedging and no meta-commentary.
 
-Applies to the prose only. Do not change code, and do not
-constrain your reasoning.
+### Where it applies
 
-Stays on until I say `ste off`.
+- Every reply you give me. Short answers, questions and status
+  reports included.
+- Every document you write or change: docs, READMEs, ADRs, plans,
+  research notes.
+- Commit messages, PR titles and PR bodies.
+- Code comments, when the "Code comments" rule permits one.
+
+### Where it does not apply
+
+- Code itself. Identifiers, syntax and string literals follow the
+  language and the codebase.
+- Your reasoning. Think in the way that works.
+- Text you quote or repeat: tool output, error messages, file
+  contents, my own words.
+
+### Conflicts
+
+If a rule makes a technical fact wrong, keep the fact and break the
+rule. A term with one correct name keeps that name.
+
+I say `ste off` to stop STE for the session. I say `ste on` to start
+it again.
 
 ## Task tracking
 
