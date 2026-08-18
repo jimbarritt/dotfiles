@@ -9,6 +9,7 @@
 set -euo pipefail
 
 PRESENTATION_FILE="$HOME/.config/ghostty/presentation"
+GITCONFIG_PRESENTATION="$HOME/.gitconfig-presentation"
 
 DARK_NVIM_COLORSCHEME="green-tinted"
 LIGHT_NVIM_COLORSCHEME="github-light"
@@ -36,6 +37,24 @@ tmux_set_theme() {
     fi
 }
 
+git_delta_set_theme() {
+    local mode="$1"
+    if [ "$mode" = "light" ]; then
+        cat > "$GITCONFIG_PRESENTATION" <<'EOF'
+# Presentation mode overrides (managed by bin/presentation-mode)
+[delta]
+	light = true
+	syntax-theme = GitHub
+	minus-style = "syntax #f6dee0"
+	minus-emph-style = "syntax #eebcc0"
+	plus-style = "syntax #ddefdd"
+	plus-emph-style = "syntax #b8dcb8"
+EOF
+    else
+        rm -f "$GITCONFIG_PRESENTATION"
+    fi
+}
+
 nvim_set_colorscheme() {
     local scheme="$1"
     local bg="$2"
@@ -57,6 +76,7 @@ adjust-cell-height = 9
 EOF
     ghostty_reload
     tmux_set_theme "light"
+    git_delta_set_theme "light"
     nvim_set_colorscheme "$LIGHT_NVIM_COLORSCHEME" "light"
     echo "Switched to presentation mode (light)"
 }
@@ -65,6 +85,7 @@ switch_to_dark() {
     rm -f "$PRESENTATION_FILE"
     ghostty_reload
     tmux_set_theme "dark"
+    git_delta_set_theme "dark"
     nvim_set_colorscheme "$DARK_NVIM_COLORSCHEME" "dark"
     echo "Switched to normal mode (dark)"
 }

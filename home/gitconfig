@@ -31,17 +31,17 @@
 [delta]
   # Appearance
   navigate = true    # Use n/N to navigate between diff sections
-  light = false      # Set to true if you use a light terminal theme
+  light = false      # Dark mode; presentation-mode overrides via ~/.gitconfig-presentation
   side-by-side = false  # Set to true if you prefer side-by-side diffs
   line-numbers = true
     
   syntax-theme = Monokai Extended
   
   # Minimal visual noise
-  minus-style = "syntax #3f0001"
-  minus-emph-style = "syntax #901011"
-  plus-style = "syntax #002800"
-  plus-emph-style = "syntax #006000"
+  minus-style = "syntax #51161a"
+  minus-emph-style = "syntax #8f2027"
+  plus-style = "syntax #17552a"
+  plus-emph-style = "syntax #1f7034"
 
 [merge]
     conflictstyle = diff3
@@ -67,6 +67,10 @@
       detachedHead = false
       pushUpdateRejected = false
       pushNonFFCurrent   = false
+
+# Light-mode delta overrides, written by bin/presentation-mode
+[include]
+    path = ~/.gitconfig-presentation
 
 # Include work config if it exists (checked last, so it overrides)
 [include]
