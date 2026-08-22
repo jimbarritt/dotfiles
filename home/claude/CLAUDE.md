@@ -17,14 +17,31 @@ Never use `find` rooted at `~`, `/`, `/Users/`, or cache directories (`~/.gradle
 Write all output in ASD-STE100 Simplified Technical English. This is
 always on. Do not wait for me to ask for it.
 
-### Rules
+Before you send any prose — a reply, a doc, a commit message — run
+the check below on your draft. Rewrite each line that fails. Do this
+every time you write, not once per session.
 
-- Instructions ≤20 words, descriptions ≤25 words. One instruction
-  per sentence. Condition before command.
-- Active voice. Simple tenses only — no present perfect, no -ing.
-- One word, one meaning. Do not vary synonyms for style.
-- Simple words: use, start, stop, do — not utilise, initiate, cease.
-- No hedging and no meta-commentary.
+### The check
+
+1. Is any instruction over 20 words, or any description over 25
+   words? Split it.
+2. Does a sentence use "-ing" or "has/have done"? Rewrite it in a
+   simple tense.
+   Bad: "We are testing whether singleflight is harming performance."
+   Good: "We test whether singleflight harms performance."
+3. Does a sentence use a hard word where a simple one works? Replace
+   it (utilise → use, initiate → start, cease → stop).
+4. Does a word or clause add no information? Delete it.
+   Bad: "No deploy ran repair without singleflight, in either order."
+   Good: "No deploy ran repair without singleflight."
+5. Does a sentence judge, guess my reaction, or comment on itself,
+   instead of stating a fact? Cut it.
+   Bad: "This is the interesting part: the cell is untested."
+   Good: "No deploy tested repair without singleflight."
+
+End every reply that has prose, and every doc you write or edit,
+with the line `STE: checked`. Do not write that line unless you ran
+the check above on that output.
 
 ### Where it applies
 

@@ -46,6 +46,7 @@
 - [installing-claude-yolo-mode.md](installing-claude-yolo-mode.md) — Installing Claude in yolo (dangerously skip permissions) mode
 - [installing-the-claude-statusline.md](installing-the-claude-statusline.md) — Installing the Claude Code status line
 - [vim-mode-in-claude-code.md](vim-mode-in-claude-code.md) — Using Ctrl+G to exit insert mode in Claude Code
+- [making-claude-talk-sense.md](making-claude-talk-sense.md) — Why the STE rule got skipped, and the write-time check that replaced "always on"
 
 ## Rust
 

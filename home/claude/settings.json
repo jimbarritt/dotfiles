@@ -36,7 +36,7 @@
       "Bash(git stash *)"
     ]
   },
-  "model": "opus",
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -85,7 +85,7 @@
   },
   "enabledPlugins": {},
   "effortLevel": "medium",
-  "advisorModel": "opus",
+  "advisorModel": "sonnet",
   "autoUpdatesChannel": "latest",
   "minimumVersion": "2.1.81",
   "tui": "fullscreen",
