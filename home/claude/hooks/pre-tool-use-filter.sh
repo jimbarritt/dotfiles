@@ -74,6 +74,10 @@ if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+checkout(\s|$)'; then
   deny "git checkout is blocked — discards uncommitted changes and switches branches"
 fi
 
+if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+switch(\s|$)'; then
+  deny "git switch is blocked — switches branches and can discard uncommitted changes"
+fi
+
 if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+branch\s+-[a-zA-Z]*D'; then
   deny "git branch -D is blocked — force-deletes branches"
 fi

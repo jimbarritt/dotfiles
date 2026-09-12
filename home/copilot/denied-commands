@@ -9,5 +9,13 @@ git push -f:*
 git push --force-with-lease:*
 git add:*
 git stash:*
+git switch:*
+git checkout:*
+git rebase:*
+git reset --hard:*
+git clean -f:*
+git commit:*
+git branch -D:*
+git tag -d:*
 ./do.sh:*
 do.sh:*

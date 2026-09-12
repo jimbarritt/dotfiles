@@ -2,10 +2,10 @@
 
 ## What's Next
 
-- **Next:** Task 1 — evaluate `jscpd` for the duplication layer (Delta: Code Metrics for Agents)
-- **Sub-doc:** [doc/code-metrics-for-agents.md](../code-metrics-for-agents.md)
+- **Next:** Task 3 — Brighten the gutter line numbers (Delta: Diff Viewer Readability)
+- **Sub-doc:** (none)
 - **Blockers:** None
-- **Context:** [Checkpoint: Session 2026-08-18](#checkpoint-session-2026-08-18)
+- **Context:** [Checkpoint: Session 2026-08-22](#checkpoint-session-2026-08-22)
 
 ## Summary
 
@@ -15,9 +15,12 @@
 | | [2. Plan skill refinement](#task-2-plan-skill-refinement) | ✓ DONE |
 | [Delta: Plan Skill Iteration](#delta-plan-skill-iteration) | [1. Tweak plan skill based on continued use](#task-1-tweak-plan-skill-based-on-continued-use) | ✓ DONE |
 | | [2. Session timer loose ends](#task-2-session-timer-loose-ends) | TODO |
+| [Delta: Diff Viewer Readability](#delta-diff-viewer-readability) | [1. Retune diff colours for both themes](#task-1-retune-diff-colours-for-both-themes) | IN PROGRESS |
+| | [2. Fix the hunk header](#task-2-fix-the-hunk-header) | IN PROGRESS |
+| | [3. Brighten the gutter line numbers](#task-3-brighten-the-gutter-line-numbers) | IN PROGRESS |
 | [Delta: Code Metrics for Agents](#delta-code-metrics-for-agents) | [1. Survey the tooling](#task-1-survey-the-tooling) | IN PROGRESS |
 | | [2. Decide packaging](#task-2-decide-packaging) | ✓ DONE |
-| | [3. Build the skill](#task-3-build-the-skill) | IN PROGRESS |
+| | [3. Build the skill](#task-3-build-the-skill) | ✓ DONE |
 | [Delta: Go Development Environment](#delta-go-development-environment) | [1. Go toolchain and nvim LSP](#task-1-go-toolchain-and-nvim-lsp) | ✓ DONE |
 | | [2. Delve/DAP debugging](#task-2-delvedap-debugging) | TODO |
 | [Delta: Permission Config Fixes](#delta-permission-config-fixes) | [1. Carve am-dotfiles-base out of the bin/ deny rule](#task-1-carve-am-dotfiles-base-out-of-the-bin-deny-rule) | TODO |
@@ -60,6 +63,37 @@ Archived Deltas: see the [archive index](archive/index.md)
 - TODO — `home/claude/hooks/plan-timer-resume.sh` (auto-resume on the next prompt) is written and tested but deliberately unregistered in `settings.json` — enable it if manual `/resume-plan` proves annoying; snippet is in the script header
 - TODO — Work out why `~/.claude/skills/plan-format` was never symlinked, which broke every plan skill's helper call with exit 127. `do.sh`'s `link_claude` globs `skills/*/` and should have created it — run `./do.sh link-claude` and check the result is consistent
 
+## Delta: Diff Viewer Readability
+
+git-delta rendering on the green-tinted themes. Research: `doc/gitconfig.md`.
+
+### Task 1: Retune diff colours for both themes
+
+- ✓ DONE — Root cause: `home/gitconfig` hardcoded dark-only delta colours, and `bin/presentation-mode` switched Ghostty, tmux and Neovim but never delta
+- ✓ DONE — Light overlay `~/.gitconfig-presentation`, written and removed by `bin/presentation-mode`, included from `home/gitconfig` after the `[delta]` block and before the `~/.gitconfig-work` include
+- ✓ DONE — Dark colours retuned. The old backgrounds sat within 1-4 luminance points of the terminal background `#0a1f0a`, so whole added and removed lines were invisible
+- ✓ DONE — New dark values: minus 40, minus-emph 65, plus 61, plus-emph 80 against a background of 22. Additions are brighter than deletions because green on green blends
+- ✓ DONE — `plus-emph` capped at 80 to stay clear of Monokai Extended's dimmest foreground `#f92672` at 109
+- ✓ DONE — Verified by measuring the colours delta emits, in both modes
+- TODO — Light mode is verified by number only. Check it on screen at the next `presentation-mode` switch
+
+### Task 2: Fix the hunk header
+
+- ✓ DONE — `hunk-header-style = syntax` hides the line number. The number is the first line of the hunk and the text is the context from a line above it, so the pair misleads
+- ✓ DONE — Confirmed delta accepts only `file` and `line-number` as special attributes. A range such as `14->21` is not possible
+- ✓ DONE — `home/gitattributes` added, linked as `~/.gitattributes` by `do.sh`, with `core.attributesFile` set
+- ✓ DONE — `*.md` uses git's built-in `markdown` driver, so the header shows the enclosing heading instead of a body sentence
+- ✓ DONE — `*.txt` uses a `[diff "nocontext"]` driver with `xfuncname = "$^"`, which never matches. Delta then drops the header box
+- TODO — Decide whether to enable git's built-in drivers for go, rust, python, java and cpp
+
+### Task 3: Brighten the gutter line numbers
+
+- ✓ DONE — `line-numbers-zero-style` set to `#5a755a`, luminance 105. The delta default `#444444` at 68 is a neutral grey and reads flat on a green background
+- ✓ DONE — `line-numbers-minus-style` and `line-numbers-plus-style` set to bold `#ff7b81` and bold `#7ee787`, luminance 163 and 188
+- ✓ DONE — Verified in the escape codes delta emits
+- TODO — Document the gutter styles in `doc/gitconfig.md` once the user confirms the values
+- TODO — Decide whether the light overlay needs the same gutter treatment
+
 ## Delta: Code Metrics for Agents
 
 Command-line tooling that gives a coding agent structural feedback about an unfamiliar
@@ -88,7 +122,7 @@ agent reads and acts on. Research: `doc/code-metrics-for-agents.md`.
 - ✓ DONE — Explicit `-x` excludes for `node_modules`, `target`, `vendor`, `.build`, `build`, `dist`, `Pods`, `.venv`, `__pycache__`. scc respects `.gitignore`, lizard does not
 - ✓ DONE — Pure awk/sort over `scc --format csv` and `lizard --csv`; no jq or python dependency
 - ✓ DONE — Verified on `~/projects/ledgr` (Rust) and `~/projects/tilr` (Swift), plus the degraded path with an empty PATH
-- TODO — User to run `do.sh link-claude` to symlink the skill into `~/.claude/skills/`
+- ✓ DONE — Skill symlinked into `~/.claude/skills/code-metrics`; verified registered and smoke-tested end to end against `~/projects/quiq`
 
 ## Delta: Go Development Environment
 
@@ -202,22 +236,6 @@ agent reads and acts on. Research: `doc/code-metrics-for-agents.md`.
   - `\\[` is required in the config file — git rejects `\[` as a bad escape
   - Excludes any `*[bot]` plus `dependabot`, `renovate`, `github-actions`, `semantic-release`; `Bob Botham` and `Abbot Smith` still show
   - Confirmed the alias contains nothing work-specific, in response to a public-repo scrub question
-
-## Checkpoint: Session 2026-06-18d
-
-**What was completed this session:**
-- Diagnosed root cause of persistent `/tmp` permission prompts: Claude Code uses gitignore-spec anchoring where a single `/` prefix means "relative to project root", not filesystem root — absolute paths require `//` prefix
-- Fixed `settings.json`: `Read(/tmp/**)` → `Read(//tmp/**)`, `Read(/private/tmp/**)` → `Read(//private/tmp/**)`, dropped redundant single-star entry
-- Added `Write(//tmp/**)` and `Write(//private/tmp/**)` for symmetry
-- Updated implementation notes with `//` anchoring rule
-
-**State of the project:**
-Delta 1 and Task 2.1 complete. The `/tmp` permission prompt is now fully resolved — reads and writes to `/tmp` work without prompting. Implementation notes updated with the `//` anchoring rule so the footgun is documented.
-
-**Immediate next priorities:**
-1. Task 2.2 — Rewrite `README.md` to reflect current setup
-2. Task 3.1 — Verify extra usage detection in statusline
-3. Task 3.2 — Review plan skill behaviour after sustained use
 
 ## Checkpoint: Session 2026-07-01
 
@@ -398,6 +416,29 @@ No pre-existing plan TODO was completed this session — the fourth session runn
 3. Task 5 (Delta: Neovim Ergonomics) — Mason ENOTCONN, if it recurs
 4. Task 1 (Delta: Permission Config Fixes) — carve `am-dotfiles-base` out of the `bin/` deny rule
 5. Task 2 (Delta: Plan Skill Iteration) — session timer loose ends, now more pressing given the timer overrun below
+
+## Checkpoint: Session 2026-08-22
+
+**What was completed this session:**
+- The `code-metrics` skill is live. `do.sh link-claude` ran, the skill registers, and it smoke-tested clean against `~/projects/quiq`
+- New Delta from unplanned work: Diff Viewer Readability. Three Tasks, all started, none fully closed
+- git-delta diff colours were broken in both themes. Light mode had no support at all, and the dark backgrounds sat within 1-4 luminance points of the terminal background
+- `bin/presentation-mode` now switches delta as well as Ghostty, tmux and Neovim, through a `~/.gitconfig-presentation` overlay
+- The hunk header line number is hidden. It named the first line of the hunk while the text came from a line above it
+- `home/gitattributes` added, with git's `markdown` driver for `.md` and a never-matching `xfuncname` for `.txt`. Markdown headers now show the enclosing heading; text files show no header at all
+- Gutter line numbers brightened: context from luminance 68 to 105, changed lines to bold at 163 and 188
+- The STE rule in `home/claude/CLAUDE.md` changed from opt-in to always on, and now covers replies, documents, commit messages, PR text and code comments
+- `doc/code-metrics-for-agents.md`, `doc/gitconfig.md`, `doc/green-tinted-light-theme.md` and `README.md` all updated
+
+**State of the project:**
+Two errors this session were caught by the user, not by inspection. The first fixed light mode when dark was the mode in use. The second left the added-line background too close to the terminal background. Both were found by rendering a real diff and measuring the colours delta emits. Every colour value in this Delta is now backed by a luminance measurement rather than by eye. The four older Deltas remain untouched: Delve/DAP, the `bin/` deny-rule contradiction, the plan-skill timer loose ends, and statusline extra-usage detection.
+
+**Immediate next priorities:**
+1. Task 3 (Delta: Diff Viewer Readability) — confirm the gutter values, then document them
+2. Task 1 (Delta: Diff Viewer Readability) — check light mode on screen at the next `presentation-mode` switch
+3. Task 2 (Delta: Diff Viewer Readability) — decide on git's built-in drivers for go, rust and python
+4. Task 1 (Delta: Code Metrics for Agents) — evaluate `jscpd` for the duplication layer
+5. Task 2 (Delta: Go Development Environment) — Delve/DAP debugging, still untouched after five sessions
 
 ---
 

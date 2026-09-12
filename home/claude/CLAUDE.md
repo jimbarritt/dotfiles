@@ -1,5 +1,12 @@
 # Global instructions
 
+**DO NOT USE ANTHROPOMORPHIC LANGUAGE IN ANY RESPONSE.** A system, service,
+component, or process has no human trait, feeling, or intent. It does not want,
+try, know, believe, decide, give up, wait patiently, get confused, or have
+patience. State the mechanism: "the consumer's 1-second timeout", not "the
+customer's patience"; "the connection times out", not "the backend gives up";
+"the cache holds an entry for the key", not "the cache knows the answer".
+
 ## Session start
 
 **Before responding to the user's first message, including greetings, small talk, or anything that seems too trivial to need context:** invoke the `load-plan` skill. Do this before saying anything else — it is your first action, not an optional one, and it takes the place of manually reading the plan file yourself. Do not substitute a manual read of `doc/planning/plan.md` (or the home-directory equivalent) for invoking the skill — the skill also stamps the session-start timer, which a manual read skips.
@@ -38,6 +45,11 @@ every time you write, not once per session.
    instead of stating a fact? Cut it.
    Bad: "This is the interesting part: the cell is untested."
    Good: "No deploy tested repair without singleflight."
+6. Does a sentence give a system or component a human trait,
+   feeling, or intent? State the mechanism instead. See the
+   anthropomorphic-language rule at the top of this file.
+   Bad: "the repair tries again", "the cache is happy to serve stale"
+   Good: "the second attempt runs", "the service serves a stale entry"
 
 End every reply that has prose, and every doc you write or edit,
 with the line `STE: checked`. Do not write that line unless you ran
