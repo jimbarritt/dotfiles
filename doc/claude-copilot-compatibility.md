@@ -39,6 +39,39 @@ description: What the skill does and when to use it.
 
 Claude Code accepts the same frontmatter, so adding it costs nothing on the Claude side. All skills in `home/claude/skills/` now carry it — **any new skill must include it too**, or it will work in Claude Code but silently fail to load in Copilot.
 
+### Frontmatter values must be the right YAML *type*
+
+Unknown keys are tolerated — Copilot ignores `model:`, `bogus-key:`, and anything else it doesn't recognise. What it will **not** tolerate is a key it *does* recognise carrying the wrong YAML type. A type mismatch rejects the entire skill.
+
+The trap in practice is unquoted square brackets. This is the conventional way to write an argument hint in Claude Code, and it is silently fatal in Copilot:
+
+```yaml
+argument-hint: [week-start-date]     # ✗ parses as a YAML list -> skill rejected
+argument-hint: "[week-start-date]"   # ✓ parses as a string    -> skill loads
+```
+
+YAML flow-sequence syntax means `[week-start-date]` is the list `["week-start-date"]`, not the string `[week-start-date]`. Copilot expects a string, gets a list, and drops the skill. The same applies to any value beginning with `[`, `{`, `*`, `&`, `!`, or `%` — quote them.
+
+**The failure is close to invisible.** All you get on startup is:
+
+```
+Failed to load 1 skill. Run /skills for more details.
+```
+
+There is no error in `~/.copilot/logs/`, and nothing names the offending file. Diagnosing it means bisecting the skill set.
+
+Fastest way to find the culprit — the debug log records a count, so compare it against how many skills you expect:
+
+```sh
+copilot --log-level all --no-color -p "reply with just: ok" >/dev/null 2>&1
+grep -o "Plugin activation \[skills\].*" "$(ls -t ~/.copilot/logs/process-*.log | head -1)"
+# Plugin activation [skills]: fingerprint=..., plugins=0, loaded=13
+```
+
+Move skills out one at a time and re-run until `loaded=` goes up.
+
+**Applies to `.claude/commands/` too.** Copilot reads Claude Code's slash-command files as skills, so a command file written for Claude Code with an unquoted `argument-hint` will load in Claude and be rejected by Copilot. Quoting it satisfies both.
+
 ### Where Copilot finds skills
 
 Copilot looks for personal (cross-project) skills in `~/.copilot/skills/` or `~/.agents/skills/`, and per-repo skills in `.github/skills/`, `.claude/skills/`, or `.agents/skills/`.

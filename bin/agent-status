@@ -1,0 +1,88 @@
+#!/usr/bin/env sh
+#
+# agent-status — report what a coding agent is doing, in the tmux status line.
+#
+# Each session carries one state. bin/tmux-session-list draws it beside the
+# session name, so a glance at the status bar tells you which session is
+# working and which one has something for you.
+#
+#   agent-status busy        the agent is working
+#   agent-status attention   the agent has something for you
+#   agent-status idle        nothing outstanding
+#   agent-status seen        you are looking at this session now
+#   agent-status focus in|out  track whether the terminal has focus
+#   agent-status get         print the current state
+#
+# The state is a tmux session option, @agent_state. A session with no option
+# reads as idle.
+#
+# attention downgrades to idle while you are looking at the session, so a turn
+# that ends in front of you never leaves a dot to clear. tmux hooks call
+# `seen` when you switch session or come back to the terminal.
+#
+# Call it from a Claude Code or Copilot CLI hook. Both feed the hook JSON on
+# stdin, which is drained and discarded.
+
+set -u
+
+OPT=@agent_state
+FOCUS=@terminal_focused
+
+command -v tmux >/dev/null 2>&1 || exit 0
+[ -n "${TMUX:-}" ] || exit 0
+
+# Inside a tmux hook there is no TMUX_PANE, so tmux resolves its own target.
+session_here() {
+  if [ -n "${TMUX_PANE:-}" ]; then
+    tmux display-message -p -t "$TMUX_PANE" '#{session_name}' 2>/dev/null
+  else
+    tmux display-message -p '#{session_name}' 2>/dev/null
+  fi
+}
+
+# A client shows this session, and the terminal itself has focus. An unset
+# focus flag counts as focused, so a missing hook never leaves stale dots.
+watching() {
+  attached=$(tmux display-message -p -t "${TMUX_PANE:-}" '#{session_attached}' 2>/dev/null || echo 0)
+  [ "${attached:-0}" -gt 0 ] || return 1
+  [ "$(tmux show-options -gqv "$FOCUS" 2>/dev/null)" != "0" ]
+}
+
+apply() {
+  _session=$(session_here) || exit 0
+  [ -n "$_session" ] || exit 0
+  _current=$(tmux show-options -t "$_session" -qv "$OPT" 2>/dev/null)
+  [ "$_current" = "$1" ] && exit 0
+  if [ "$1" = "idle" ]; then
+    tmux set-option -t "$_session" -u "$OPT" 2>/dev/null
+  else
+    tmux set-option -t "$_session" "$OPT" "$1" 2>/dev/null
+  fi
+  # The status line otherwise waits for the next status-interval tick.
+  tmux refresh-client -S 2>/dev/null
+}
+
+state="${1:-}"
+case "$state" in
+  busy|idle) ;;
+  attention) watching && state=idle ;;
+  seen) state=idle ;;
+  get)
+    tmux show-options -t "$(session_here)" -qv "$OPT" 2>/dev/null
+    exit 0
+    ;;
+  focus)
+    case "${2:-}" in
+      in)  tmux set-option -g "$FOCUS" 1 2>/dev/null; apply idle ;;
+      out) tmux set-option -g "$FOCUS" 0 2>/dev/null ;;
+    esac
+    exit 0
+    ;;
+  *) printf 'usage: agent-status busy|attention|idle|seen|focus|get\n' >&2; exit 2 ;;
+esac
+
+# A hook that never reads its pipe can block the agent.
+[ -t 0 ] || cat >/dev/null 2>&1
+
+apply "$state"
+exit 0

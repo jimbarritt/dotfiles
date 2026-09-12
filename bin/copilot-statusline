@@ -1,0 +1,21 @@
+#!/bin/sh
+# Custom status line item for GitHub Copilot CLI.
+# Wired up via the statusLine.command setting in ~/.copilot/settings.json.
+#
+# Marks whether the session sits in a repository's main tree or in a linked
+# git worktree, and names it. A session in a worktree must not be mistaken
+# for one in the main tree.
+
+root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+[ -n "$root" ] || exit 0
+
+name=$(basename "$root")
+
+# In a linked worktree, .git is a file holding a gitdir: pointer.
+# In the main tree it is a directory.
+if [ -f "$root/.git" ]; then
+  main=$(git worktree list 2>/dev/null | head -1 | awk '{print $1}')
+  printf '\033[33m⑂ %s\033[0m \033[2mof %s\033[0m' "$name" "$(basename "$main")"
+else
+  printf '\033[2m⌂ %s main tree\033[0m' "$name"
+fi

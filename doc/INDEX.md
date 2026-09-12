@@ -10,12 +10,14 @@
 ## Terminal & Tmux
 
 - [ghostty-setup.md](ghostty-setup.md) — Ghostty terminal configuration
+- [agent-status-in-tmux.md](agent-status-in-tmux.md) — A dot per tmux session showing whether its coding agent is idle, working, or waiting for you
 - [tmux-config.md](tmux-config.md) — Tmux configuration
 - [tmux_cheatsheet.md](tmux_cheatsheet.md) — Tmux keybinding cheatsheet
 
 ## Git
 
 - [gitconfig.md](gitconfig.md) — Git configuration
+- [git-worktrees-and-rebasing.md](git-worktrees-and-rebasing.md) — `git wt`, `git rebase-main`, and the settings both need
 - [git-prompt-async-fix.md](git-prompt-async-fix.md) — Oh-My-Zsh async git prompt fix
 - [git-rewrite-author.md](git-rewrite-author.md) — Rewriting git commit authors
 - [git-lol-column-padding.md](git-lol-column-padding.md) — Why `git lol` printed blank lines, and the `%<()` padding rules

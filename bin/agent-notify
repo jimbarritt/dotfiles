@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+#
+# agent-notify — tell macOS that a coding agent is waiting for you.
+#
+# Called from a Claude Code or Copilot CLI hook. Both pass their event as JSON
+# on stdin; neither payload is needed beyond an optional message, so stdin is
+# read and mostly discarded.
+#
+#   agent-notify <agent> <reason>
+#
+#     agent    Claude | Copilot
+#     reason   short line shown in the notification body
+#
+# The notification names the tmux session, so you know where to go back to.
+# Set AGENT_NOTIFY=0 to silence it.
+
+set -uo pipefail
+
+[ "${AGENT_NOTIFY:-1}" = "0" ] && exit 0
+
+agent="${1:-Agent}"
+reason="${2:-is waiting for you}"
+
+# Hooks are fed JSON on stdin. Drain it so the caller never blocks on a pipe.
+[ -t 0 ] || cat >/dev/null 2>&1
+
+# Where to go back to. A tmux session if there is one, otherwise the directory.
+location=""
+if [ -n "${TMUX:-}" ] && command -v tmux >/dev/null 2>&1; then
+  location=$(tmux display-message -p -t "${TMUX_PANE:-}" '#{session_name}' 2>/dev/null || true)
+fi
+
+project=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+
+if [ -n "$location" ]; then
+  title="tmux: $location"
+  subtitle="$agent · $project"
+else
+  title="$agent"
+  subtitle="$project"
+fi
+
+# osascript takes the three strings as arguments, so a quote in a branch name
+# or a directory name cannot break out of the script.
+osascript \
+  -e 'on run argv' \
+  -e 'display notification (item 3 of argv) with title (item 1 of argv) subtitle (item 2 of argv) sound name "Ping"' \
+  -e 'end run' \
+  "$title" "$subtitle" "$reason" >/dev/null 2>&1
+
+exit 0

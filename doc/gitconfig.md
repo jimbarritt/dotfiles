@@ -39,13 +39,14 @@ Full reference: [git-config documentation](https://git-scm.com/docs/git-config)
     p  = push -q
     serve = !git daemon --reuseaddr --verbose  --base-path=. --export-all ./.git
     lol = !git log --reverse --format='%C(yellow) %h %Creset %<(10)%an %<(12)%cd %<(80,trunc)%s' --date=format:'%y-%m-%d %H:%M' -15
+    rebase-main = !git pull --rebase origin main
 
 [advice]
     statusHints = false
     detachedHead = false
 
 [push]
-    default = matching
+    default = simple
 
 [core]
     pager = delta
@@ -69,6 +70,12 @@ Full reference: [git-config documentation](https://git-scm.com/docs/git-config)
     minus-emph-style = "syntax #8f2027"
     plus-style = "syntax #17552a"
     plus-emph-style = "syntax #1f7034"
+
+[rebase]
+    autoStash = true
+
+[rerere]
+    enabled = true
 
 [merge]
     conflictstyle = diff3
@@ -132,6 +139,7 @@ Shortcuts for common commands. Aliases prefixed with `!` run shell commands rath
 | `p`   | `push -q` | Quiet push — suppresses the remote tracking info, just shows errors if any |
 | `serve` | `git daemon ...` | Serves the repo over the git protocol on your local machine, useful for quick local sharing |
 | `lol` | `git log ...` | A compact, coloured one-line log of the last 15 commits with author, date, and truncated subject |
+| `rebase-main` | `git pull --rebase origin main` | Fetch `main` and replay the current branch on top of it. See [git-worktrees-and-rebasing.md](git-worktrees-and-rebasing.md) |
 
 Note: you can't alias `commit` itself — git always runs built-in commands before checking aliases.
 
@@ -153,9 +161,16 @@ Other advice keys worth knowing about (set to `false` to silence):
 
 ### `[push]`
 
-`default = matching` pushes the current branch to a remote branch of the same name, but only if that remote branch already exists. This is the pre-Git-2.0 default; `simple` is now the upstream default (pushes only the current tracking branch).
+`default = simple` pushes the current branch only. The older `matching` pushes every local branch that has a same-named branch on the remote, so a bare `git push` from a feature branch also pushes `main`.
 
 - [push.default](https://git-scm.com/docs/git-config#Documentation/git-config.txt-pushdefault)
+
+### `[rebase]` and `[rerere]`
+
+`rebase.autoStash = true` stashes uncommitted work before a rebase and restores it after. `rerere.enabled = true` records a conflict resolution and replays it when the same conflict appears again. Both are covered in [git-worktrees-and-rebasing.md](git-worktrees-and-rebasing.md).
+
+- [rebase.autoStash](https://git-scm.com/docs/git-config#Documentation/git-config.txt-rebaseautoStash)
+- [git-rerere](https://git-scm.com/docs/git-rerere)
 
 ### `[core]`
 

@@ -20,9 +20,10 @@
 	br = branch
   serve = !git daemon --reuseaddr --verbose  --base-path=. --export-all ./.git
   lol = !git log --reverse --perl-regexp --author='^(?!.*(\\[bot\\]|dependabot|renovate|github-actions|semantic-release)).*$' --format='%C(yellow) %h %Creset %<(12,trunc)%an %cd %s' --date=format:'%y-%m-%d %H:%M' -15
+  rebase-main = !git pull --rebase origin main
         
 [push]
-	default = matching
+	default = simple
 
 [core]
 	pager = delta
@@ -85,3 +86,7 @@
 # Include work config if it exists (checked last, so it overrides)
 [include]
     path = ~/.gitconfig-work
+[rebase]
+	autoStash = true
+[rerere]
+	enabled = true

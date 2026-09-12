@@ -180,6 +180,12 @@ link_copilot() {
   backup_existing_file "${HOME}/.copilot/denied-commands"
   create_symlink "${DOTFILES_DIR}/home/copilot/denied-commands" "${HOME}/.copilot/denied-commands"
 
+  ensure_dir "${HOME}/.copilot/hooks"
+  for _hook in "${DOTFILES_DIR}/home/copilot/hooks/"*.json; do
+    _hook_name=$(basename "$_hook")
+    create_symlink "$_hook" "${HOME}/.copilot/hooks/${_hook_name}"
+  done
+
   for _skill_dir in "${DOTFILES_DIR}/home/claude/skills"/*/; do
     _skill_name=$(basename "${_skill_dir%/}")
     create_symlink "${_skill_dir%/}" "${HOME}/.copilot/skills/${_skill_name}"
@@ -191,6 +197,11 @@ unlink_copilot() {
 
   remove_symlink "${HOME}/.copilot/copilot-instructions.md"
   remove_symlink "${HOME}/.copilot/denied-commands"
+
+  for _hook in "${DOTFILES_DIR}/home/copilot/hooks/"*.json; do
+    _hook_name=$(basename "$_hook")
+    remove_symlink "${HOME}/.copilot/hooks/${_hook_name}"
+  done
 
   for _skill_dir in "${DOTFILES_DIR}/home/claude/skills"/*/; do
     _skill_name=$(basename "${_skill_dir%/}")

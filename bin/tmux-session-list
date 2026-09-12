@@ -1,20 +1,59 @@
 #!/bin/sh
 # Called from tmux status-left with the current session name as $1
+#
+# Each session carries a dot showing what its coding agent is doing. The state
+# lives in the session option @agent_state, written by bin/agent-status.
+#
+# Brightness carries the urgency, so the dots stay in the bar's own green.
+#
+#   idle       a hollow dot, dimmer than the text
+#   busy       a dot that pulses once a second, brighter than the text
+#   attention  a solid dot, the brightest thing on the bar
+#
+# The current session is drawn on a lighter background, so its dot has its own
+# set of colours. The pulse needs status-interval 1, so tmux redraws once a
+# second.
 current="$1"
 mode=$(tmux show-option -gqv @theme_mode)
 
 if [ "$mode" = "light" ]; then
-  active_fmt='#[bg=#338833,fg=#ffffff]'
-  reset_fmt='#[bg=#d8e8d8,fg=#338833]'
+  bar_bg='#d8e8d8';   bar_fg='#338833'
+  act_bg='#338833';   act_fg='#ffffff'
+  bar_idle='#a8cca8'; bar_busy='#2a6a2a'; bar_alert='#0d3d0d'
+  act_idle='#7ab87a'; act_busy='#ffffff'; act_alert='#ffffff'
 else
-  active_fmt='#[bg=#3a7a3a,fg=#000000]'
-  reset_fmt='#[bg=#122912,fg=#4a7c4a]'
+  bar_bg='#122912';   bar_fg='#4a7c4a'
+  act_bg='#3a7a3a';   act_fg='#000000'
+  bar_idle='#2f5a2f'; bar_busy='#7ec87e'; bar_alert='#d8f0d8'
+  act_idle='#1c451c'; act_busy='#0a2a0a'; act_alert='#000000'
 fi
 
-tmux ls -F '#{session_created} #{session_name}' | sort -n | sed 's/^[0-9]* //' | while read -r name; do
-  if [ "$name" = "$current" ]; then
-    printf '%s %s %s ' "$active_fmt" "$name" "$reset_fmt"
-  else
-    printf ' %s  ' "$name"
-  fi
-done
+reset_fmt="#[bg=$bar_bg,fg=$bar_fg]"
+
+# One shared phase, so every pulsing dot beats together.
+phase=$(( $(date +%s) % 2 ))
+
+# dot <state> <bg> <idle fg> <busy fg> <alert fg>
+dot() {
+  case "$1" in
+    attention) printf '#[bg=%s,fg=%s,bold]●' "$2" "$5" ;;
+    busy)      if [ "$phase" -eq 0 ]
+               then printf '#[bg=%s,fg=%s,bold]●' "$2" "$4"
+               else printf '#[bg=%s,fg=%s,bold]○' "$2" "$4"; fi ;;
+    *)         printf '#[bg=%s,fg=%s]○' "$2" "$3" ;;
+  esac
+}
+
+tmux ls -F '#{session_created}|#{@agent_state}|#{session_name}' |
+  sort -n |
+  while IFS='|' read -r _created state name; do
+    if [ "$name" = "$current" ]; then
+      printf ' #[bg=%s,fg=%s] %s %s %s   ' \
+        "$act_bg" "$act_fg" "$name" \
+        "$(dot "$state" "$act_bg" "$act_idle" "$act_busy" "$act_alert")" \
+        "$reset_fmt"
+    else
+      printf ' %s %s   ' "$name" \
+        "$(dot "$state" "$bar_bg" "$bar_idle" "$bar_busy" "$bar_alert")$reset_fmt"
+    fi
+  done
