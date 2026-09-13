@@ -7,6 +7,8 @@ patience. State the mechanism: "the consumer's 1-second timeout", not "the
 customer's patience"; "the connection times out", not "the backend gives up";
 `the cache holds an entry for the key`, not `the cache knows the answer`.
 
+**NEVER USE AN EM DASH.** Use a period, a colon, or a comma instead.
+
 ## Session start
 
 **Before responding to the user's first message, including greetings, small talk, or anything that seems too trivial to need context:** invoke the `load-plan` skill. Do this before saying anything else. It is your first action, not an optional one, and it takes the place of manually reading the plan file yourself. Do not substitute a manual read of `doc/planning/plan.md` (or the home-directory equivalent) for invoking the skill. The skill also stamps the session-start timer, which a manual read skips.
@@ -33,7 +35,6 @@ inference-based-tier rules are advisory.
 The deterministic-tier faults you write most often, so check for them
 before sending:
 
-- An em dash. Use a period, a colon, or a comma instead.
 - A filler intensifier: `simply`, `essentially`, `basically`, `genuinely`,
   `really`, `actually`, `obviously`, `clearly`. Cut it.
 - The continuous tense for system behaviour (`is testing`, `is running`).
