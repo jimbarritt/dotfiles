@@ -1,5 +1,9 @@
 # Documentation Index
 
+## Conventions
+
+- [source-tree-directory-conventions.md](source-tree-directory-conventions.md) — `doc` vs `docs`, `bin` vs `scripts`, `ops`, and the singular/plural rule
+
 ## Shell
 
 - [configuring-zshrc.md](configuring-zshrc.md) — Tips and tricks for configuring zsh via .zshrc

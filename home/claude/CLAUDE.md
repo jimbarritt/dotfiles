@@ -19,66 +19,36 @@ If the `load-plan` skill is unavailable for some reason, fall back to checking w
 
 Never use `find` rooted at `~`, `/`, `/Users/`, or cache directories (`~/.gradle`, `~/.m2`, etc.) — these scan millions of inodes and are almost always wrong. Search within the current project directory. If the file isn't there, ask rather than scanning broadly.
 
-## STE
+## Software English
 
-Write all output in ASD-STE100 Simplified Technical English. This is
-always on. Do not wait for me to ask for it.
+Write all prose in Software English:
+https://github.com/jimbarritt/software-english/blob/main/spec/SPEC.md
 
-Before you send any prose — a reply, a doc, a commit message — run
-the check below on your draft. Rewrite each line that fails. Do this
-every time you write, not once per session.
+Check your own reply against the spec before sending it — get it right the
+first time, rather than relying on a rewrite. The `software-english-lint`
+plugin checks every reply and every changed document too, as a backstop:
+deterministic-tier rules block on a violation and force a second attempt;
+inference-based-tier rules are advisory.
 
-### The check
-
-1. Is any instruction over 20 words, or any description over 25
-   words? Split it.
-2. Does a sentence use "-ing" or "has/have done"? Rewrite it in a
-   simple tense.
-   Bad: "We are testing whether singleflight is harming performance."
-   Good: "We test whether singleflight harms performance."
-3. Does a sentence use a hard word where a simple one works? Replace
-   it (utilise → use, initiate → start, cease → stop).
-4. Does a word or clause add no information? Delete it.
-   Bad: "No deploy ran repair without singleflight, in either order."
-   Good: "No deploy ran repair without singleflight."
-5. Does a sentence judge, guess my reaction, or comment on itself,
-   instead of stating a fact? Cut it.
-   Bad: "This is the interesting part: the cell is untested."
-   Good: "No deploy tested repair without singleflight."
-6. Does a sentence give a system or component a human trait,
-   feeling, or intent? State the mechanism instead. See the
-   anthropomorphic-language rule at the top of this file.
-   Bad: "the repair tries again", "the cache is happy to serve stale"
-   Good: "the second attempt runs", "the service serves a stale entry"
-
-End every reply that has prose, and every doc you write or edit,
-with the line `STE: checked`. Do not write that line unless you ran
-the check above on that output.
-
-### Where it applies
-
-- Every reply you give me. Short answers, questions and status
-  reports included.
-- Every document you write or change: docs, READMEs, ADRs, plans,
-  research notes.
-- Commit messages, PR titles and PR bodies.
-- Code comments, when the "Code comments" rule permits one.
+End every reply that has prose with the line `SWE: Verified`. Do not end
+a persisted document (a doc, README, ADR, plan) with this line — it marks
+a chat reply only.
 
 ### Where it does not apply
 
 - Code itself. Identifiers, syntax and string literals follow the
   language and the codebase.
 - Your reasoning. Think in the way that works.
-- Text you quote or repeat: tool output, error messages, file
-  contents, my own words.
+- Text you quote or repeat: tool output, error messages, file contents,
+  my own words.
 
 ### Conflicts
 
 If a rule makes a technical fact wrong, keep the fact and break the
 rule. A term with one correct name keeps that name.
 
-I say `ste off` to stop STE for the session. I say `ste on` to start
-it again.
+I say `swe off` to stop this for the session. I say `swe on` to start it
+again.
 
 ## Task tracking
 

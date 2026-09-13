@@ -260,6 +260,13 @@ install_zsh_plugins() {
   fi
 }
 
+install_claude_plugins() {
+  echo "Installing Claude plugins..."
+  claude plugin marketplace add jimbarritt/claude-plugins
+  claude plugin install software-english-lint@jimbarritt-claude-plugins -y
+  echo "✓ Claude plugins installed"
+}
+
 install_git_hooks() {
   git config core.hooksPath hooks
   echo "✓ Configured git hooks"
@@ -274,6 +281,7 @@ configure_macos() {
 
 install() {
   install_zsh_plugins
+  install_claude_plugins
   install_git_hooks
   configure_macos
 }
