@@ -83,7 +83,17 @@
     "command": "sh ~/.claude/statusline-command.sh",
     "padding": 2
   },
-  "enabledPlugins": {},
+  "enabledPlugins": {
+    "software-english-lint@jimbarritt-claude-plugins": true
+  },
+  "extraKnownMarketplaces": {
+    "jimbarritt-claude-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "jimbarritt/claude-plugins"
+      }
+    }
+  },
   "effortLevel": "medium",
   "advisorModel": "sonnet",
   "autoUpdatesChannel": "latest",
