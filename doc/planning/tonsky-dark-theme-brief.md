@@ -85,6 +85,11 @@ Keep the dark green background, UI, diagnostics and git colours as they are.
 
 ## Verification
 
+Run the whole task in one session, then commit and push. Do not stop to ask
+Jim to check anything: he reviews the result after he pulls it on his dev
+machine.
+
+- Install `nvim` in the session if it is missing.
 - Dump every highlight group for each theme before and after the change:
   ```
   nvim --headless -c 'colorscheme green-tinted-light' \
@@ -92,10 +97,12 @@ Keep the dark green background, UI, diagnostics and git colours as they are.
   ```
   Do the same for `green-tinted` and `github-light`. The light dumps must match
   before and after. The dark dump shows the intended changes.
-- If `nvim` is not installed in the session, install it. If that fails, list
-  the checks for Jim to run on his machine.
-- Jim reviews the result by eye on a Lua, Kotlin and Go file, using
-  `:InspectLine` on any token that looks wrong.
+- If `nvim` cannot be installed, check the change by reading the palette,
+  the mapping and the fallback in `apply.lua`, and say so in the commit
+  message.
+- In the final reply, list what changed and what Jim should look at on his
+  dev machine: a Lua, Kotlin and Go file, with `:InspectLine` on any token
+  that looks wrong.
 
 ## When done
 
