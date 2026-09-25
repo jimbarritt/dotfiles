@@ -36,6 +36,7 @@
 | | [2. copypath](#task-2-copypath) | ✓ DONE |
 | | [3. readme](#task-3-readme) | ✓ DONE |
 | [Delta: Git Config Refinements](#delta-git-config-refinements) | [1. Exclude bots from git lol](#task-1-exclude-bots-from-git-lol) | ✓ DONE |
+| [Delta: Syntax Highlighting Review](#delta-syntax-highlighting-review) | [1. Review Tonsky's syntax highlighting article against the themes](#task-1-review-tonskys-syntax-highlighting-article-against-the-themes) | TODO |
 
 Archived Deltas: see the [archive index](archive/index.md)
 
@@ -236,6 +237,17 @@ agent reads and acts on. Research: `doc/code-metrics-for-agents.md`.
   - `\\[` is required in the config file — git rejects `\[` as a bad escape
   - Excludes any `*[bot]` plus `dependabot`, `renovate`, `github-actions`, `semantic-release`; `Bob Botham` and `Abbot Smith` still show
   - Confirmed the alias contains nothing work-specific, in response to a public-repo scrub question
+
+## Delta: Syntax Highlighting Review
+
+### Task 1: Review Tonsky's syntax highlighting article against the themes
+- TODO — Review <https://tonsky.me/blog/syntax-highlighting/> and decide what to apply to `green-tinted` and `green-tinted-light`
+  - Reference notes and the list of differences: `doc/syntax-highlighting-tonsky.md`
+  - Keywords and function calls: keep as anchor and navigation layers, or drop to default text
+  - Comments: highlight explanatory comments, grey only commented-out code
+  - Colour count: compare the slot count with the "as many as you can remember" rule
+  - Light theme: try background tints on tokens
+  - Bold and italic: remove any use
 
 ## Checkpoint: Session 2026-07-01
 
