@@ -1,6 +1,6 @@
 # Syntax Highlighting: Tonsky's Principles
 
-Reference notes on Niki Tonsky, "I am sorry, but everyone is getting syntax
+Reference notes on Nikita Prokopov (tonsky), "I am sorry, but everyone is getting syntax
 highlighting wrong", 15 October 2025. Found via Martin Fowler's blog.
 
 Source: <https://tonsky.me/blog/syntax-highlighting/>
