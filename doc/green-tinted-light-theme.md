@@ -21,9 +21,23 @@ keeping the same philosophy:
 
 | Layer              | Dark theme      | Light theme      | Purpose                        |
 |--------------------|-----------------|------------------|--------------------------------|
-| Structural anchors | Brightest       | Darkest/most sat | Keywords, fn declarations      |
-| Navigation         | Medium          | Medium           | Fn calls, types, params        |
-| Content / noise    | Dimmest         | Lightest/least sat | Variables, operators, punct  |
+| Structural anchors | Default text    | Darkest/most sat | Keywords, fn declarations      |
+| Navigation         | Default text    | Medium           | Fn calls, types, params        |
+| Content / noise    | Default text; punctuation dim | Lightest/least sat | Variables, operators, punct  |
+
+The dark theme no longer uses this hierarchy. It follows Tonsky's rules
+instead: keywords, calls, types, variables, params and properties are
+default text `#c8d8d0`, and operators and punctuation are dim `#5f7f6f`.
+Four roles have a colour, each at a different lightness:
+
+| Role | Dark colour | OKLab L |
+|------|-------------|---------|
+| Comments | `#f0d860` yellow | 0.88 |
+| Definitions (functions, type declarations, headings) | `#88c8ff` light blue | 0.81 |
+| Constants and numbers | `#c898e8` purple | 0.75 |
+| Strings and escapes | `#60b060` green | 0.69 |
+
+See [syntax-highlighting-tonsky.md](syntax-highlighting-tonsky.md).
 
 ### Colour choices
 

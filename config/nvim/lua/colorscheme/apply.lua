@@ -10,12 +10,17 @@
 local M = {}
 
 --- Resolve a slot name to a colour value from the palette.
---- Fallback chain: slot → text → fg
+--- Fallback chain: slot → mapping._fallback[slot] (repeated) → text → fg
 ---@param palette table
 ---@param slot string
+---@param fallback table
 ---@return string
-local function resolve(palette, slot)
-  return palette[slot] or palette.text or palette.fg
+local function resolve(palette, slot, fallback)
+  while slot do
+    if palette[slot] then return palette[slot] end
+    slot = fallback[slot]
+  end
+  return palette.text or palette.fg
 end
 
 --- Apply a palette using the shared mapping.
@@ -45,7 +50,7 @@ function M.apply(palette, opts)
     -- Skip empty slot tables
     if #groups == 0 then goto continue end
 
-    local fg = resolve(palette, slot)
+    local fg = resolve(palette, slot, mapping._fallback or {})
 
     for _, entry in ipairs(groups) do
       local group, extra
@@ -178,7 +183,7 @@ function M.apply_ui(p, suppress, transparent)
   -- Signs & fold
   hi(0, "SignColumn",   { bg = bg })
   hi(0, "FoldColumn",   { fg = p.fg_dim, bg = p.bg })
-  hi(0, "Folded",       { fg = p.comment or p.fg_dim, bg = p.bg_float or p.bg })
+  hi(0, "Folded",       { fg = p.folded or p.comment or p.fg_dim, bg = p.bg_float or p.bg })
 
   -- Diff
   local diff_add_bg = p.background == "light" and "#e0f0e0" or p.bg_float
@@ -228,10 +233,10 @@ function M.apply_ui(p, suppress, transparent)
   vim.g.terminal_color_10 = p.git_add or p.tag or "#116329"
   vim.g.terminal_color_3  = p.warning or "#9a6700"
   vim.g.terminal_color_11 = p.warning or "#9a6700"
-  vim.g.terminal_color_4  = p.type or p.info or "#0550ae"
-  vim.g.terminal_color_12 = p.type or p.info or "#0550ae"
-  vim.g.terminal_color_5  = p.entity or "#8250df"
-  vim.g.terminal_color_13 = p.entity or "#8250df"
+  vim.g.terminal_color_4  = p.terminal_blue or p.type or p.info or "#0550ae"
+  vim.g.terminal_color_12 = p.terminal_blue or p.type or p.info or "#0550ae"
+  vim.g.terminal_color_5  = p.terminal_magenta or p.entity or "#8250df"
+  vim.g.terminal_color_13 = p.terminal_magenta or p.entity or "#8250df"
   vim.g.terminal_color_6  = p.info or "#0550ae"
   vim.g.terminal_color_14 = p.info or "#0550ae"
   vim.g.terminal_color_7  = p.fg or "#1f2328"

@@ -1,6 +1,7 @@
 -- Green Dark palette
--- Extracted from green-tinted.lua — cognitive-load hierarchy with
--- green monochromatic theme. Retains finer-grained slots (D1).
+-- Dark green background. Syntax colours follow Tonsky's rules: highlight
+-- definitions, strings, constants and comments; dim punctuation; leave
+-- everything else as default text.
 
 return {
   name = "green-dark",
@@ -13,32 +14,34 @@ return {
   fg             = "#c8d8d0",
   fg_dim         = "#8fa89f",
 
-  -- Syntax slots — finer-grained than GitHub's 8
-  comment        = "#4a6860",
-  keyword        = "#5ab85a",     -- structural anchors
-  keyword_control = "#88ff88",    -- return, break, continue
-  entity         = "#d8eb8b",     -- fn declarations (yellow-green)
-  fn_call        = "#88d8c8",     -- function calls (cyan-green)
-  param          = "#a8d8b8",     -- parameters
-  type           = "#88c8ff",     -- types (blue-green)
-  string         = "#88a888",     -- strings (moderate green)
-  string_escape  = "#98b898",     -- string escapes
-  variable       = "#789878",     -- variables (muted sage)
-  variable_local = "#6a8a6a",     -- local variables (even more muted)
-  constant       = "#d8b888",     -- constants (warm tan-green)
-  property       = "#98c8b8",     -- object properties
-  bracket_top    = "#7fd87f",     -- structural brackets
-  operator       = "#5a7a6a",     -- operators (very subtle)
-  string_interpolation = "#7fd87f", -- ${...} blocks — bracket_top green
-  constructor    = "#d8eb8b",     -- User() constructor calls — entity yellow-green
-  punctuation    = "#4a6a5a",     -- punctuation (barely visible)
-  number         = "#98b8a8",     -- numbers
+  -- Syntax slots — Tonsky's rules (doc/syntax-highlighting-tonsky.md).
+  -- Four highlight colours, each at a different lightness. Keywords,
+  -- calls, constructors, variables, params, properties and types are not
+  -- set, so they fall back to `text`.
+  comment        = "#f0d860",     -- yellow, brightest (L 0.88)
+  entity         = "#88c8ff",     -- definitions, light blue (L 0.81)
+  type_definition = "#88c8ff",    -- type declarations: entity blue
+  entity_ref     = "#c8d8d0",     -- type and module references: text
+  constant       = "#c898e8",     -- constants and numbers, purple (L 0.75)
+  number         = "#c898e8",
+  string         = "#60b060",     -- strings and escapes, green (L 0.69)
+  string_escape  = "#60b060",
+
+  -- Punctuation: one dim colour
+  operator       = "#5f7f6f",
+  punctuation    = "#5f7f6f",
+  bracket_top    = "#5f7f6f",
+  string_interpolation = "#5f7f6f", -- ${...} delimiters
+
   text           = "#c8d8d0",     -- default text (same as fg)
 
   -- UI
   cursor         = "#7fd87f",
   selection      = "#2a4d45",
   line_number    = "#4a6860",
+  folded         = "#4a6860",     -- folded line text; not the comment colour
+  terminal_blue  = "#88c8ff",     -- :terminal ANSI 4/12; `type` is unset
+  terminal_magenta = "#d8eb8b",   -- :terminal ANSI 5/13; kept from old entity
   search         = "#d8d888",
   search_current = "#ffff88",
 

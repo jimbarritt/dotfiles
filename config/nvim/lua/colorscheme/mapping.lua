@@ -10,7 +10,7 @@
 --   { "GroupName", { gui = "bold" } }  → fg = slot colour + style overrides
 --
 -- If a palette doesn't define a slot, the applicator falls back:
---   slot → text → fg
+--   slot → _fallback[slot] → text → fg
 --
 -- Prose groups (markup headings, bold, italic) are tagged with gui attributes
 -- here. The applicator decides whether to honour or suppress them based on
@@ -43,25 +43,17 @@ M.keyword_control = {
 }
 
 M.entity = {
-  -- Function declarations + user-defined type references
+  -- Function and type declarations. References are in entity_ref.
   "Function",
   "@function", "@function.method",
-  "@module",
-  "@lsp.type.struct",            -- Kotlin LSP: user-defined types (User, App)
-  "@lsp.type.namespace",         -- package names (org.example)
   "@lsp.typemod.function.declaration",
   "@lsp.typemod.function.declaration.kotlin",
   "@lsp.typemod.method.declaration",
   "@lsp.typemod.method.declaration.kotlin",
   "@lsp.typemod.class.declaration",
   "@lsp.typemod.class.declaration.kotlin",
-  "@lsp.type.enum.kotlin", "@lsp.type.enumMember",
-  "@lsp.type.enumMember.kotlin",
   "@lsp.typemod.enum.declaration", "@lsp.typemod.enum.declaration.kotlin",
   "@lsp.typemod.enumMember.declaration", "@lsp.typemod.enumMember.declaration.kotlin",
-  "@lsp.typemod.enumMember.readonly", "@lsp.typemod.enumMember.readonly.kotlin",
-  "@lsp.type.class",
-  "@lsp.type.interface", "@lsp.type.interface.kotlin",
   "@lsp.typemod.interface.declaration", "@lsp.typemod.interface.declaration.kotlin",
   "@function.kotlin",
   -- Markup headings (D3: stay in entity)
@@ -81,6 +73,20 @@ M.entity = {
   "TelescopeMatching",
 }
 
+-- entity_ref: references to user types, modules and packages.
+-- Falls back to entity (see _fallback), so palettes that do not set it
+-- colour references the same as declarations.
+M.entity_ref = {
+  "@module",
+  "@lsp.type.struct",            -- Kotlin LSP: user-defined types (User, App)
+  "@lsp.type.namespace",         -- package names (org.example)
+  "@lsp.type.enum.kotlin", "@lsp.type.enumMember",
+  "@lsp.type.enumMember.kotlin",
+  "@lsp.typemod.enumMember.readonly", "@lsp.typemod.enumMember.readonly.kotlin",
+  "@lsp.type.class",
+  "@lsp.type.interface", "@lsp.type.interface.kotlin",
+}
+
 -- fn_call: falls back to text if palette doesn't define it (D4)
 M.fn_call = {
   "@function.call", "@function.method.call",
@@ -91,12 +97,18 @@ M.fn_call = {
 
 M.type = {
   "Type", "StorageClass", "Structure", "Typedef",
-  "@type", "@type.builtin", "@type.definition",
+  "@type", "@type.builtin",
   "@attribute", "@namespace",
   "@lsp.type.type", "@lsp.type.enum",
   "@type.kotlin",
   "Directory", "NvimTreeFolderName",
   "jsonBoolean",
+}
+
+-- type_definition: the name in a type declaration (Go `type Foo struct`).
+-- Falls back to type (see _fallback).
+M.type_definition = {
+  "@type.definition",
 }
 
 M.constant = {
@@ -156,7 +168,6 @@ M.text = {
   -- Everything that should be the default fg colour
   "Identifier",
   "@variable",
-  "Delimiter", "@punctuation.delimiter", "@punctuation.special",
   "Special", "Tag",
   "@lsp.type.variable",
   "@lsp.typemod.variable.readonly",  -- val variables: override @lsp.mod.readonly (constant) at pri=127
@@ -193,7 +204,7 @@ M.operator = {
 
 -- punctuation: falls back to text if palette doesn't define it
 M.punctuation = {
-  -- Only used when palette defines a separate punctuation colour (green-dark)
+  "Delimiter", "@punctuation.delimiter", "@punctuation.special",
 }
 
 -- bracket_top: falls back to text if palette doesn't define it
@@ -204,6 +215,15 @@ M.bracket_top = {
 -- variable_local: falls back to variable → text
 M.variable_local = {
   -- Placeholder for green-dark's dimmer local variable colour
+}
+
+-- ── Slot fallbacks ──────────────────────────────────────────────────
+-- A slot listed here resolves to another slot when the palette does not
+-- set it, before the text → fg fallback.
+
+M._fallback = {
+  entity_ref      = "entity",
+  type_definition = "type",
 }
 
 -- ── Prose groups (D2: exempt from style suppression) ────────────────
