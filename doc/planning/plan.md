@@ -2,10 +2,9 @@
 
 ## What's Next
 
-- **Next:** Task 3 — Brighten the gutter line numbers (Delta: Diff Viewer Readability)
-- **Sub-doc:** (none)
+- **Next:** Task 2 — Apply Tonsky's principles to the dark theme (Delta: Syntax Highlighting Review)
+- **Sub-doc:** [tonsky-dark-theme-brief.md](tonsky-dark-theme-brief.md)
 - **Blockers:** None
-- **Context:** [Checkpoint: Session 2026-08-22](#checkpoint-session-2026-08-22)
 
 ## Summary
 
@@ -37,6 +36,7 @@
 | | [3. readme](#task-3-readme) | ✓ DONE |
 | [Delta: Git Config Refinements](#delta-git-config-refinements) | [1. Exclude bots from git lol](#task-1-exclude-bots-from-git-lol) | ✓ DONE |
 | [Delta: Syntax Highlighting Review](#delta-syntax-highlighting-review) | [1. Review Tonsky's syntax highlighting article against the themes](#task-1-review-tonskys-syntax-highlighting-article-against-the-themes) | TODO |
+| | [2. Apply Tonsky's principles to the dark theme](#task-2-apply-tonskys-principles-to-the-dark-theme) | TODO |
 
 Archived Deltas: see the [archive index](archive/index.md)
 
@@ -248,6 +248,14 @@ agent reads and acts on. Research: `doc/code-metrics-for-agents.md`.
   - Colour count: compare the slot count with the "as many as you can remember" rule
   - Light theme: try background tints on tokens
   - Bold and italic: remove any use
+
+### Task 2: Apply Tonsky's principles to the dark theme
+- TODO — Rework the `green-dark` palette so the `green-tinted` Neovim theme highlights only definitions, strings, constants and comments
+  - Why: Jim finds the dark theme hard to read. About 20 slots each have their own colour, so nothing stands out
+  - Brief with current state, target, constraints and verification: [tonsky-dark-theme-brief.md](tonsky-dark-theme-brief.md)
+  - Keywords, calls, variables, properties and types go to default text; punctuation goes dim; comments become bright
+  - Constraint: `mapping.lua` is shared with the light themes, which must render the same after the change
+  - Takes over the dark theme part of Task 1
 
 ## Checkpoint: Session 2026-07-01
 
