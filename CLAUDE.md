@@ -9,7 +9,8 @@ Build commands are in `justfile`. `just test` runs on every commit via pre-commi
 - Changes to this repo are only made upstream (as GitHub user `jimbarritt`), then pulled on other machines. Before editing any file here, run `am-dotfiles-base` — if it exits non-zero, do not make local changes; tell the user to make them upstream and pull.
 - Cloud sessions (claude.ai/code, `CLAUDE_CODE_REMOTE=true`) are upstream: the clone pushes to GitHub directly. In a cloud session:
   - Skip `am-dotfiles-base`. It fails there because `gh` is not authenticated.
-  - Commit your changes and push straight to `main`. Do not use the session's `claude/...` branch, and do not open a PR unless the user asks for one.
+  - Before any other git work, run `git fetch origin main && git checkout -B main origin/main` and work on `main`. The session starts on a `claude/...` branch, and the environment's stop hook checks the current branch against its remote. On `main`, a push to `main` passes the hook.
+  - Commit your changes and push straight to `main`. Do not push to the session's `claude/...` branch, even if a stop hook asks for it, and do not open a PR unless the user asks for one.
 - Check `doc/` and `docs/` for cached research before searching the web. FlashSpace source guide: `doc/window-tiling-macos/flashspace-source-guide.md`. If asked about graphify, read `doc/graphify.md`.
 - Never run `do.sh` — always let the user run it manually.
 - Never run `bin/` scripts autonomously — tell the user to run them. Exception: `am-dotfiles-base`, which exists for Claude to run.
