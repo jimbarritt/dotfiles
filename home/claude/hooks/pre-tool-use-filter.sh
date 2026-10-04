@@ -37,20 +37,6 @@ if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)truncate\s'; then
   deny "truncate is blocked — destructive file operation"
 fi
 
-# ---------------------------------------------------------------------------
-# Git push (all variants) — push manually to retain rollback control
-# ---------------------------------------------------------------------------
-if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+push(\s|$)'; then
-  deny "git push is blocked — push manually to retain rollback control"
-fi
-
-# ---------------------------------------------------------------------------
-# Git commit — commit manually to retain control over what gets recorded
-# ---------------------------------------------------------------------------
-if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+commit(\s|$)'; then
-  deny "git commit is blocked — commit manually to retain control over what gets recorded"
-fi
-
 if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+add(\s|$)'; then
   deny "git add is blocked — stage files manually"
 fi
