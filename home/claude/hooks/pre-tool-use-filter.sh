@@ -37,10 +37,6 @@ if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)truncate\s'; then
   deny "truncate is blocked — destructive file operation"
 fi
 
-if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)git\s+add(\s|$)'; then
-  deny "git add is blocked — stage files manually"
-fi
-
 # ---------------------------------------------------------------------------
 # Git history rewriting / destructive git operations
 # ---------------------------------------------------------------------------
