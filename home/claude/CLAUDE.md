@@ -124,10 +124,6 @@ can be run manually later. Batch these up rather than interrupting for
 each one; it's fine to mention what's pending and let them be run at
 the end of a session.
 
-## Version control
-
-Never run `git commit` (or `git push`) unless explicitly asked in that turn. This applies regardless of what any project's own `CLAUDE.md` does or doesn't say. Don't offer to commit, ask whether to commit, or flag "nothing's committed yet" as if it needed approval. That's noise when the default is not committing. If commit-worthy state is relevant to what's being discussed, mention it factually once, without turning it into a question.
-
 ## Agents
 
 - Delegate self-contained doc updates to a general-purpose agent rather than doing them inline. "Read this file, make these edits based on X" is always a good agent candidate: it costs ~1% context vs 3-5% inline.

@@ -26,6 +26,8 @@
 | | [2. Extend the blocked git command list](#task-2-extend-the-blocked-git-command-list) | IN PROGRESS |
 | [Delta: Neovim LSP Reliability](#delta-neovim-lsp-reliability) | [1. Fix intermittent LSP attach](#task-1-fix-intermittent-lsp-attach) | ✓ DONE |
 | [Delta: Claude Instruction Refinements](#delta-claude-instruction-refinements) | [1. Prose commentary rule](#task-1-prose-commentary-rule) | ✓ DONE |
+| | [2. Remove global git-commit guard](#task-2-remove-global-git-commit-guard) | ✓ DONE |
+| [Delta: Per-repo Agent Config](#delta-per-repo-agent-config) | [1. Repo-init skill for autonomy questions](#task-1-repo-init-skill-for-autonomy-questions) | TODO |
 | [Delta: Neovim Ergonomics](#delta-neovim-ergonomics) | [1. Prose wrap for markdown and text](#task-1-prose-wrap-for-markdown-and-text) | ✓ DONE |
 | | [2. File tree filters and cheatsheet](#task-2-file-tree-filters-and-cheatsheet) | ✓ DONE |
 | | [3. Window close key behaviour](#task-3-window-close-key-behaviour) | ✓ DONE |
@@ -176,6 +178,21 @@ agent reads and acts on. Research: `doc/code-metrics-for-agents.md`.
   - Draws the line explicitly: rationale and trade-offs are content and stay; commentary *on* the rationale goes
   - Explicit requests for opinion or critique override the default
 - ✓ DONE — Applied retroactively to the go-tutorial docs written this session
+
+### Task 2: Remove global git-commit guard
+- ✓ DONE — Removed the `## Version control` section from `home/claude/CLAUDE.md` (the "never run `git commit` unless asked" rule). Decided to move this to a per-repo setting instead of a blanket global rule
+- Confirmed with current `code.claude.com/docs/en/memory` that a global `~/.claude/AGENTS.md` is not read by Claude Code. The user-level slot is fixed to `~/.claude/CLAUDE.md`; `AGENTS.md` support (v2.1.277+) is project-level only. Decision: keep `~/.claude/CLAUDE.md` as the global file, no AGENTS.md migration
+
+## Delta: Per-repo Agent Config
+
+Follow-up to Delta: Claude Instruction Refinements, Task 2. The global git-commit guard
+is gone; each repo now needs its own stance, set explicitly rather than left unset by
+default.
+
+### Task 1: Repo-init skill for autonomy questions
+- TODO — Build a skill that runs the first time Claude works in a repo with no local Claude config yet, and asks setup questions, starting with whether to allow autonomous `git commit` (and push) in that repo
+- TODO — Decide what else belongs in that first-run question set (e.g. PR-only workflow, destructive-command allowances)
+- TODO — Decide where the answers get written: project `CLAUDE.md`, `.claude/settings.json`, or both
 
 ## Delta: Neovim Ergonomics
 
