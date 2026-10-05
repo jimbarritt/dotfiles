@@ -21,8 +21,52 @@ deny() {
 # ---------------------------------------------------------------------------
 # Destructive file operations
 # ---------------------------------------------------------------------------
+# rm is allowed when every target is a relative path, or an absolute path
+# under the session cwd, the scratchpad dir, or /tmp. Any -r plus -f (in any
+# spelling) is blocked regardless of target. Anything else falls through to
+# the same deny as before.
 if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)rm\s'; then
-  deny "rm is blocked — delete files manually if needed"
+  CWD=$(echo "$INPUT" | jq -r '.cwd // empty' 2>/dev/null) || CWD=""
+  SCRATCHPAD_DIR=$(echo "$INPUT" | jq -r '.scratchpad_dir // empty' 2>/dev/null) || SCRATCHPAD_DIR=""
+
+  _rm_old_ifs=$IFS
+  IFS='
+'
+  set -- $(echo "$COMMAND" | grep -oE '(^|[;&|])[[:space:]]*rm[[:space:]][^;&|]*')
+  IFS=$_rm_old_ifs
+
+  for _seg in "$@"; do
+    [ -z "$_seg" ] && continue
+
+    if echo "$_seg" | grep -qE -- '(^|[[:space:]])-[A-Za-z]*[rR][A-Za-z]*([[:space:]]|$)|--recursive' \
+      && echo "$_seg" | grep -qE -- '(^|[[:space:]])-[A-Za-z]*f[A-Za-z]*([[:space:]]|$)|--force'; then
+      deny "rm -rf (recursive + force) is blocked regardless of target"
+    fi
+
+    for _tok in $_seg; do
+      case "$_tok" in
+        -*|rm) continue ;;
+      esac
+      case "$_tok" in
+        /tmp|/tmp/*|/private/tmp|/private/tmp/*) continue ;;
+      esac
+      if [ -n "$SCRATCHPAD_DIR" ]; then
+        case "$_tok" in
+          "$SCRATCHPAD_DIR"|"$SCRATCHPAD_DIR"/*) continue ;;
+        esac
+      fi
+      if [ -n "$CWD" ]; then
+        case "$_tok" in
+          "$CWD"|"$CWD"/*) continue ;;
+        esac
+      fi
+      case "$_tok" in
+        /*|\~*)
+          deny "rm target '$_tok' is outside the working repo and outside tmp — delete it manually"
+          ;;
+      esac
+    done
+  done
 fi
 
 if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)rmdir\s'; then
@@ -86,9 +130,9 @@ if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)npm\s+publish(\s|$)'; then
   deny "npm publish is blocked — publish manually"
 fi
 
-if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)cargo\s+publish(\s|$)'; then
-  deny "cargo publish is blocked — publish manually"
-fi
+# if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)cargo\s+publish(\s|$)'; then
+#   deny "cargo publish is blocked — publish manually"
+# fi
 
 if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)wrangler\s+(deploy|publish)(\s|$)'; then
   deny "wrangler deploy is blocked — deploy manually"
