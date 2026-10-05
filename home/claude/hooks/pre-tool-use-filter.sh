@@ -21,13 +21,26 @@ deny() {
 # ---------------------------------------------------------------------------
 # Destructive file operations
 # ---------------------------------------------------------------------------
-# rm is allowed when every target is a relative path, or an absolute path
-# under the session cwd, the scratchpad dir, or /tmp. Any -r plus -f (in any
-# spelling) is blocked regardless of target. Anything else falls through to
-# the same deny as before.
+# rm -rf (any flag spelling combining recursive + force) is always blocked —
+# also backstopped as a static permissions.deny pattern in settings.json,
+# since a deny rule there always wins over this hook regardless of what this
+# hook returns.
+#
+# Everything else is blocked by default. It's allowed, scoped to the session
+# cwd/scratchpad/tmp, only when the user has flipped the switch below — this
+# hook never flips it itself:
+#   - per session: `export CLAUDE_RM_SCOPED_ALLOW=1` before starting Claude
+#   - per repo:    create a file at <repo-root>/.git/claude-rm-allowed
 if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)rm\s'; then
   CWD=$(echo "$INPUT" | jq -r '.cwd // empty' 2>/dev/null) || CWD=""
   SCRATCHPAD_DIR=$(echo "$INPUT" | jq -r '.scratchpad_dir // empty' 2>/dev/null) || SCRATCHPAD_DIR=""
+
+  RM_SWITCH_ON=""
+  if [ "${CLAUDE_RM_SCOPED_ALLOW:-}" = "1" ]; then
+    RM_SWITCH_ON=1
+  elif [ -n "$CWD" ] && [ -f "$CWD/.git/claude-rm-allowed" ]; then
+    RM_SWITCH_ON=1
+  fi
 
   _rm_old_ifs=$IFS
   IFS='
@@ -41,6 +54,10 @@ if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)rm\s'; then
     if echo "$_seg" | grep -qE -- '(^|[[:space:]])-[A-Za-z]*[rR][A-Za-z]*([[:space:]]|$)|--recursive' \
       && echo "$_seg" | grep -qE -- '(^|[[:space:]])-[A-Za-z]*f[A-Za-z]*([[:space:]]|$)|--force'; then
       deny "rm -rf (recursive + force) is blocked regardless of target"
+    fi
+
+    if [ -z "$RM_SWITCH_ON" ]; then
+      deny "rm is blocked — set CLAUDE_RM_SCOPED_ALLOW=1 or create <repo-root>/.git/claude-rm-allowed to allow scoped deletes, or delete manually"
     fi
 
     for _tok in $_seg; do
