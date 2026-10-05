@@ -26,20 +26,20 @@ deny() {
 # since a deny rule there always wins over this hook regardless of what this
 # hook returns.
 #
-# Everything else is blocked by default. It's allowed, scoped to the session
-# cwd/scratchpad/tmp, only when the user has flipped the switch below — this
-# hook never flips it itself:
-#   - per session: `export CLAUDE_RM_SCOPED_ALLOW=1` before starting Claude
-#   - per repo:    create a file at <repo-root>/.git/claude-rm-allowed
+# Everything else is allowed by default, scoped to the session
+# cwd/scratchpad/tmp. Switch to strict mode (deny every non-combo rm, same as
+# the old blanket block) with — this hook never flips it itself:
+#   - per session: `export CLAUDE_RM_STRICT_DENY=1` before starting Claude
+#   - per repo:    create a file at <repo-root>/.git/claude-rm-strict
 if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)rm\s'; then
   CWD=$(echo "$INPUT" | jq -r '.cwd // empty' 2>/dev/null) || CWD=""
   SCRATCHPAD_DIR=$(echo "$INPUT" | jq -r '.scratchpad_dir // empty' 2>/dev/null) || SCRATCHPAD_DIR=""
 
-  RM_SWITCH_ON=""
-  if [ "${CLAUDE_RM_SCOPED_ALLOW:-}" = "1" ]; then
-    RM_SWITCH_ON=1
-  elif [ -n "$CWD" ] && [ -f "$CWD/.git/claude-rm-allowed" ]; then
-    RM_SWITCH_ON=1
+  RM_STRICT=""
+  if [ "${CLAUDE_RM_STRICT_DENY:-}" = "1" ]; then
+    RM_STRICT=1
+  elif [ -n "$CWD" ] && [ -f "$CWD/.git/claude-rm-strict" ]; then
+    RM_STRICT=1
   fi
 
   _rm_old_ifs=$IFS
@@ -56,8 +56,8 @@ if echo "$COMMAND" | grep -qE '(^|\s|\;|\&|\|)rm\s'; then
       deny "rm -rf (recursive + force) is blocked regardless of target"
     fi
 
-    if [ -z "$RM_SWITCH_ON" ]; then
-      deny "rm is blocked — set CLAUDE_RM_SCOPED_ALLOW=1 or create <repo-root>/.git/claude-rm-allowed to allow scoped deletes, or delete manually"
+    if [ -n "$RM_STRICT" ]; then
+      deny "rm is blocked — CLAUDE_RM_STRICT_DENY is set, delete manually"
     fi
 
     for _tok in $_seg; do
