@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Colorscheme Tweaker</title>
+<style>
+  :root {
+    --panel-bg: #14181c;
+    --panel-fg: #d6dde3;
+    --panel-dim: #7f8b94;
+    --panel-line: #262d34;
+    --panel-accent: #88c8ff;
+    --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    font: 13px/1.45 var(--sans);
+    background: var(--panel-bg);
+    color: var(--panel-fg);
+  }
+  button, select, input[type=text], textarea {
+    font: inherit;
+    color: inherit;
+    background: #1d2329;
+    border: 1px solid var(--panel-line);
+    border-radius: 5px;
+    padding: 4px 9px;
+  }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--panel-accent); }
+  button.on { background: var(--panel-accent); color: #0d1f1a; border-color: var(--panel-accent); }
+  textarea { font-family: var(--mono); font-size: 12px; width: 100%; min-height: 220px; resize: vertical; }
+
+  /* Left panel */
+  #panel { overflow-y: auto; border-right: 1px solid var(--panel-line); padding: 14px 16px 40px; }
+  #panel h1 { font-size: 15px; margin: 0 0 4px; }
+  #panel .sub { color: var(--panel-dim); margin-bottom: 12px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .group { margin-top: 14px; }
+  .group h2 {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--panel-dim); margin: 0 0 6px; padding-bottom: 4px;
+    border-bottom: 1px solid var(--panel-line);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 18px 36px 1fr auto;
+    gap: 8px; align-items: center;
+    padding: 3px 4px; border-radius: 4px;
+  }
+  .row.flash { background: #2a3a4a; }
+  .row:hover { background: #1b2127; }
+  .row input[type=checkbox] { margin: 0; }
+  .row input[type=color] {
+    width: 36px; height: 24px; padding: 0; border: 1px solid var(--panel-line);
+    border-radius: 4px; background: none; cursor: pointer;
+  }
+  .row input[type=color]:disabled { opacity: .35; cursor: default; }
+  .row .name { font-family: var(--mono); font-size: 12px; }
+  .row .meta { font-family: var(--mono); font-size: 11px; color: var(--panel-dim); text-align: right; white-space: nowrap; }
+  .row .meta .hex { color: var(--panel-fg); }
+  .row.unset .name { color: var(--panel-dim); }
+  .row.changed .name::after { content: " •"; color: #ffb86b; }
+  .hint { color: var(--panel-dim); font-size: 12px; margin: 6px 0 0; }
+
+  /* Right: preview */
+  #preview { display: flex; flex-direction: column; min-width: 0; }
+  #topbar {
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    padding: 10px 16px; border-bottom: 1px solid var(--panel-line);
+  }
+  #topbar .spacer { flex: 1; }
+  #stage { flex: 1; overflow: auto; padding: 18px 20px 40px; background: var(--bg); color: var(--text); }
+  .editor {
+    font-family: var(--mono); font-size: 13.5px; line-height: 1.55;
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--bg_highlight); border-radius: 6px; overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .editor .title {
+    font-family: var(--sans); font-size: 11px; padding: 4px 10px;
+    background: var(--bg_float); color: var(--fg_dim); border-bottom: 1px solid var(--bg_highlight);
+  }
+  .editor pre { margin: 0; padding: 8px 0; overflow-x: auto; }
+  .line { display: flex; white-space: pre; }
+  .line .ln {
+    width: 3.5em; flex: none; text-align: right; padding-right: 1em;
+    color: var(--line_number); user-select: none;
+  }
+  .line.cur { background: var(--bg_highlight); }
+  .line.cur .ln { color: var(--cursor_line_nr); }
+  .line .gutter { width: 1ch; flex: none; margin-right: .5ch; }
+  .line .code { flex: 1; padding-right: 1em; }
+  .t { cursor: help; border-radius: 2px; }
+  .t:hover { outline: 1px solid var(--fg_dim); }
+  .sel { background: var(--selection); }
+  .search { background: var(--search); color: var(--fg); }
+  .search-cur { background: var(--search_current); color: var(--fg); }
+  .cursor { background: var(--cursor); color: var(--bg); }
+  .ul { text-decoration: underline; }
+  .b { font-weight: bold; }
+  .i { font-style: italic; }
+  .folded { color: var(--folded); background: var(--bg_float); }
+  .diag-error { text-decoration: underline wavy var(--error); }
+  .diag-warning { text-decoration: underline wavy var(--warning); }
+  .statusline {
+    display: flex; gap: 16px; padding: 3px 10px; font-family: var(--mono); font-size: 12px;
+    background: var(--bg_float); color: var(--fg); border-top: 1px solid var(--bg_highlight);
+  }
+  .statusline .nc { color: var(--fg_dim); }
+  .popup {
+    display: inline-block; font-family: var(--mono); font-size: 12.5px;
+    background: var(--bg_float); color: var(--fg); border: 1px solid var(--fg_dim);
+    border-radius: 4px; padding: 4px 0; margin: 4px 0 0 4.5em;
+  }
+  .popup div { padding: 1px 12px; }
+  .popup .psel { background: var(--bg_highlight); }
+  .diags { font-family: var(--mono); font-size: 12.5px; padding: 6px 12px; border-top: 1px solid var(--bg_highlight); }
+  .diags div { padding: 1px 0; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .sw {
+    font-family: var(--mono); font-size: 12px; padding: 6px 10px; border-radius: 5px;
+    background: var(--bg_float); border: 1px solid var(--bg_highlight); color: var(--fg);
+  }
+  .sw i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; }
+  #ex-wrap { padding: 0 20px 20px; display: none; background: var(--bg); color: var(--text); }
+  #ex-wrap.open { display: block; }
+  #ex-wrap textarea { background: var(--bg_float); color: var(--fg); border-color: var(--bg_highlight); }
+  #ex-wrap .ex-bar { display: flex; gap: 6px; margin: 8px 0; }
+  #ex-wrap button { background: var(--bg_float); color: var(--fg); border-color: var(--fg_dim); }
+  .note { font-size: 12px; color: var(--fg_dim); margin: 0 0 12px; max-width: 70ch; }
+  .note code { font-family: var(--mono); }
+  @media (max-width: 900px) {
+    body { grid-template-columns: 1fr; }
+    #panel { border-right: 0; border-bottom: 1px solid var(--panel-line); max-height: 45vh; }
+  }
+</style>
+</head>
+<body>
+
+<aside id="panel">
+  <h1>Colorscheme Tweaker</h1>
+  <div class="sub">Slots from <code>lua/colorscheme/mapping.lua</code>. Unticked slots fall back: slot → fallback → text → fg.</div>
+  <div class="toolbar">
+    <button id="btn-dark">green-dark</button>
+    <button id="btn-light">green-light</button>
+    <button id="btn-reset" title="Restore this theme's values from the repo">Reset</button>
+  </div>
+  <div id="slots"></div>
+  <p class="hint">Changes save in this browser. • marks a slot that differs from the repo. Hover a token on the right to see its slot; click it to jump here.</p>
+</aside>
+
+<section id="preview">
+  <div id="topbar">
+    <button data-lang="lua">Lua</button>
+    <button data-lang="kotlin">Kotlin</button>
+    <button data-lang="go">Go</button>
+    <button data-lang="markdown">Markdown</button>
+    <span class="spacer"></span>
+    <button id="btn-rainbow" title="rainbow-delimiters.nvim colours brackets by depth in every theme">Rainbow brackets</button>
+    <button id="btn-export">Export Lua</button>
+    <button id="btn-import">Import Lua</button>
+  </div>
+  <div id="stage"></div>
+  <div id="ex-wrap">
+    <div class="ex-bar">
+      <button id="ex-copy">Copy</button>
+      <button id="ex-download">Download</button>
+      <button id="ex-apply" style="display:none">Apply pasted palette</button>
+      <button id="ex-close">Close</button>
+    </div>
+    <textarea id="ex-text" spellcheck="false"></textarea>
+  </div>
+</section>
+
+<script>
+// ─── Repo palettes ──────────────────────────────────────────────────
+// Keep in step with config/nvim/lua/colorscheme/palettes/*.lua.
+const REPO = {
+  dark: {
+    file: "green-dark.lua", name: "green-dark", background: "dark",
+    values: {
+      bg:"#0d1f1a", bg_float:"#132825", bg_highlight:"#1a3d35", fg:"#c8d8d0", fg_dim:"#8fa89f",
+      comment:"#f0d860", entity:"#88c8ff", type_definition:"#88c8ff", entity_ref:"#c8d8d0",
+      constant:"#c898e8", number:"#c898e8", string:"#60b060", string_escape:"#60b060",
+      operator:"#5f7f6f", punctuation:"#5f7f6f", bracket_top:"#5f7f6f", string_interpolation:"#5f7f6f",
+      text:"#c8d8d0",
+      cursor:"#7fd87f", selection:"#2a4d45", line_number:"#4a6860", folded:"#4a6860",
+      terminal_blue:"#88c8ff", terminal_magenta:"#d8eb8b", search:"#d8d888", search_current:"#ffff88",
+      error:"#ff6b6b", warning:"#ffb86b", info:"#88d8d8", hint:"#88b8d8",
+      git_add:"#5ab85a", git_change:"#ffb86b", git_delete:"#ff6b6b",
+    },
+  },
+  light: {
+    file: "green-light.lua", name: "green-light", background: "light",
+    values: {
+      bg:"#ffffff", bg_float:"#f0f4f0", bg_highlight:"#e8efe8", fg:"#1f2328", fg_dim:"#656d76",
+      comment:"#59636e", keyword:"#cf222e", keyword_control:"#cf222e", entity:"#8250df",
+      fn_call:"#1f2328", param:"#1f2328", type:"#0550ae", string:"#0a3069", string_escape:"#0550ae",
+      variable:"#1f2328", constant:"#0550ae", property:"#1f2328", bracket_top:"#1f2328",
+      operator:"#1f2328", string_interpolation:"#cf222e", constructor:"#0550ae", punctuation:"#1f2328",
+      number:"#0550ae", text:"#1f2328",
+      cursor:"#0550ae", selection:"#ddf4ff", line_number:"#8c959f", cursor_line_nr:"#1a7a2a",
+      search:"#fff8c5", search_current:"#ffdf5d",
+      error:"#cf222e", warning:"#9a6700", info:"#0550ae", hint:"#0550ae",
+      git_add:"#1a7f37", git_change:"#9a6700", git_delete:"#cf222e",
+    },
+  },
+};
+
+// Slot catalogue. `fb` is the fallback chain from mapping._fallback and apply.lua.
+// Syntax slots end in text → fg; UI slots follow apply_ui's `or` chains.
+const GROUPS = [
+  { title: "Canvas", slots: [
+    ["bg", "Normal background"], ["bg_float", "Floats, statusline, popup menu"],
+    ["bg_highlight", "Cursor line, popup selection"], ["fg", "Final fallback for every slot"],
+    ["fg_dim", "Inactive statusline, float border"],
+  ]},
+  { title: "Syntax", slots: [
+    ["text", "Default text: identifiers, @variable", ["fg"]],
+    ["comment", "Comment, @comment"],
+    ["keyword", "if, fun, func, local, class, import"],
+    ["keyword_control", "return, break, continue", ["keyword"]],
+    ["entity", "Function and class declarations, headings"],
+    ["entity_ref", "Type, module and package references", ["entity"]],
+    ["type_definition", "@type.definition", ["type"]],
+    ["type", "Type names, @type.builtin, @attribute"],
+    ["fn_call", "Calls, methods, builtins like print"],
+    ["constructor", "User() constructor calls", ["entity"]],
+    ["builtin", "@lsp.mod.defaultLibrary (LSP only)"],
+    ["variable", "Parameters, @variable.builtin like self, vim"],
+    ["variable_local", "Placeholder slot, no groups", ["variable"]],
+    ["param", "Placeholder slot, no groups"],
+    ["property", "@property, @variable.member"],
+    ["constant", "Constant, Boolean, @constant.builtin"],
+    ["number", "Number, Float"],
+    ["string", "String, Character, inline code"],
+    ["string_escape", "\\n and other escapes"],
+    ["string_interpolation", "${...} inside strings"],
+    ["tag", "Regex, list markers, markdown bold"],
+  ]},
+  { title: "Punctuation", slots: [
+    ["operator", "= + == := ?:"],
+    ["punctuation", ", . : ; and delimiters"],
+    ["bracket_top", "( ) [ ] { } when rainbow is off"],
+  ]},
+  { title: "UI", slots: [
+    ["cursor", "Cursor block", ["fg"]],
+    ["selection", "Visual selection"],
+    ["line_number", "LineNr", ["fg_dim"]],
+    ["cursor_line_nr", "CursorLineNr", ["cursor", "fg"]],
+    ["folded", "Folded line text", ["comment", "fg_dim"]],
+    ["search", "Search match background"],
+    ["search_current", "Current match, IncSearch"],
+    ["terminal_blue", ":terminal ANSI 4 and 12", ["type"]],
+    ["terminal_magenta", ":terminal ANSI 5 and 13", ["entity"]],
+  ]},
+  { title: "Diagnostics", slots: [
+    ["error", "DiagnosticError"], ["warning", "DiagnosticWarn"],
+    ["info", "DiagnosticInfo, Underlined"], ["hint", "DiagnosticHint"],
+  ]},
+  { title: "Git", slots: [
+    ["git_add", "GitSignsAdd, DiffAdd", ["tag"]],
+    ["git_change", "GitSignsChange", ["warning"]],
+    ["git_delete", "GitSignsDelete", ["error"]],
+  ]},
+];
+const SLOT_INFO = {};
+GROUPS.forEach(g => g.slots.forEach(([k, d, fb]) => { SLOT_INFO[k] = { desc: d, fb: fb || [] }; }));
+const CANVAS = new Set(["bg", "bg_float", "bg_highlight", "fg", "fg_dim"]);
+
+// rainbow-delimiters.nvim gradient from lua/plugins/rainbow-delimiters.lua.
+// The plugin sets these for every theme, so they are shown but not editable.
+const RAINBOW = ["#7fd87f", "#68c868", "#5ab85a", "#50a050", "#4a8a4a", "#4a7a60", "#4a6a5a"];
+
+// ─── State ──────────────────────────────────────────────────────────
+const KEY = "colorscheme-tweaker.v1";
+let state = load();
+function fresh() {
+  return { theme: "dark", lang: "lua", rainbow: true,
+           dark: { ...REPO.dark.values }, light: { ...REPO.light.values } };
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return fresh();
+    const s = JSON.parse(raw);
+    const f = fresh();
+    return { ...f, ...s, dark: s.dark || f.dark, light: s.light || f.light };
+  } catch (e) { return fresh(); }
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+const cur = () => state[state.theme];
+// Own-property read: a slot named `constructor` must not hit Object.prototype.
+const has = (vals, k) => Object.prototype.hasOwnProperty.call(vals, k) && typeof vals[k] === "string";
+const get = (vals, k) => has(vals, k) ? vals[k] : undefined;
+
+// Resolve a slot the way apply.lua does: slot → fallback chain → text → fg.
+function resolve(slot, vals, seen) {
+  seen = seen || new Set();
+  if (has(vals, slot) && !seen.has(slot)) return { hex: vals[slot], via: slot };
+  seen.add(slot);
+  for (const fb of (SLOT_INFO[slot] ? SLOT_INFO[slot].fb : [])) {
+    if (!seen.has(fb)) { const r = resolve(fb, vals, seen); if (r.hex) return r; }
+  }
+  if (!CANVAS.has(slot) && slot !== "text" && has(vals, "text")) return { hex: vals.text, via: "text" };
+  return { hex: get(vals, "fg") || "#000000", via: "fg" };
+}
+
+// OKLab lightness, for the "different lightness per colour" rule.
+function oklabL(hex) {
+  const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map(v => v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+  const l = Math.cbrt(0.4122214708 * c[0] + 0.5363325363 * c[1] + 0.0514459929 * c[2]);
+  const m = Math.cbrt(0.2119034982 * c[0] + 0.6806995451 * c[1] + 0.1073969566 * c[2]);
+  const s = Math.cbrt(0.0883024619 * c[0] + 0.2817188376 * c[1] + 0.6299787005 * c[2]);
+  return 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s;
+}
+
+// ─── Left panel ─────────────────────────────────────────────────────
+const $slots = document.getElementById("slots");
+function renderPanel() {
+  const vals = cur(), repo = REPO[state.theme].values;
+  $slots.innerHTML = "";
+  for (const g of GROUPS) {
+    const sec = document.createElement("div"); sec.className = "group";
+    sec.innerHTML = `<h2>${g.title}</h2>`;
+    for (const [slot] of g.slots) {
+      const set = has(vals, slot);
+      const r = resolve(slot, vals);
+      const changed = (get(vals, slot) || null) !== (get(repo, slot) || null);
+      const row = document.createElement("div");
+      row.className = "row" + (set ? "" : " unset") + (changed ? " changed" : "");
+      row.dataset.slot = slot;
+      row.title = SLOT_INFO[slot].desc + (SLOT_INFO[slot].fb.length ? "\nFalls back to: " + SLOT_INFO[slot].fb.join(" → ") : "");
+      const canUnset = !CANVAS.has(slot);
+      row.innerHTML = `
+        <input type="checkbox" ${set ? "checked" : ""} ${canUnset ? "" : "disabled"} title="${canUnset ? "Set this slot" : "Canvas slots are always set"}">
+        <input type="color" value="${r.hex}" ${set ? "" : "disabled"}>
+        <span class="name">${slot}</span>
+        <span class="meta"><span class="hex">${r.hex}</span> L${oklabL(r.hex).toFixed(2)}${set ? "" : " ← " + r.via}</span>`;
+      const [cb, picker] = row.querySelectorAll("input");
+      cb.addEventListener("change", () => {
+        if (cb.checked) vals[slot] = r.hex; else delete vals[slot];
+        save(); renderAll();
+      });
+      picker.addEventListener("input", () => {
+        vals[slot] = picker.value;
+        row.querySelector(".hex").textContent = picker.value;
+        row.classList.toggle("changed", picker.value !== (get(repo, slot) || null));
+        applyVars();
+      });
+      picker.addEventListener("change", () => { save(); renderPanel(); });
+      sec.appendChild(row);
+    }
+    $slots.appendChild(sec);
+  }
+}
+
+// ─── CSS variables drive the preview ────────────────────────────────
+const $stage = document.getElementById("stage");
+function applyVars() {
+  const vals = cur();
+  const root = document.getElementById("preview").style;
+  for (const slot of Object.keys(SLOT_INFO)) root.setProperty("--" + slot, resolve(slot, vals).hex);
+  RAINBOW.forEach((c, i) => root.setProperty("--rb" + (i + 1), state.rainbow ? c : resolve("bracket_top", vals).hex));
+  // Live-update unset rows, which follow their fallback.
+  $slots.querySelectorAll(".row.unset").forEach(row => {
+    const r = resolve(row.dataset.slot, vals);
+    row.querySelector("input[type=color]").value = r.hex;
+    row.querySelector(".hex").textContent = r.hex;
+  });
+}
+
+// ─── Samples ────────────────────────────────────────────────────────
+// t(slot, text) marks a token. b(depth, text) marks a bracket (rainbow when on).
+// Lua uses the rainbow-blocks query, so block keywords are rainbow too.
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const t = (slot, s) => `<span class="t" data-slot="${slot}" style="color:var(--${slot})" title="${slot}">${esc(s)}</span>`;
+const b = (d, s) => `<span class="t" data-slot="${state.rainbow ? "rainbow " + d : "bracket_top"}" style="color:var(--rb${d})" title="${state.rainbow ? "rainbow-delimiters depth " + d : "bracket_top"}">${esc(s)}</span>`;
+const p = s => t("punctuation", s);
+const o = s => t("operator", s);
+const kw = s => t("keyword", s);
+const v = s => t("variable", s);
+const ident = s => t("text", s);
+
+function luaSample() {
+  const K = state.rainbow ? b : (d, s) => kw(s);   // block keywords under rainbow-blocks
+  return [
+    t("comment", "-- Resolve a slot to a colour, falling back to text then fg."),
+    `${kw("local")} ${t("entity", "M")} ${o("=")} ${b(1,"{")}${b(1,"}")}`,
+    ``,
+    `${kw("local")} ${K(1,"function")} ${t("entity", "resolve")}${b(1,"(")}${v("palette")}${p(",")} ${v("slot")}${b(1,")")}`,
+    `  ${kw("local")} ${ident("value")} ${o("=")} ${ident("palette")}${b(2,"[")}${ident("slot")}${b(2,"]")} ${kw("or")} ${ident("palette")}${p(".")}${t("property","text")}`,
+    `  ${t("keyword_control","return")} ${ident("value")} ${kw("or")} ${ident("palette")}${p(".")}${t("property","fg")}`,
+    `${K(1,"end")}`,
+    ``,
+    `${K(1,"function")} ${ident("M")}${p(".")}${t("entity","apply")}${b(1,"(")}${v("palette")}${p(",")} ${v("opts")}${b(1,")")}`,
+    `  ${ident("opts")} ${o("=")} ${ident("opts")} ${kw("or")} ${b(2,"{")}${b(2,"}")}`,
+    `  ${kw("local")} ${ident("count")} ${o("=")} ${t("number","0")}`,
+    `  ${K(2,"for")} ${ident("name")}${p(",")} ${ident("groups")} ${kw("in")} ${t("fn_call","pairs")}${b(3,"(")}${ident("mapping")}${b(3,")")} ${K(2,"do")}`,
+    `    ${K(3,"if")} ${ident("name")}${p(":")}${t("fn_call","sub")}${b(4,"(")}${t("number","1")}${p(",")} ${t("number","1")}${b(4,")")} ${o("~=")} ${t("string",'"_"')} ${K(3,"then")}`,
+    `      ${v("vim")}${p(".")}${t("property","api")}${p(".")}${t("fn_call","nvim_set_hl")}${b(4,"(")}${t("number","0")}${p(",")} ${ident("name")}${p(",")} ${b(5,"{")} ${t("property","fg")} ${o("=")} ${t("fn_call","resolve")}${b(6,"(")}${ident("palette")}${p(",")} ${ident("name")}${b(6,")")} ${b(5,"}")}${b(4,")")}`,
+    `      ${ident("count")} ${o("=")} ${ident("count")} ${o("+")} ${t("number","1")}`,
+    `    ${K(3,"end")}`,
+    `  ${K(2,"end")}`,
+    `  ${t("fn_call","print")}${b(2,"(")}${b(3,"(")}${t("string",'"applied %d groups')}${t("string_escape","\\n")}${t("string",'"')}${b(3,")")}${p(":")}${t("fn_call","format")}${b(3,"(")}${ident("count")}${b(3,")")}${b(2,")")}`,
+    `  ${t("keyword_control","return")} ${t("constant","true")}`,
+    `${K(1,"end")}`,
+    ``,
+    `${t("keyword_control","return")} ${ident("M")}`,
+  ];
+}
+
+function kotlinSample() {
+  const ty = s => t("type", s);
+  return [
+    `${kw("package")} ${t("entity_ref","org.example.themes")}`,
+    ``,
+    `${kw("import")} ${t("entity_ref","kotlin.math")}${p(".")}${t("fn_call","max")}`,
+    ``,
+    t("comment", "/** A colour slot with a fallback chain. */"),
+    `${kw("data")} ${kw("class")} ${t("type_definition","Slot")}${b(1,"(")}${kw("val")} ${v("name")}${p(":")} ${ty("String")}${p(",")} ${kw("val")} ${v("fallback")}${p(":")} ${ty("String")}${o("?")} ${o("=")} ${t("constant","null")}${b(1,")")}`,
+    ``,
+    `${kw("object")} ${t("type_definition","Palette")} ${b(1,"{")}`,
+    `    ${kw("const")} ${kw("val")} ${t("constant","DEFAULT")} ${o("=")} ${t("string",'"#c8d8d0"')}`,
+    `    ${kw("private")} ${kw("val")} ${ident("slots")} ${o("=")} ${t("fn_call","mutableMapOf")}${o("<")}${ty("String")}${p(",")} ${ty("String")}${o(">")}${b(2,"(")}${b(2,")")}`,
+    ``,
+    `    ${kw("fun")} ${t("entity","resolve")}${b(2,"(")}${v("slot")}${p(":")} ${ty("Slot")}${p(",")} ${v("depth")}${p(":")} ${ty("Int")} ${o("=")} ${t("number","0")}${b(2,")")}${p(":")} ${ty("String")} ${b(2,"{")}`,
+    `        ${kw("val")} ${ident("value")} ${o("=")} ${ident("slots")}${b(3,"[")}${ident("slot")}${p(".")}${t("property","name")}${b(3,"]")}`,
+    `        ${kw("if")} ${b(3,"(")}${ident("value")} ${o("!=")} ${t("constant","null")}${b(3,")")} ${t("keyword_control","return")} ${ident("value")}`,
+    `        ${kw("val")} ${ident("next")} ${o("=")} ${ident("slot")}${p(".")}${t("property","fallback")} ${o("?:")} ${t("keyword_control","return")} ${t("constant","DEFAULT")}`,
+    `        ${t("keyword_control","return")} ${t("fn_call","resolve")}${b(3,"(")}${t("constructor","Slot")}${b(4,"(")}${ident("next")}${b(4,")")}${p(",")} ${t("fn_call","max")}${b(4,"(")}${ident("depth")} ${o("+")} ${t("number","1")}${p(",")} ${t("number","1")}${b(4,")")}${b(3,")")}`,
+    `    ${b(2,"}")}`,
+    ``,
+    `    ${kw("fun")} ${t("entity","describe")}${b(2,"(")}${v("slot")}${p(":")} ${ty("Slot")}${b(2,")")} ${o("=")} ${t("string",'"slot ')}${t("string_interpolation","${")}${ident("slot")}${p(".")}${t("property","name")}${t("string_interpolation","}")}${t("string",' -> ')}${t("string_interpolation","${")}${t("fn_call","resolve")}${b(3,"(")}${ident("slot")}${b(3,")")}${t("string_interpolation","}")}${t("string_escape","\\n")}${t("string",'"')}`,
+    `${b(1,"}")}`,
+  ];
+}
+
+function goSample() {
+  const ty = s => t("type", s);
+  return [
+    `${kw("package")} ${t("entity_ref","themes")}`,
+    ``,
+    `${kw("import")} ${t("string",'"fmt"')}`,
+    ``,
+    t("comment", "// Slot names a colour and the slot it falls back to."),
+    `${kw("type")} ${t("type_definition","Slot")} ${kw("struct")} ${b(1,"{")}`,
+    `\t${t("property","Name")}     ${ty("string")}`,
+    `\t${t("property","Fallback")} ${ty("string")}`,
+    `${b(1,"}")}`,
+    ``,
+    `${kw("const")} ${t("constant","Default")} ${o("=")} ${t("string",'"#c8d8d0"')}`,
+    ``,
+    `${kw("var")} ${ident("palette")} ${o("=")} ${kw("map")}${b(1,"[")}${ty("string")}${b(1,"]")}${ty("string")}${b(1,"{")}${t("string",'"comment"')}${p(":")} ${t("string",'"#f0d860"')}${b(1,"}")}`,
+    ``,
+    `${kw("func")} ${t("entity","Resolve")}${b(1,"(")}${v("s")} ${ty("Slot")}${p(",")} ${v("depth")} ${ty("int")}${b(1,")")} ${b(1,"(")}${ty("string")}${p(",")} ${ty("error")}${b(1,")")} ${b(1,"{")}`,
+    `\t${kw("if")} ${ident("v")}${p(",")} ${ident("ok")} ${o(":=")} ${ident("palette")}${b(2,"[")}${ident("s")}${p(".")}${t("property","Name")}${b(2,"]")}${p(";")} ${ident("ok")} ${b(2,"{")}`,
+    `\t\t${t("keyword_control","return")} ${ident("v")}${p(",")} ${t("constant","nil")}`,
+    `\t${b(2,"}")}`,
+    `\t${kw("if")} ${ident("s")}${p(".")}${t("property","Fallback")} ${o("==")} ${t("string",'""')} ${o("||")} ${ident("depth")} ${o(">")} ${t("number","8")} ${b(2,"{")}`,
+    `\t\t${t("keyword_control","return")} ${t("constant","Default")}${p(",")} ${t("entity_ref","fmt")}${p(".")}${t("fn_call","Errorf")}${b(3,"(")}${t("string",'"unresolved slot %q"')}${p(",")} ${ident("s")}${p(".")}${t("property","Name")}${b(3,")")}`,
+    `\t${b(2,"}")}`,
+    `\t${t("keyword_control","return")} ${t("fn_call","Resolve")}${b(2,"(")}${ty("Slot")}${b(3,"{")}${t("property","Name")}${p(":")} ${ident("s")}${p(".")}${t("property","Fallback")}${b(3,"}")}${p(",")} ${ident("depth")}${o("+")}${t("number","1")}${b(2,")")}`,
+    `${b(1,"}")}`,
+  ];
+}
+
+function markdownSample() {
+  const h = s => `<span class="t b" data-slot="entity" style="color:var(--entity)" title="entity (bold)">${esc(s)}</span>`;
+  const code = s => `<span class="t" data-slot="string" style="color:var(--string);background:var(--bg_float)" title="string on bg_float">${esc(s)}</span>`;
+  const list = s => t("tag", s);
+  return [
+    h("# Colorscheme slot system"),
+    ``,
+    `Slots map to highlight groups in ${code("`mapping.lua`")}. A palette that`,
+    `leaves a slot unset falls back to ${code("`text`")}, then ${code("`fg`")}.`,
+    ``,
+    h("## Rules"),
+    ``,
+    `${list("-")} Highlight <span class="t b" data-slot="tag" style="color:var(--tag)" title="tag (bold)">**definitions**</span>, strings, constants and comments.`,
+    `${list("-")} Leave keywords and calls as <span class="t i" data-slot="text" style="color:var(--text)" title="text (italic)">_default text_</span>.`,
+    `${list("-")} Read <span class="t ul" data-slot="info" style="color:var(--info)" title="info, underlined">[the article](https://tonsky.me/blog/syntax-highlighting/)</span> first.`,
+    ``,
+    `${list("- [x]")} Dark theme done`,
+    `${list("- [ ]")} Light theme next`,
+    ``,
+    code("```lua"),
+    `${kw("local")} ${ident("p")} ${o("=")} ${t("fn_call","require")}${b(1,"(")}${t("string",'"colorscheme.palettes.green-dark"')}${b(1,")")}`,
+    code("```"),
+  ];
+}
+
+const SAMPLES = {
+  lua: ["lua/colorscheme/apply.lua", luaSample],
+  kotlin: ["src/main/kotlin/Palette.kt", kotlinSample],
+  go: ["internal/themes/slot.go", goSample],
+  markdown: ["doc/colorscheme-slot-system-design.md", markdownSample],
+};
+
+function renderStage() {
+  const [title, fn] = SAMPLES[state.lang];
+  const lines = fn();
+  const curLine = Math.min(5, lines.length - 1);
+  const gut = { 2: "git_add", 6: "git_change", 10: "git_delete" };
+  let html = `<div class="editor"><div class="title">${esc(title)}  ·  ${REPO[state.theme].name}</div><pre>`;
+  lines.forEach((code, i) => {
+    const g = gut[i] ? `<span class="gutter" style="color:var(--${gut[i]})" title="${gut[i]}">${gut[i] === "git_delete" ? "_" : "│"}</span>` : `<span class="gutter"></span>`;
+    html += `<div class="line${i === curLine ? " cur" : ""}"><span class="ln">${i + 1}</span>${g}<span class="code">${code || " "}</span></div>`;
+  });
+  html += `</pre>
+    <div class="diags">
+      <div><span style="color:var(--error)" class="t" data-slot="error" title="error">E</span> <span class="diag-error">value</span> is unused <span style="color:var(--fg_dim)">[E0001]</span></div>
+      <div><span style="color:var(--warning)" class="t" data-slot="warning" title="warning">W</span> <span class="diag-warning">depth</span> shadows an outer binding</div>
+      <div><span style="color:var(--info)" class="t" data-slot="info" title="info">I</span> import is used once &nbsp; <span style="color:var(--hint)" class="t" data-slot="hint" title="hint">H</span> inline this variable</div>
+    </div>
+    <div class="statusline"><span>NORMAL</span><span>${esc(title)}</span><span class="nc">utf-8 · ${state.lang}</span><span class="nc" style="margin-left:auto">Ln ${curLine + 1}, Col 1</span></div>
+  </div>`;
+
+  html += `<div class="editor"><div class="title">Selection, search, folds, popup</div><pre><div class="line"><span class="ln">1</span><span class="gutter"></span><span class="code">${kw("local")} <span class="sel">${ident("palette")} ${o("=")} ${t("fn_call","require")}${b(1,"(")}${t("string",'"colorscheme.palettes.green-dark"')}</span>${b(1,")")}</span></div><div class="line cur"><span class="ln">2</span><span class="gutter"></span><span class="code">${kw("local")} ${ident("colour")} ${o("=")} ${ident("palette")}${p(".")}<span class="search-cur">comment</span> ${kw("or")} ${ident("palette")}${p(".")}<span class="search">comment</span>_dim<span class="cursor"> </span></span></div><div class="line"><span class="ln">3</span><span class="gutter"></span><span class="code"><span class="folded">+--  12 lines: function M.apply(palette, opts) ···</span></span></div><div class="line"><span class="ln">4</span><span class="gutter"></span><span class="code">${ident("palette")}${p(".")}</span></div>
+  </pre>
+  <div class="popup"><div class="psel">bg_float     <span style="color:var(--fg_dim)">field</span></div><div>bg_highlight <span style="color:var(--fg_dim)">field</span></div><div>comment      <span style="color:var(--fg_dim)">field</span></div></div>
+  <div style="height:10px"></div></div>`;
+
+  html += `<div class="swatches">` + ["text", "comment", "entity", "string", "constant", "operator"].map(s =>
+    `<span class="sw t" data-slot="${s}" title="${s}"><i style="background:var(--${s})"></i>${s}</span>`).join("") + `</div>`;
+
+  if (state.rainbow) html += `<p class="note">Rainbow brackets are on: <code>rainbow-delimiters.nvim</code> colours brackets by depth with its own fixed gradient, in every theme. In Lua it also colours block keywords (<code>function</code>, <code>if</code>, <code>for</code>, <code>end</code>). Turn it off to see the <code>bracket_top</code> and <code>keyword</code> slots.</p>`;
+  html += `<p class="note">Token classes follow <code>mapping.lua</code>, not a live Tree-sitter parse. A Kotlin class name in a declaration may be captured as <code>@type</code> rather than <code>@type.definition</code>; check with <code>:InspectLine</code>.</p>`;
+  $stage.innerHTML = html;
+
+  $stage.querySelectorAll(".t").forEach(el => {
+    el.addEventListener("click", () => {
+      const slot = el.dataset.slot.split(" ")[0];
+      const row = $slots.querySelector(`.row[data-slot="${slot}"]`);
+      if (!row) return;
+      row.scrollIntoView({ block: "center", behavior: "smooth" });
+      row.classList.add("flash"); setTimeout(() => row.classList.remove("flash"), 900);
+    });
+  });
+}
+
+// ─── Export and import ──────────────────────────────────────────────
+function luaFile() {
+  const r = REPO[state.theme], vals = cur();
+  const line = (k, c) => `  ${(k + " ").padEnd(15, " ")}= "${vals[k]}",${c ? "  -- " + c : ""}`;
+  const section = (title, keys, comments) => {
+    const rows = keys.filter(k => has(vals, k)).map(k => line(k, comments && comments[k]));
+    return rows.length ? [`  -- ${title}`, ...rows, ``] : [];
+  };
+  const syn = GROUPS[1].slots.map(s => s[0]), punct = GROUPS[2].slots.map(s => s[0]);
+  const out = [
+    `-- ${r.name === "green-dark" ? "Green Dark" : "Green Light"} palette`,
+    `-- Exported from doc/themes/colorscheme-tweaker.html.`,
+    `-- Unset slots fall back: slot → mapping._fallback → text → fg.`,
+    ``,
+    `return {`,
+    `  name = "${r.name}",`,
+    `  background = "${r.background}",`,
+    ``,
+    ...section("Canvas", GROUPS[0].slots.map(s => s[0])),
+    ...section("Syntax slots", syn, Object.fromEntries(syn.map(k => [k, `L ${oklabL(get(vals, k) || "#000000").toFixed(2)}`]))),
+    ...section("Punctuation", punct),
+    ...section("UI", GROUPS[3].slots.map(s => s[0])),
+    ...section("Diagnostics", GROUPS[4].slots.map(s => s[0])),
+    ...section("Git", GROUPS[5].slots.map(s => s[0])),
+  ];
+  while (out[out.length - 1] === "") out.pop();
+  return out.join("\n") + "\n}\n";
+}
+function parseLua(text) {
+  const vals = {};
+  for (const m of text.matchAll(/^\s*([a-z_]+)\s*=\s*"(#[0-9a-fA-F]{6})"/gm)) vals[m[1]] = m[2].toLowerCase();
+  return vals;
+}
+
+const $ex = document.getElementById("ex-wrap"), $exText = document.getElementById("ex-text");
+const $apply = document.getElementById("ex-apply");
+document.getElementById("btn-export").onclick = () => {
+  $exText.value = luaFile(); $exText.readOnly = true; $apply.style.display = "none"; $ex.classList.add("open");
+};
+document.getElementById("btn-import").onclick = () => {
+  $exText.value = ""; $exText.placeholder = `Paste a palettes/${REPO[state.theme].file} here. Every slot not in the paste becomes unset.`;
+  $exText.readOnly = false; $apply.style.display = ""; $ex.classList.add("open"); $exText.focus();
+};
+$apply.onclick = () => {
+  const vals = parseLua($exText.value);
+  if (!Object.keys(vals).length) { alert("No `slot = \"#rrggbb\"` lines found."); return; }
+  for (const k of CANVAS) if (!has(vals, k)) vals[k] = cur()[k];
+  state[state.theme] = vals; save(); renderAll(); $ex.classList.remove("open");
+};
+document.getElementById("ex-close").onclick = () => $ex.classList.remove("open");
+document.getElementById("ex-copy").onclick = () => navigator.clipboard.writeText($exText.value);
+document.getElementById("ex-download").onclick = () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([$exText.value], { type: "text/plain" }));
+  a.download = REPO[state.theme].file; a.click(); URL.revokeObjectURL(a.href);
+};
+
+// ─── Toolbar ────────────────────────────────────────────────────────
+document.getElementById("btn-dark").onclick = () => { state.theme = "dark"; save(); renderAll(); };
+document.getElementById("btn-light").onclick = () => { state.theme = "light"; save(); renderAll(); };
+document.getElementById("btn-reset").onclick = () => {
+  if (!confirm(`Reset ${REPO[state.theme].name} to the repo values?`)) return;
+  state[state.theme] = { ...REPO[state.theme].values }; save(); renderAll();
+};
+document.getElementById("btn-rainbow").onclick = () => { state.rainbow = !state.rainbow; save(); renderAll(); };
+document.querySelectorAll("#topbar [data-lang]").forEach(btn => {
+  btn.onclick = () => { state.lang = btn.dataset.lang; save(); renderAll(); };
+});
+
+function renderAll() {
+  document.getElementById("btn-dark").classList.toggle("on", state.theme === "dark");
+  document.getElementById("btn-light").classList.toggle("on", state.theme === "light");
+  document.getElementById("btn-rainbow").classList.toggle("on", state.rainbow);
+  document.querySelectorAll("#topbar [data-lang]").forEach(b => b.classList.toggle("on", b.dataset.lang === state.lang));
+  renderPanel(); renderStage(); applyVars();
+}
+renderAll();
+</script>
+</body>
+</html>
