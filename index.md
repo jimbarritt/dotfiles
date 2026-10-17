@@ -29,6 +29,7 @@ The dark theme is reworked to Tonsky's principles (T-02 done). The light theme r
 | M-DOT-NVIM-01 | Go development environment | IN PROGRESS | `missions/operational/M-DOT-NVIM-01-go-development-environment.md` |
 | M-DOT-NVIM-02 | Neovim LSP reliability | DONE | `missions/operational/M-DOT-NVIM-02-neovim-lsp-reliability.md` |
 | M-DOT-NVIM-03 | Neovim ergonomics | IN PROGRESS | `missions/operational/M-DOT-NVIM-03-neovim-ergonomics.md` |
+| M-DOT-NVIM-04 | IntelliJ language server for Java and Kotlin | TODO | `missions/operational/M-DOT-NVIM-04-intellij-language-server.md` |
 | M-DOT-THEME-01 | Syntax highlighting review | IN PROGRESS | `missions/operational/M-DOT-THEME-01-syntax-highlighting-review.md` |
 | M-DOT-GIT-01 | Diff viewer readability | IN PROGRESS | `missions/operational/M-DOT-GIT-01-diff-viewer-readability.md` |
 | M-DOT-GIT-02 | Git config refinements | DONE | `missions/operational/M-DOT-GIT-02-git-config-refinements.md` |
