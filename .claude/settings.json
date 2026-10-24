@@ -1,0 +1,17 @@
+{
+  "enabledPlugins": {
+    "tsk@jimbarritt-claude-plugins": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tsk thread session-start --install-plugin claude-cli"
+          }
+        ]
+      }
+    ]
+  }
+}

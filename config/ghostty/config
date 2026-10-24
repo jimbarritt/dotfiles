@@ -11,6 +11,7 @@ cursor-style-blink = true
 window-padding-x = 10
 window-padding-y = 10
 macos-titlebar-style = hidden
+window-decoration = false
 
 # Shell
 shell-integration = detect

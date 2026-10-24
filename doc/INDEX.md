@@ -33,6 +33,7 @@
 - [green-tinted-light-theme.md](green-tinted-light-theme.md) — Green Tinted Light theme
 - [colorscheme-slot-system-design.md](colorscheme-slot-system-design.md) — Colorscheme slot system design
 - [syntax-highlighting-tonsky.md](syntax-highlighting-tonsky.md) — Tonsky's syntax highlighting rules, and how they compare with the green-tinted themes
+- [themes/colorscheme-tweaker.html](themes/colorscheme-tweaker.html) — Standalone page to tweak the green-dark and green-light palettes with a live preview, and export the Lua palette file
 - [additional-customisation-of-nvim-treesitter.md](additional-customisation-of-nvim-treesitter.md) — Additional customisation of nvim treesitter
 - [nvim-lsp-filetype-race.md](nvim-lsp-filetype-race.md) — Intermittent LSP attach caused by a FileType startup race, and how to diagnose it
 - [nvim-dockerfile-injection-bleed.md](nvim-dockerfile-injection-bleed.md) — Dockerfile keywords losing highlighting, and the `after/queries` override that fixes it
