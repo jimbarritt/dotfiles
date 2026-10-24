@@ -11,11 +11,13 @@ customer's patience"; "the connection times out", not "the backend gives up";
 
 ## Session start
 
-**Before responding to the user's first message, including greetings, small talk, or anything that seems too trivial to need context:** invoke the `load-plan` skill. Do this before saying anything else. It is your first action, not an optional one, and it takes the place of manually reading the plan file yourself. Do not substitute a manual read of `doc/planning/plan.md` (or the home-directory equivalent) for invoking the skill. The skill also stamps the session-start timer, which a manual read skips.
+Migrating to `tsk` for work tracking. The old plan system (`doc/planning/plan.md`, the `load-plan`/`init-plan`/`update-plan`/`prune-plan`/`pause-plan`/`resume-plan` skills) still exists and still works, but is now **manual-only**: invoke one of those skills only when the user explicitly asks or types the matching slash command. Do not invoke `load-plan` (or any plan skill) automatically at the start of a session, and do not substitute a manual read of `doc/planning/plan.md` for it either.
 
-If the `load-plan` skill is unavailable for some reason, fall back to checking whether a plan file exists for the current project: `doc/planning/plan.md` first, then `~/.planning/{project-name}/plan.md` (where `{project-name}` is `basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"`), used for repos you don't own. If either is found, read it immediately and briefly orient on current state and next step.
+**Before responding to the user's first message, including greetings, small talk, or anything that seems too trivial to need context:** check `tsk` instead. Run `tsk thread binding` to see whether this session or worktree is already bound to a ledger thread.
+- If bound, resume it and briefly orient (1–3 plain sentences: what's done, what's next) from what `tsk` reports.
+- If `tsk` isn't installed, the repo has no ledger, or the command errors, say nothing about it and proceed normally — don't block on it and don't nag the user about missing setup.
 
-**"Briefly orient" means 1–3 plain sentences of prose: what's done, what's next.** Never paste, reproduce, or re-render the plan file's own Summary table (or any other table/section from it) into the response. If the user has to scroll, it's too long.
+**"Briefly orient" means 1–3 plain sentences of prose.** Never paste, reproduce, or re-render a plan's table, or raw `tsk` output, into the response. If the user has to scroll, it's too long.
 
 ## Finding files
 
