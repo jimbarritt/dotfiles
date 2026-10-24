@@ -1,7 +1,4 @@
 {
-  "enabledPlugins": {
-    "tsk@jimbarritt-claude-plugins": true
-  },
   "hooks": {
     "SessionStart": [
       {
@@ -13,5 +10,8 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "tsk@jimbarritt-claude-plugins": true
   }
 }

@@ -263,7 +263,7 @@ install_zsh_plugins() {
 install_claude_plugins() {
   echo "Installing Claude plugins..."
   claude plugin marketplace add jimbarritt/claude-plugins
-  claude plugin install software-english-lint@jimbarritt-claude-plugins -y
+  claude plugin install swe@jimbarritt-claude-plugins -y
   echo "✓ Claude plugins installed"
 }
 

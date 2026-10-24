@@ -44,10 +44,6 @@ before sending:
 - A human trait, feeling, or intent given to a system, service, component,
   or process. State the mechanism instead.
 
-End every reply that has prose with the line `SWE: Verified`. Do not end
-a persisted document (a doc, README, ADR, plan) with this line. It marks
-a chat reply only.
-
 ### Where it does not apply
 
 - Code itself. Identifiers, syntax and string literals follow the
