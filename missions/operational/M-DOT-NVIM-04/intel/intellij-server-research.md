@@ -74,6 +74,17 @@ Minimal lazy.nvim specs from the READMEs:
 - Tools: `bin/lsp-doctor` finds and cleans dangling kotlin-lsp processes.
 - Claude Code: `doc/claude-lsp-integration.md` covers Claude Code's own LSP plugins. The intellij-server licence does not cover that use yet.
 
+## Inline suggestions of whole lines and next edits
+
+Gathered 2026-10-28 from search results and JetBrains help pages. Not verified against the 1.0 extension itself.
+
+Jim saw intelligent suggestions of the next code in IntelliJ IDEA. Two separate IDE features can produce them. Neither is listed as a feature of the LSP or the VS Code extension.
+
+- Full Line Code Completion suggests whole lines, and sometimes several, as grey inline text. It runs a local deep learning model and sends no code over the internet. The IntelliJ IDEA Ultimate subscription includes it. The plugin is bundled and enabled by default, with bundled Java and Kotlin models. It needs a 64-bit processor, or an x86 processor with AVX2. It does not run in Remote Development.
+- Next edit suggestions belong to the AI Assistant plugin, not Full Line. They suggest the next edit to the code. The models are cloud (Gemini, OpenAI, Anthropic) or a custom local model. Whether they ship with Ultimate, and whether they can run locally, is not established.
+- The extension's official feature list names completion and signature help. Full Line is not mentioned there. In Neovim, the LSP gives completion items and signature help only. Inline whole-line suggestions need a separate plugin.
+- To tell which feature was in use: check Settings, Plugins, Installed for "Full Line Code Completion", "AI Assistant" and "GitHub Copilot". Grey inline text with no popup points to Full Line or next edit suggestions.
+
 ## Sources
 
 - [IntelliJ IDEA's Java and Kotlin for Cursor and VS Code Hits 1.0](https://blog.jetbrains.com/idea/2026/10/intellij-idea-s-java-and-kotlin-for-cursor-and-vs-code-hits-1-0/)
@@ -87,3 +98,6 @@ Minimal lazy.nvim specs from the READMEs:
 - [JetBrains: Subscription options and pricing](https://jetbrains.com/buy)
 - [Capterra: IntelliJ IDEA pricing](https://www.capterra.com/p/136010/IntelliJ-IDEA/pricing/)
 - [heise.de: Price jump for development environments from October 1](https://heise.de/-10506695)
+- [Full Line code completion](https://jetbrains.com/help/idea/full-line-code-completion.html)
+- [Full Line Code Completion in JetBrains IDEs: All You Need to Know](https://blog.jetbrains.com/?p=458703/)
+- [IntelliJ IDEA 2026.2 Help: AI Assistant](https://www.jetbrains.com.cn/en-us/help/idea/ai-assistant.html)
